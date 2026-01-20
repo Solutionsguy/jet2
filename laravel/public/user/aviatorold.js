@@ -542,7 +542,8 @@ function new_game_generated() {
     // setTimeout(hide_loading_game(), 10000);
     $(".flew_away_section").hide();
     $("#auto_increment_number").removeClass('text-danger');
-    $("#all_bets .mCSB_container").html('');
+    // NOTE: Don't clear bets here - they are managed by socket sync now
+    // $("#all_bets .mCSB_container").html('');
     $("#running_type").text('bet time');
     $("#auto_increment_number_div").hide();
     //khushbu
@@ -768,7 +769,10 @@ function update_bet_list(bets, target, appendType = '') {
     //khushbu 
     // show_bet_count(bets.length);
     if (appendType == 1) {
-        $("#all_bets .mCSB_container").html('');
+        // NOTE: Only clear if not using socket sync (socket handles bet display now)
+        if (typeof window.currentRoundBets === 'undefined' || window.currentRoundBets.length === 0) {
+            $("#all_bets .mCSB_container").html('');
+        }
     }
     if (appendType == 2) {
         $('#prev_bets .mCSB_container').html('');

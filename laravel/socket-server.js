@@ -420,6 +420,39 @@ function startGameLoop() {
 }
 
 /**
+ * Generate fake bets to populate the sidebar
+ * Creates realistic-looking bot players for display
+ */
+function generateFakeBets() {
+    const fakeBets = [];
+    const numFakeBets = Math.floor(Math.random() * 500) + 400; // 400-900 fake bets
+    
+    for (let i = 0; i < numFakeBets; i++) {
+        const odapuId = Math.floor(Math.random() * 40000) + 10000;
+        const betId = 'fake_' + Date.now() + '_' + i;
+        const amount = Math.floor(Math.random() * 9000) + 100; // 100-9100
+        const avatarNum = Math.floor(Math.random() * 72) + 1;
+        
+        const fakeBet = {
+            odapuId: odapuId,
+            odapu: 'd***' + Math.floor(Math.random() * 900 + 100),
+            username: 'd***' + Math.floor(Math.random() * 900 + 100),
+            amount: amount,
+            betId: betId,
+            avatar: '/images/avtar/av-' + avatarNum + '.png',
+            status: 'active',
+            isFake: true,
+            cashOutMultiplier: null
+        };
+        
+        fakeBets.push(fakeBet);
+        gameState.bets.set(betId, fakeBet);
+    }
+    
+    return fakeBets;
+}
+
+/**
  * Run a single game cycle: waiting -> countdown -> flying -> crashed -> repeat
  */
 function runGameCycle() {
@@ -434,6 +467,13 @@ function runGameCycle() {
         phase: 'waiting',
         duration: GAME_CONFIG.waitingTime
     });
+    
+    // Generate fake bets and broadcast to all clients
+    const fakeBets = generateFakeBets();
+    console.log(`🤖 Generated ${fakeBets.length} fake bets for display`);
+    
+    // Broadcast all fake bets to populate sidebar on all clients
+    io.emit('syncBets', { bets: fakeBets });
     
     // After waiting time, start countdown
     setTimeout(() => {
@@ -495,12 +535,60 @@ function startFlying() {
             multiplier: gameState.currentMultiplier
         });
         
+        // Simulate fake cashouts randomly (makes it look more realistic)
+        simulateFakeCashouts(gameState.currentMultiplier);
+        
         // Check if target reached
         if (gameState.currentMultiplier >= gameState.targetMultiplier) {
             clearInterval(multiplierInterval);
             crashGame();
         }
     }, GAME_CONFIG.incrementSpeed);
+}
+
+/**
+ * Simulate fake players cashing out at various multipliers
+ * This makes the game look more active and realistic
+ */
+function simulateFakeCashouts(currentMultiplier) {
+    // Only process fake cashouts occasionally (every ~500ms on average)
+    if (Math.random() > 0.2) return;
+    
+    // Get active fake bets
+    const activeFakeBets = Array.from(gameState.bets.values())
+        .filter(bet => bet.isFake && bet.status === 'active');
+    
+    if (activeFakeBets.length === 0) return;
+    
+    // Randomly select 1-5 fake bets to cash out
+    const numCashouts = Math.floor(Math.random() * 5) + 1;
+    
+    for (let i = 0; i < numCashouts && activeFakeBets.length > 0; i++) {
+        // Higher multipliers = fewer cashouts (more realistic)
+        const cashoutChance = Math.max(0.1, 1 - (currentMultiplier / 10));
+        if (Math.random() > cashoutChance) continue;
+        
+        const randomIndex = Math.floor(Math.random() * activeFakeBets.length);
+        const bet = activeFakeBets[randomIndex];
+        
+        if (bet && bet.status === 'active') {
+            bet.status = 'cashed_out';
+            bet.cashOutMultiplier = currentMultiplier;
+            bet.winAmount = bet.amount * currentMultiplier;
+            
+            // Broadcast the fake cashout to all clients
+            io.emit('playerCashedOut', {
+                odapuId: bet.odapuId,
+                username: bet.username || bet.odapu,
+                betId: bet.betId,
+                multiplier: currentMultiplier,
+                winAmount: bet.winAmount
+            });
+            
+            // Remove from active list for next iteration
+            activeFakeBets.splice(randomIndex, 1);
+        }
+    }
 }
 
 /**

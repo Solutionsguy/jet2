@@ -21,6 +21,7 @@ class AviatorSocketClient {
             onSyncBets: [],
             onMultiplierUpdate: [],
             onGameCrashed: [],
+            onGameReset: [],
             onBetPlaced: [],
             onPlayerCashedOut: [],
             onConnectionChange: []
@@ -135,6 +136,7 @@ class AviatorSocketClient {
             this.gameState.status = 'waiting';
             this.gameState.multiplier = 1.00;
             this.gameState.bets = [];
+            this.triggerCallback('onGameReset', data);
         });
 
         // Bet placed event

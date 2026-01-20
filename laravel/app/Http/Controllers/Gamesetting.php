@@ -234,6 +234,75 @@ class Gamesetting extends Controller
 	       //  $gamestatusdata = Setting::where('category', 'game_between_time')->update(["value"  => 5000]);
 	    }else{}
 	}
+	
+	/**
+	 * Get bet list for a previous game round
+	 * Used when switching to "Previous Hand" tab in the sidebar
+	 */
+	public function previous_game_bet_list(Request $r)
+	{
+	    $status = false;
+	    $data = array();
+	    $message = "";
+	    
+	    $game_id = $r->game_id;
+	    
+	    if ($game_id) {
+	        // Get the previous game ID (one before the provided game_id)
+	        $previousGame = Gameresult::where('id', '<', $game_id)
+	            ->orderBy('id', 'desc')
+	            ->first();
+	        
+	        if ($previousGame) {
+	            // Get all bets for the previous game
+	            $allbets = Userbit::where("gameid", $previousGame->id)
+	                ->join('users', 'users.id', '=', 'userbits.userid')
+	                ->select('userbits.*', 'users.name', 'users.username', 'users.image')
+	                ->get();
+	            
+	            $betList = [];
+	            foreach ($allbets as $bet) {
+	                $betList[] = [
+	                    "betId" => $bet->id,
+	                    "odapuId" => $bet->userid,
+	                    "odapu" => $bet->username ?? $bet->name ?? 'Player',
+	                    "amount" => $bet->amount,
+	                    "avatar" => $bet->image ?? '/images/avtar/av-' . rand(1, 72) . '.png',
+	                    "cashout_multiplier" => $bet->cashout_multiplier,
+	                    "status" => $bet->status
+	                ];
+	            }
+	            
+	            // Add some fake bets for display (like in currentlybet)
+	            for ($i = 0; $i < rand(50, 150); $i++) {
+	                $fakeMultiplier = rand(0, 1) ? (rand(100, 300) / 100) : null;
+	                $betList[] = [
+	                    "betId" => rand(100000, 999999),
+	                    "odapuId" => rand(10000, 50000),
+	                    "odapu" => 'd***' . rand(100, 999),
+	                    "amount" => rand(100, 5000),
+	                    "avatar" => '/images/avtar/av-' . rand(1, 72) . '.png',
+	                    "cashout_multiplier" => $fakeMultiplier,
+	                    "status" => 1
+	                ];
+	            }
+	            
+	            $status = true;
+	            $data = [
+	                "bet_list" => $betList,
+	                "bet_counts" => count($betList),
+	                "win_multi" => $previousGame->result ?? 1.00
+	            ];
+	        } else {
+	            $message = "No previous game found";
+	        }
+	    } else {
+	        $message = "Game ID is required";
+	    }
+	    
+	    $response = array("isSuccess" => $status, "data" => $data, "message" => $message);
+	    return response()->json($response);
+	}
 }
 
 

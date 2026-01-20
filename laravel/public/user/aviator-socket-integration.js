@@ -1,7 +1,16 @@
 /**
  * Integration of Socket.IO with existing Aviator game
  * This file bridges the socket client with the existing game logic
+ * 
+ * SYNCHRONIZED BET SIDEBAR:
+ * - All bets are broadcast to all connected clients
+ * - Sidebar displays identical data across all tabs/devices
+ * - Bets clear at the start of each new round
  */
+
+// Global bet tracking
+window.currentRoundBets = [];
+window.totalBetsCount = 0;
 
 // Initialize socket when document is ready
 (function() {
@@ -36,10 +45,47 @@ function loadCurrentBets() {
 }
 
 /**
+ * Clear all bets from sidebar - called at start of new round
+ */
+function clearBetsSidebar() {
+    // Try multiple container selectors for compatibility
+    const container = $("#all_bets .mCSB_container");
+    if (container.length > 0) {
+        container.empty();
+    } else {
+        $("#all_bets").empty();
+    }
+    
+    // Reset tracking
+    window.currentRoundBets = [];
+    window.totalBetsCount = 0;
+    
+    // Update the counter display
+    updateBetCountDisplay(0);
+    
+    console.log('🧹 Bets sidebar cleared for new round');
+}
+
+/**
+ * Update the total bets counter display
+ */
+function updateBetCountDisplay(count) {
+    window.totalBetsCount = count;
+    $("#total_bets").text(count);
+    $(".bet-count").text(count);
+}
+
+/**
  * Display a single bet in the sidebar
+ * Called when a new bet is placed (broadcast from server)
  */
 function displayBetInSidebar(bet) {
-    const container = $("#all_bets .mCSB_container");
+    // Try multiple container selectors for compatibility
+    let container = $("#all_bets .mCSB_container");
+    if (container.length === 0) {
+        container = $("#all_bets");
+    }
+    
     if (container.length === 0) {
         console.log('⚠️ Bet container not found');
         return;
@@ -50,12 +96,25 @@ function displayBetInSidebar(bet) {
         return;
     }
     
-    const avatar = bet.avatar || '/images/avtar/user.png';
+    const avatar = bet.avatar || '/images/avtar/av-1.png';
     const username = bet.odapu || bet.username || 'Player';
     const amount = parseFloat(bet.amount).toFixed(2);
+    const status = bet.status || 'active';
+    const cashOutMultiplier = bet.cashOutMultiplier;
+    
+    // Determine status display
+    let statusClass = 'bg1';
+    let statusText = '-';
+    let winnings = '-';
+    
+    if (status === 'cashed_out' && cashOutMultiplier) {
+        statusClass = 'bg2';
+        statusText = cashOutMultiplier.toFixed(2) + 'x';
+        winnings = (parseFloat(bet.amount) * cashOutMultiplier).toFixed(2) + '₹';
+    }
     
     const betHtml = `
-        <div class="list-items" id="bet-${bet.betId}" data-bet-id="${bet.betId}">
+        <div class="list-items" id="bet-${bet.betId}" data-bet-id="${bet.betId}" data-user-id="${bet.odapuId || bet.userId}">
             <div class="column-1 users fw-normal">
                 <img src="${avatar}" class="user-avatar" style="width:20px;height:20px;border-radius:50%;margin-right:5px;">
                 ${username}
@@ -66,27 +125,34 @@ function displayBetInSidebar(bet) {
                 </button>
             </div>
             <div class="column-3">
-                <div class="bg1 custom-badge mx-auto bet-status">Betting</div>
+                <div class="${statusClass} custom-badge mx-auto bet-status">${statusText}</div>
             </div>
-            <div class="column-4 fw-normal bet-winnings">-</div>
+            <div class="column-4 fw-normal bet-winnings">${winnings}</div>
         </div>
     `;
     
     container.prepend(betHtml);
+    
+    // Track the bet
+    window.currentRoundBets.push(bet);
+    
+    // Update counter
+    updateBetCountDisplay(window.currentRoundBets.length);
 }
 
 /**
- * Display all bets in sidebar (for sync)
+ * Display all bets in sidebar (for sync when client connects/reconnects)
  */
 function displayAllBets(bets) {
-    const container = $("#all_bets .mCSB_container");
-    container.empty();
+    // Clear existing bets first
+    clearBetsSidebar();
     
+    // Add all bets
     bets.forEach(bet => {
         displayBetInSidebar(bet);
     });
     
-    console.log(`📋 Displayed ${bets.length} bets in sidebar`);
+    console.log(`📋 Synced ${bets.length} bets to sidebar`);
 }
 
 /**
@@ -95,8 +161,25 @@ function displayAllBets(bets) {
 function updateBetCashOut(betId, multiplier, winAmount) {
     const betElement = $(`#bet-${betId}`);
     if (betElement.length > 0) {
-        betElement.find('.bet-status').removeClass('bg1').addClass('bg2').text(multiplier.toFixed(2) + 'x');
+        betElement.find('.bet-status')
+            .removeClass('bg1')
+            .addClass('bg2')
+            .text(multiplier.toFixed(2) + 'x');
         betElement.find('.bet-winnings').text(winAmount.toFixed(2) + '₹');
+        
+        // Add highlight animation
+        betElement.addClass('cashed-out-highlight');
+        setTimeout(() => {
+            betElement.removeClass('cashed-out-highlight');
+        }, 2000);
+    }
+    
+    // Update tracking
+    const bet = window.currentRoundBets.find(b => b.betId === betId);
+    if (bet) {
+        bet.status = 'cashed_out';
+        bet.cashOutMultiplier = multiplier;
+        bet.winAmount = winAmount;
     }
 }
 
@@ -156,19 +239,18 @@ function showFlyingPlane(gameId, multiplier, isMidGameSync = false) {
 
 /**
  * Setup all socket event handlers
+ * These handlers ensure all tabs/devices show the same bet data
  */
 function setupSocketEventHandlers(socket) {
     // Connection status handler
     socket.on('onConnectionChange', (data) => {
         if (data.connected) {
             console.log('✓ Connected to game server');
-            if (typeof toastr !== 'undefined') {
-                toastr.success('Connected to game server');
-            }
+            // Don't show toastr for connection - too noisy
         } else {
             console.log('✗ Disconnected from game server');
             if (typeof toastr !== 'undefined') {
-                toastr.warning('Disconnected from game server');
+                toastr.warning('Disconnected from game server. Reconnecting...');
             }
         }
     });
@@ -183,8 +265,8 @@ function setupSocketEventHandlers(socket) {
             $("#auto_increment_number_div").hide();
             console.log('⏳ Waiting for next round... (' + (data.duration/1000) + 's)');
             
-            // Clear old bets - new bets will come via socket betPlaced events
-            $("#all_bets .mCSB_container").empty();
+            // DON'T clear bets here - server will send syncBets event with new bets
+            // The syncBets handler will clear and repopulate
             
         } else if (data.phase === 'countdown') {
             // Countdown phase before game starts
@@ -211,14 +293,16 @@ function setupSocketEventHandlers(socket) {
     });
     
     // Sync bets list - for clients that connect/reconnect
+    // Server event name is 'syncBets', client receives as 'onSyncBets' via socket-client.js wrapper
     socket.on('onSyncBets', (data) => {
         console.log('🔄 [SYNC] Received bets list:', data.bets.length, 'bets');
         displayAllBets(data.bets);
     });
     
     // New bet placed - broadcast to ALL clients
+    // This ensures all tabs/devices see the same bets
     socket.on('onBetPlaced', (data) => {
-        console.log('💰 [SOCKET] Bet placed:', data.username, data.amount + '₹');
+        console.log('💰 [SOCKET] Bet placed:', data.username || data.odapu, data.amount + '₹');
         displayBetInSidebar(data);
     });
     
@@ -242,11 +326,17 @@ function setupSocketEventHandlers(socket) {
         
         // Update DOM elements
         updateMultiplierDisplay(data.multiplier);
+        
+        // Update cash out amounts for active bets in sidebar
+        updateActiveBetsCashOutAmounts(data.multiplier);
     });
 
     // Game crashed handler - ALL clients receive this from server
     socket.on('onGameCrashed', (data) => {
         console.log('💥 [SERVER] Game crashed at', data.crashMultiplier + 'x');
+        
+        // Mark all remaining active bets as lost in the sidebar
+        markActiveBetsAsLost();
         
         // Show crash animation
         if (typeof crash_plane === 'function') {
@@ -258,42 +348,58 @@ function setupSocketEventHandlers(socket) {
             gameover(data.crashMultiplier);
         }
         
-        // DON'T clear bets here - let the new round handler do it
-        // $("#all_bets .mCSB_container").empty();
-        
-        // Refresh bet history
+        // Refresh bet history (My Bets tab)
         refreshBetHistory();
         
         // Update wallet balance
         updateWalletBalance();
         
         // Server will automatically start the next game cycle
-        // No client action needed - just wait for gamePhase event
+        // Bets will be cleared when 'waiting' phase begins
         console.log('⏳ Waiting for server to start next round...');
     });
-
-    // Bet placed handler
-    socket.on('onBetPlaced', (data) => {
-        console.log('💰 Bet placed:', data);
-        
-        // Update all bets display
-        addBetToDisplay(data);
-        
-        // Update bet count
-        updateBetCount();
+    
+    // Game reset handler - prepare for new round
+    socket.on('onGameReset', (data) => {
+        console.log('🔄 [SERVER] Game reset - preparing for new round');
+        clearBetsSidebar();
     });
+}
 
-    // Player cashed out handler
-    socket.on('onPlayerCashedOut', (data) => {
-        console.log('💸 Player cashed out:', data);
-        
-        // Show cash out notification
-        if (typeof toastr !== 'undefined') {
-            toastr.success(`${data.username} cashed out at ${data.multiplier}x!`);
+/**
+ * Update the potential cash out amounts displayed for active bets
+ */
+function updateActiveBetsCashOutAmounts(multiplier) {
+    // Update each active bet's potential winnings display
+    window.currentRoundBets.forEach(bet => {
+        if (bet.status === 'active') {
+            const betElement = $(`#bet-${bet.betId}`);
+            if (betElement.length > 0 && !betElement.hasClass('cashed-out')) {
+                const potentialWin = (parseFloat(bet.amount) * multiplier).toFixed(2);
+                // Optionally show potential winnings - uncomment if desired
+                // betElement.find('.bet-winnings').text(potentialWin + '₹');
+            }
         }
-        
-        // Update display
-        updateCashOutDisplay(data);
+    });
+}
+
+/**
+ * Mark all active bets as lost when game crashes
+ */
+function markActiveBetsAsLost() {
+    window.currentRoundBets.forEach(bet => {
+        if (bet.status === 'active') {
+            const betElement = $(`#bet-${bet.betId}`);
+            if (betElement.length > 0) {
+                betElement.find('.bet-status')
+                    .removeClass('bg1 bg2')
+                    .addClass('bg3')
+                    .text('Lost');
+                betElement.find('.bet-winnings').text('-');
+                betElement.addClass('bet-lost');
+            }
+            bet.status = 'lost';
+        }
     });
 }
 

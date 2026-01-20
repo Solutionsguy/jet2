@@ -110,6 +110,7 @@ Route::group(['middleware' => ['isUser']], function () {
 	Route::get('/cash_out', [Gamesetting::class, "cashout"]);
     Route::post('/game/currentlybet', [Gamesetting::class, "currentlybet"]);
     Route::post('/game/my_bets_history', [Gamesetting::class, "my_bets_history"]);
+    Route::post('/previous_game_bet_list', [Gamesetting::class, "previous_game_bet_list"]);
     Route::get('/payment_gateway_details', [Adminapi::class, "payment_gateway"]);
     Route::post('/insert/withdrawal', [Adminapi::class, "withdrawal_query"]);
     Route::post('/depositNow', [Adminapi::class, "depositNow"]);

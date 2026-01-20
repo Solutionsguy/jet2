@@ -381,6 +381,38 @@
         .bet-border-yellow {
             border-color: #e69308 !important;
         }
+
+        /* Bet sidebar styling */
+        .list-items {
+            transition: background-color 0.3s ease;
+        }
+        
+        .list-items.cashed-out-highlight {
+            background-color: rgba(78, 175, 17, 0.3) !important;
+            animation: cashoutPulse 0.5s ease;
+        }
+        
+        .list-items.bet-lost {
+            opacity: 0.6;
+        }
+        
+        .list-items .bet-status.bg3 {
+            background-color: #dc3545 !important;
+        }
+        
+        @keyframes cashoutPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+        
+        .user-avatar {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 5px;
+            object-fit: cover;
+        }
     </style>
     {{-- Preloader area  --}}
     <div class="load-txt">
