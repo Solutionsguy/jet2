@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 namespace App\Http\Controllers;
 
@@ -60,7 +60,7 @@ class Authentication extends Controller
                     $user->mobile = $r->mobile;
                     $user->email = $r->email;
                     $user->password = Hash::make($r->password);
-                    $user->currency = '₹';
+                    $user->currency = 'KSh';
                     $user->gender = $r->gender;
                     $user->country = 'IN';
                     $user->status = '1';
@@ -92,7 +92,7 @@ class Authentication extends Controller
                 $user->mobile = $r->mobile;
                 $user->email = $r->email;
                 $user->password = Hash::make($r->password);
-                $user->currency = '₹';
+                $user->currency = 'KSh';
                 $user->gender = $r->gender;
                 $user->country = 'IN';
                 $user->status = '1';

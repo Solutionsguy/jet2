@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html class="no-js" lang="en">
 
 <head>
@@ -728,16 +728,16 @@
                                     <div class="bets-opt-list">
                                         <button class="btn btn-secondary btn-sm bet-opt main_amount_btn"
                                             onclick="select_direct_bet_amount(this);"><span
-                                                class="amt">100</span><span class="currency">₹</span></button>
+                                                class="amt">100</span><span class="currency">KSh</span></button>
                                         <button class="btn btn-secondary btn-sm bet-opt main_amount_btn"
                                             onclick="select_direct_bet_amount(this);"><span
-                                                class="amt">200</span><span class="currency">₹</span></button>
+                                                class="amt">200</span><span class="currency">KSh</span></button>
                                         <button class="btn btn-secondary btn-sm bet-opt main_amount_btn"
                                             onclick="select_direct_bet_amount(this);"><span
-                                                class="amt">500</span><span class="currency">₹</span></button>
+                                                class="amt">500</span><span class="currency">KSh</span></button>
                                         <button class="btn btn-secondary btn-sm bet-opt main_amount_btn"
                                             onclick="select_direct_bet_amount(this);"><span
-                                                class="amt">1000</span><span class="currency">₹</span></button>
+                                                class="amt">1000</span><span class="currency">KSh</span></button>
                                     </div>
                                 </div>
                                 <div class="buttons-block" id="bet_button">
@@ -842,16 +842,16 @@
                                     <div class="bets-opt-list">
                                         <button class="btn btn-secondary btn-sm bet-opt extra_amount_btn"
                                             onclick="select_direct_bet_amount(this);"><span
-                                                class="amt">100</span><span class="currency">₹</span></button>
+                                                class="amt">100</span><span class="currency">KSh</span></button>
                                         <button class="btn btn-secondary btn-sm bet-opt extra_amount_btn"
                                             onclick="select_direct_bet_amount(this);"><span
-                                                class="amt">200</span><span class="currency">₹</span></button>
+                                                class="amt">200</span><span class="currency">KSh</span></button>
                                         <button class="btn btn-secondary btn-sm bet-opt extra_amount_btn"
                                             onclick="select_direct_bet_amount(this);"><span
-                                                class="amt">500</span><span class="currency">₹</span></button>
+                                                class="amt">500</span><span class="currency">KSh</span></button>
                                         <button class="btn btn-secondary btn-sm bet-opt extra_amount_btn"
                                             onclick="select_direct_bet_amount(this);"><span
-                                                class="amt">1000</span><span class="currency">₹</span></button>
+                                                class="amt">1000</span><span class="currency">KSh</span></button>
                                     </div>
                                 </div>
                                 <div class="buttons-block" id="bet_button">
@@ -941,15 +941,15 @@
                     <ul class="list-unstyled limit-rules">
                         <li class="list-group-item">
                             Minimum Bet:
-                            <span class="badge badge-success px-2 font-family-number">10 ₹ </span>
+                            <span class="badge badge-success px-2 font-family-number">10 KSh </span>
                         </li>
                         <li class="list-group-item">
                             Maximum Bet:
-                            <span class="badge badge-success px-2 font-family-number">8000 ₹ </span>
+                            <span class="badge badge-success px-2 font-family-number">8000 KSh </span>
                         </li>
                         <li class="list-group-item">
                             Maximum win for one bet:
-                            <span class="badge badge-success px-2 font-family-number">800000 ₹ </span>
+                            <span class="badge badge-success px-2 font-family-number">800000 KSh </span>
                         </li>
                     </ul>
                 </div>

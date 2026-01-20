@@ -1,4 +1,4 @@
-@extends('Layout.admindashboard')
+﻿@extends('Layout.admindashboard')
 @section('css')
 @endsection
 
@@ -50,9 +50,9 @@
                                             <td>{{ appvalidate($item->name) }}</td>
                                             <td>{{ appvalidate($item->mobile) }}</td>
                                             <td>{{ appvalidate($item->email) }}</td>
-                                            <td>₹{{ wallet($item->id) }} <span class="mdi mdi-border-color"
+                                            <td>KSh{{ wallet($item->id) }} <span class="mdi mdi-border-color"
                                                     style="cursor: pointer;" onclick="updatewalletbalance('{{ appvalidate($item->id) }}','{{ wallet($item->id,'num') }}')"></span></td>
-                                            <td>₹{{ number_format(lastrecharge($item->id, 'amount'), 2) }}
+                                            <td>KSh{{ number_format(lastrecharge($item->id, 'amount'), 2) }}
                                                 <sub>{{ lastrecharge($item->id, 'created_at') ? dformat(lastrecharge($item->id, 'created_at'), 'd-m-Y') : 'No data found!' }}</sub>
                                             </td>
                                             <td>{{ appvalidate($item->promocode) }}</td>

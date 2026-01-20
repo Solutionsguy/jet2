@@ -1,4 +1,4 @@
-@extends('Layout.admindashboard')
+﻿@extends('Layout.admindashboard')
 @section('css')
 @endsection
 @section('content')
@@ -37,7 +37,7 @@
                                             <td>{{ appvalidate($history->userid) }}</td>
                                             <td>{{ appvalidate(userdetail($history->userid, 'name')) }}</td>
                                             <td>{{ appvalidate($history->transactionno) }}</td>
-                                            <td>₹{{ appvalidate(number_format($history->amount, 2)) }}</td>
+                                            <td>KSh{{ appvalidate(number_format($history->amount, 2)) }}</td>
                                             <td><label
                                                     class="badge badge-{{ status($history->status, 'recharge')['color'] }}">{{ status($history->status, 'recharge')['name'] }}</label>
                                             </td>

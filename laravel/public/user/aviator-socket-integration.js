@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Integration of Socket.IO with existing Aviator game
  * This file bridges the socket client with the existing game logic
  * 
@@ -42,6 +42,79 @@ function loadCurrentBets() {
     // Bets are now synced via socket (syncBets event)
     // This function is kept as a fallback
     console.log('📋 Bets are synced via socket');
+}
+
+/**
+ * Restore user's active bets after page refresh
+ * This ensures the user can still cash out if they refresh mid-game
+ */
+function restoreMyActiveBets() {
+    $.ajax({
+        url: '/game/my_active_bets',
+        type: 'POST',
+        data: {
+            _token: typeof hash_id !== 'undefined' ? hash_id : $('meta[name="csrf-token"]').attr('content')
+        },
+        success: function(result) {
+            if (result.isSuccess && result.data.active_bets && result.data.active_bets.length > 0) {
+                console.log('🔄 Restoring', result.data.active_bets.length, 'active bet(s)');
+                
+                result.data.active_bets.forEach(function(bet) {
+                    // Add bet to bet_array if not already present
+                    if (typeof bet_array !== 'undefined') {
+                        // Check if bet already exists
+                        const existingBet = bet_array.find(b => b.bet_id === bet.bet_id);
+                        if (!existingBet) {
+                            bet_array.push({
+                                bet_id: bet.bet_id,
+                                bet_amount: bet.bet_amount,
+                                section_no: bet.section_no,
+                                bet_type: bet.bet_type,
+                                is_bet: 1  // Mark as already placed
+                            });
+                        }
+                    }
+                    
+                    // Update UI to show cash out button for this bet
+                    const sectionId = bet.section_no == 0 ? '#main_bet_section' : '#extra_bet_section';
+                    
+                    // Show cash out button, hide bet button
+                    $(sectionId).find('#bet_button').hide();
+                    $(sectionId).find('#cancle_button').hide();
+                    $(sectionId).find('#cashout_button').show();
+                    $(sectionId).find('.controls').addClass('bet-border-yellow');
+                    
+                    // Update the bet amount display
+                    $(sectionId).find('#bet_amount').val(bet.bet_amount);
+                    
+                    // Store bet_id in hidden input fields (used by cash_out_now function)
+                    if (bet.section_no == 0) {
+                        $('#main_bet_id').val(bet.bet_id);
+                    } else {
+                        $('#extra_bet_id').val(bet.bet_id);
+                    }
+                    
+                    // Update cash out amount display with current multiplier
+                    if (typeof incrementor !== 'undefined' && incrementor > 0) {
+                        const cashOutAmount = (bet.bet_amount * incrementor).toFixed(2);
+                        $(sectionId).find('#cash_out_amount').text(cashOutAmount + currency_symbol);
+                    }
+                    
+                    console.log('✅ Restored bet:', bet.bet_id, 'Amount:', bet.bet_amount, 'Section:', bet.section_no);
+                });
+                
+                // Update game_id for cash out
+                if (result.data.game_id) {
+                    game_id = result.data.game_id;
+                }
+            } else {
+                console.log('📋 No active bets to restore');
+            }
+        },
+        error: function(err) {
+            console.error('❌ Failed to restore active bets:', err);
+        }
+    });
 }
 
 /**
@@ -110,7 +183,7 @@ function displayBetInSidebar(bet) {
     if (status === 'cashed_out' && cashOutMultiplier) {
         statusClass = 'bg2';
         statusText = cashOutMultiplier.toFixed(2) + 'x';
-        winnings = (parseFloat(bet.amount) * cashOutMultiplier).toFixed(2) + '₹';
+        winnings = (parseFloat(bet.amount) * cashOutMultiplier).toFixed(2) + 'KSh';
     }
     
     const betHtml = `
@@ -121,7 +194,7 @@ function displayBetInSidebar(bet) {
             </div>
             <div class="column-2">
                 <button class="btn btn-transparent previous-history d-flex align-items-center mx-auto fw-normal">
-                    ${amount}₹
+                    ${amount}KSh
                 </button>
             </div>
             <div class="column-3">
@@ -165,7 +238,7 @@ function updateBetCashOut(betId, multiplier, winAmount) {
             .removeClass('bg1')
             .addClass('bg2')
             .text(multiplier.toFixed(2) + 'x');
-        betElement.find('.bet-winnings').text(winAmount.toFixed(2) + '₹');
+        betElement.find('.bet-winnings').text(winAmount.toFixed(2) + 'KSh');
         
         // Add highlight animation
         betElement.addClass('cashed-out-highlight');
@@ -298,6 +371,9 @@ function setupSocketEventHandlers(socket) {
         
         // Mid-game sync - position plane at current multiplier
         showFlyingPlane(data.gameId, data.multiplier, true);
+        
+        // Restore user's active bets so they can still cash out
+        restoreMyActiveBets();
     });
     
     // Sync bets list - for clients that connect/reconnect
@@ -310,7 +386,7 @@ function setupSocketEventHandlers(socket) {
     // New bet placed - broadcast to ALL clients
     // This ensures all tabs/devices see the same bets
     socket.on('onBetPlaced', (data) => {
-        console.log('💰 [SOCKET] Bet placed:', data.username || data.odapu, data.amount + '₹');
+        console.log('💰 [SOCKET] Bet placed:', data.username || data.odapu, data.amount + 'KSh');
         displayBetInSidebar(data);
     });
     
@@ -436,7 +512,7 @@ function updateActiveBetsCashOutAmounts(multiplier) {
             if (betElement.length > 0 && !betElement.hasClass('cashed-out')) {
                 const potentialWin = (parseFloat(bet.amount) * multiplier).toFixed(2);
                 // Optionally show potential winnings - uncomment if desired
-                // betElement.find('.bet-winnings').text(potentialWin + '₹');
+                // betElement.find('.bet-winnings').text(potentialWin + 'KSh');
             }
         }
     });
@@ -533,7 +609,7 @@ function refreshBetHistory() {
                         </div>
                         <div class="column-2">
                             <button class="btn btn-transparent previous-history d-flex align-items-center mx-auto fw-normal">
-                                ${data[i].amount}₹
+                                ${data[i].amount}KSh
                             </button>
                         </div>
                         <div class="column-3">
@@ -542,7 +618,7 @@ function refreshBetHistory() {
                             </div>
                         </div>
                         <div class="column-4 fw-normal">
-                            ${Math.round(data[i].cashout_multiplier * data[i].amount)}₹
+                            ${Math.round(data[i].cashout_multiplier * data[i].amount)}KSh
                         </div>
                     </div>
                 `);

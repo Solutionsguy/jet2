@@ -225,6 +225,51 @@ class Gamesetting extends Controller
         $response = array("currentGame" => $currentGame, "currentGameBet" => $currentGameBet, "currentGameBetCount" => $currentGameBetCount);
         return response()->json($response);
     }
+    
+    /**
+     * Get user's active bets for the current game
+     * Used to restore bet state when user refreshes page mid-game
+     */
+    public function getMyActiveBets()
+    {
+        $userId = user('id');
+        $status = false;
+        $data = array();
+        $message = "";
+        
+        if (!$userId) {
+            $response = array("isSuccess" => false, "data" => array(), "message" => "User not logged in");
+            return response()->json($response);
+        }
+        
+        // Get user's active bets (status = 0) for the current game
+        $activeBets = Userbit::where("gameid", currentid())
+            ->where("userid", $userId)
+            ->where("status", 0)
+            ->get();
+        
+        $betsArray = [];
+        foreach ($activeBets as $bet) {
+            $betsArray[] = [
+                "bet_id" => $bet->id,
+                "bet_amount" => floatval($bet->amount),
+                "section_no" => $bet->section_no ?? 0,
+                "bet_type" => $bet->type ?? 0,
+                "game_id" => $bet->gameid,
+                "status" => $bet->status
+            ];
+        }
+        
+        $status = true;
+        $data = array(
+            "active_bets" => $betsArray,
+            "game_id" => currentid(),
+            "count" => count($betsArray)
+        );
+        
+        $response = array("isSuccess" => $status, "data" => $data, "message" => $message);
+        return response()->json($response);
+    }
     public function my_bets_history(){
         $userid = user('id');
         $userbets = Userbit::where("userid", $userid)->where('status',1)->where('created_at', '>=', Carbon::today()->toDateString())->orderBy('id','desc')->get();

@@ -1,4 +1,4 @@
-// $(".header-bottom").hide();
+﻿// $(".header-bottom").hide();
 // $(".main-container").css("margin-top", "60px");
 $.ajaxSetup({
     headers: {
@@ -9,7 +9,7 @@ function onChangeCallback(ctr){
     var country = $("#countries").val(ctr);
     if (ctr == 'IN') {
         $("#currency option").removeAttr('selected').filter('[value=1]').attr('selected', true);
-        $(".styledSelect").text('INR');
+        $(".styledSelect").text('KES');
     } else {
         $("#currency option").removeAttr('selected').filter('[value=2]').attr('selected', true);
         $(".styledSelect").text('USD');

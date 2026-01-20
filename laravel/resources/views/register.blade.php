@@ -1,4 +1,4 @@
-@extends('Layout.usergame2')
+﻿@extends('Layout.usergame2')
 @section('content')
 <div class="active" id="via-email">
     <form class="register-form row w-75" style="margin: 100px auto 0 auto; color: white !important;" action="/auth/register" method="post" name="registerForm" id="registerViaEmailForm">
@@ -71,7 +71,7 @@
                         </span>
                     </span>
                     <select class="form-select custom-select" id="currency" name="currency">
-                        <option selected value="₹">KES</option>
+                        <option selected value="KSh">KES</option>
                         <option value="$">USD</option>
                     </select>
                 </div>

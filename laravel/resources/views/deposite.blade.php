@@ -1,4 +1,4 @@
-@extends('Layout.usergame')
+﻿@extends('Layout.usergame')
 @section('content')
     <div class="deposite-container">
         <div class="container">
@@ -41,7 +41,7 @@
                                                     <input type="hidden" id="net_bank_min_amount" value="{{setting('min_recharge')}}">
                                                     <input type="hidden" id="net_bank_max_amount" value="">
                                                     <i class="Input_currency">
-                                                        INR
+                                                        KES
                                                     </i>
                                                 </label>
                                             </div>
@@ -76,7 +76,7 @@
                                                     <input type="hidden" id="phonepe_min_amount" value="{{setting('min_recharge')}}">
                                                     <input type="hidden" id="phonepe_max_amount" value="">
                                                     <i class="Input_currency">
-                                                        INR
+                                                        KES
                                                     </i>
                                                 </label>
                                             </div>
@@ -111,7 +111,7 @@
                                                     <input type="hidden" id="upi_min_amount" value="{{setting('min_recharge')}}">
                                                     <input type="hidden" id="upi_max_amount" value="">
                                                     <i class="Input_currency">
-                                                        INR
+                                                        KES
                                                     </i>
                                                 </label>
                                             </div>
@@ -133,7 +133,7 @@
                                     <label for="upi_amount" class="error" id="upi_amount-error"></label>
                                     <div class="deposite-blc">
                                         <div>BALANCE AFTER DEPOSITING</div>
-                                        <div class="dopsite-vlue">₹ <span id="upi_amount_txt"></span></div>
+                                        <div class="dopsite-vlue">KSh <span id="upi_amount_txt"></span></div>
                                     </div>
                                 </div>
                             </div>
@@ -203,7 +203,7 @@
                             <h5 class="text-muted f-14 fw-bold">TO BE CREDITED</h5>
                             <div class="d-flex align-items-center justify-content-between">
                                 <div class="dopsite-vlue fw-bold f-20">
-                                    <div>₹ <span id="select_amount"></span></div>
+                                    <div>KSh <span id="select_amount"></span></div>
                                 </div>
                                 <button class="btn btn-transparent p-0">
                                     <span class="material-symbols-outlined bold-icon">

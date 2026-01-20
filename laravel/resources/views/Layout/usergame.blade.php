@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -415,7 +415,7 @@ $.ajax({
                                             </span>
                                             <select class="form-select custom-select" id="inputGroupSelect01"
                                                 name="currency">
-                                                <option selected value="₹">INR</option>
+                                                <option selected value="KSh">KES</option>
                                                 <option value="$">USD</option>
                                             </select>
                                         </div>
@@ -531,7 +531,7 @@ $.ajax({
                                                 </span>
                                             </span>
                                             <select class="form-select custom-select" id="currency" name="currency">
-                                                <option selected value="₹">INR</option>
+                                                <option selected value="KSh">KES</option>
                                                 <option value="$">USD</option>
                                             </select>
                                         </div>

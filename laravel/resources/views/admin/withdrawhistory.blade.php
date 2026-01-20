@@ -1,4 +1,4 @@
-@extends('Layout.admindashboard')
+﻿@extends('Layout.admindashboard')
 @section('css')
 @endsection
 @section('content')
@@ -45,7 +45,7 @@
                                                 <div>Mobile: {{ appvalidate($history->mobile_no) }}</div><br>
                                                 <div>UPI Id: {{ appvalidate($history->upi_id) }}</div>
                                             </td>
-                                            <td>₹{{ appvalidate(number_format($history->amount, 2)) }}</td>
+                                            <td>KSh{{ appvalidate(number_format($history->amount, 2)) }}</td>
                                             <td><label
                                                     class="badge badge-{{ status($history->status, 'recharge')['color'] }}">{{ status($history->status, 'recharge')['name'] }}</label>
                                             </td>

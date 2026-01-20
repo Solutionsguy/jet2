@@ -188,11 +188,8 @@ function cash_out_now(element, section_no, increment = '') {
     // let incrementor = $("#auto_increment_number").text().slice(0,-1);
     game_id = current_game_data.id
 
-    if (currency_id == 1) {
-        var amt = parseFloat(parseFloat(incrementor) * parseFloat(bet_amount)).toFixed(2);
-    } else {
-        var amt = parseFloat(parseFloat(incrementor) * (parseFloat(bet_amount) / 80)).toFixed(2);
-    }
+    // Calculate winnings: bet_amount × multiplier (same formula for all currencies)
+    var amt = parseFloat(parseFloat(incrementor) * parseFloat(bet_amount)).toFixed(2);
 
     $('#all_bets .mCSB_container .bet_id_' + member_id + section_no + '').addClass('active');
     $('#all_bets .mCSB_container .bet_id_' + member_id + section_no + ' .column-3').html('<div class="' + get_multiplier_badge_class(incrementor) + ' custom-badge mx-auto">' + incrementor + 'x</div>');
@@ -691,8 +688,9 @@ function lets_fly() {
 
     $(".load-txt").hide();
     $('body').removeClass('overflow-hidden');
-    // main_counter = 0;
-    // extra_counter = 0;
+    // Reset auto cash-out counters for the new round
+    main_counter = 0;
+    extra_counter = 0;
     $('.loading-game').removeClass('show');
     $("#auto_increment_number_div").show();
     setVariable(1);
@@ -757,11 +755,8 @@ function incrementor(inc_no) {
 function cash_out_bet(cashOutData) {
     $('#all_bets .mCSB_container .' + cashOutData.hash_id + '').addClass('active');
     $('#all_bets .mCSB_container .' + cashOutData.hash_id + ' .column-3').html('<div class="' + get_multiplier_badge_class(cashOutData.incrementor) + ' custom-badge mx-auto">' + cashOutData.incrementor + 'x</div>');
-    if (currency_id == 1) {
-        var amt = cashOutData.inr_amount;
-    } else {
-        var amt = cashOutData.dollar_amount;
-    }
+    // Use the amount directly - no currency conversion needed
+    var amt = cashOutData.amount || cashOutData.inr_amount || 0;
     $('#all_bets .mCSB_container .' + cashOutData.hash_id + ' .column-4').html(amt + currency_symbol);
 }
 
