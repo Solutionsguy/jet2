@@ -24,6 +24,7 @@ class AviatorSocketClient {
             onGameReset: [],
             onBetPlaced: [],
             onPlayerCashedOut: [],
+            onAutoCashoutTriggered: [],
             onConnectionChange: []
         };
     }
@@ -150,6 +151,12 @@ class AviatorSocketClient {
         this.socket.on('playerCashedOut', (data) => {
             console.log('Player cashed out:', data);
             this.triggerCallback('onPlayerCashedOut', data);
+        });
+        
+        // Auto cash-out triggered by server (for inactive tabs)
+        this.socket.on('autoCashoutTriggered', (data) => {
+            console.log('🤖 Auto cash-out triggered by server:', data);
+            this.triggerCallback('onAutoCashoutTriggered', data);
         });
 
         // Cash out success

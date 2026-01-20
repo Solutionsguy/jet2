@@ -123,22 +123,26 @@ function userbetdetail($id,$parameter)
 }
 function addwallet($id, $amount, $symbol = "+")
 {
-    $wallet = wallet::where('userid', $id)->first();
+    $wallet = Wallet::where('userid', $id)->first();
     if ($wallet) {
+        $currentBalance = floatval($wallet->amount);
+        
         if ($symbol == "+") {
-
-            wallet::where('userid', $id)->update([
-                "amount" => wallet($id, 'num') + $amount,
-            ]);
-            return wallet($id, 'num') + $amount;
+            $newBalance = $currentBalance + floatval($amount);
         } elseif ($symbol == "-") {
-            wallet::where('userid', $id)->update([
-                "amount" => wallet($id, "num") - $amount,
-            ]);
-            return wallet($id, "num") - $amount;
+            $newBalance = $currentBalance - floatval($amount);
+        } else {
+            return $currentBalance;
         }
-        return wallet($id);
+        
+        // Update the wallet with the new balance
+        Wallet::where('userid', $id)->update([
+            "amount" => $newBalance,
+        ]);
+        
+        return $newBalance;
     }
+    return 0;
 }
 function appvalidate($input)
 {

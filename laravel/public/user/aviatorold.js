@@ -1008,15 +1008,32 @@ function place_bet_now() {
                         for (let i = 0; i < bet_array.length; i++) {
                             const betId = result.data.return_bets && result.data.return_bets[i] ? 
                                           result.data.return_bets[i].bet_id : Date.now() + '_' + i;
+                            // Check if auto cash-out is enabled for this bet section
+                            let autoCashOutAt = null;
+                            if (bet_array[i].section_no == 0) {
+                                // Main section - check if auto cash-out checkbox is checked
+                                if ($('#main_checkout').prop('checked')) {
+                                    autoCashOutAt = parseFloat($('#main_incrementor').val()) || null;
+                                }
+                            } else if (bet_array[i].section_no == 1) {
+                                // Extra section - check if auto cash-out checkbox is checked
+                                if ($('#extra_checkout').prop('checked')) {
+                                    autoCashOutAt = parseFloat($('#extra_incrementor').val()) || null;
+                                }
+                            }
+                            
                             socket.placeBet({
                                 betId: betId,
                                 odapuId: typeof user_id !== 'undefined' ? user_id : null,
                                 odapu: typeof username !== 'undefined' ? username : 'Guest',
                                 username: typeof username !== 'undefined' ? username : 'Guest',
                                 amount: bet_array[i].bet_amount,
-                                avatar: typeof user_avatar !== 'undefined' ? user_avatar : null
+                                avatar: typeof user_avatar !== 'undefined' ? user_avatar : null,
+                                sectionNo: bet_array[i].section_no,
+                                // SERVER-SIDE AUTO CASH-OUT: Send target multiplier to server
+                                autoCashOutAt: autoCashOutAt
                             });
-                            console.log('📡 Bet broadcast via socket:', bet_array[i].bet_amount);
+                            console.log('📡 Bet broadcast via socket:', bet_array[i].bet_amount, autoCashOutAt ? '(auto cash-out at ' + autoCashOutAt + 'x)' : '');
                         }
                     }
                 }

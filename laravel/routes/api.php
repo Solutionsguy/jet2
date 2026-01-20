@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Userdetail;
+use App\Http\Controllers\Gamesetting;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,3 +21,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 //Data api
 Route::post('/user/withdrawal_list', [Userdetail::class,"withdrawal_list"]);
+
+// Auto cash-out endpoint for socket server (no auth required - called server-to-server)
+Route::post('/auto-cashout', [Gamesetting::class, "autoCashout"]);

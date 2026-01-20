@@ -52,7 +52,7 @@
     var username = "{{ Auth::check() ? Auth::user()->username : 'Guest' }}";
     var user_avatar = "{{ Auth::check() && Auth::user()->image ? Auth::user()->image : '/images/avtar/av-1.png' }}";
     var SOCKET_SERVER_URL = "{{ env('SOCKET_SERVER_URL', 'http://localhost:3000') }}";
-    var currency_symbol = "{{ env('CURRENCY_SYMBOL', '₹') }}";
+    var currency_symbol = "{{ env('CURRENCY_SYMBOL', 'KSh') }}";
     var hash_id = "{{ csrf_token() }}";
 </script>
     <style>
@@ -585,7 +585,7 @@
                                         <div class="column-2">
                                             <button
                                                 class="btn btn-transparent previous-history d-flex align-items-center mx-auto fw-normal">
-                                                {{ number_format($item->amount, 2) }}₹
+                                                KSh {{ number_format($item->amount, 2) }}
                                             </button>
                                         </div>
                                         <div class="column-3">
@@ -595,7 +595,7 @@
 
                                         </div>
                                         <div class="column-4 fw-normal">
-                                            {{ number_format($item->amount * $item->cashout_multiplier, 2) }}₹
+                                            KSh {{ number_format($item->amount * $item->cashout_multiplier, 2) }}
                                         </div>
                                     </div>
                                 @endforeach

@@ -116,46 +116,96 @@ class Gamesetting extends Controller
         $message = "Something went wrong!";
         $returnbets = array();
         $betData = array();
+        $data = array();
+        $new_balance = 0;
+        
+        // Validate user is logged in
+        $userId = user('id');
+        if (!$userId) {
+            $response = array("isSuccess" => false, "data" => array(), "message" => "User not logged in");
+            return response()->json($response);
+        }
+        
+        // Validate bets array exists
+        if (!$r->all_bets || count($r->all_bets) == 0) {
+            $response = array("isSuccess" => false, "data" => array(), "message" => "No bets provided");
+            return response()->json($response);
+        }
+        
+        // Get current wallet balance
+        $current_balance = floatval(wallet($userId, 'num'));
         
         for($i=0; $i < count($r->all_bets); $i++){
-		$result = new Userbit;
-        $result->userid = user('id');
-        $result->amount = $r->all_bets[$i]['bet_amount'];
-        $result->type = $r->all_bets[$i]['bet_type'];
-        $result->gameid = currentid();
-        $result->section_no = $r->all_bets[$i]['section_no'];
-        if ($r->all_bets[$i]['bet_amount'] < wallet(user('id'), 'num')) {
-            if ($result->save()) {
-                $status = true;
-                array_push($returnbets, [
-                    "bet_id" => $result->id,
-                ]);
-                
-                // Prepare data for socket broadcast
-                $betData[] = [
-                    "betId" => $result->id,
-                    "userId" => user('id'),
-                    "username" => user('username') ?? user('name') ?? 'Player',
-                    "amount" => $r->all_bets[$i]['bet_amount'],
-                    "avatar" => user('image') ?? '/images/avtar/av-1.png',
-                    "betType" => $r->all_bets[$i]['bet_type'],
-                    "sectionNo" => $r->all_bets[$i]['section_no']
-                ];
-                
-                $exact_wallet_balance = addwallet(user('id'), floatval($r->all_bets[$i]['bet_amount']), "-");
-                $data = array(
-                    "wallet_balance" => wallet(user('id')),
-                    "return_bets" => $returnbets,
-                    "socket_data" => $betData // Data for socket emission
-                );
-                $message = "";
+            $bet_amount = floatval($r->all_bets[$i]['bet_amount']);
+            
+            // Validate bet amount
+            if ($bet_amount <= 0) {
+                $status = false;
+                $message = "Invalid bet amount";
+                break;
             }
-        } else {
-            $status = false;
-            $data = array();
-            $message = "Insufficient fund!!";
+            
+            // Check if user has enough balance (bet_amount should be <= wallet balance)
+            if ($bet_amount <= $current_balance) {
+                // FIRST deduct the bet amount from wallet
+                $new_balance = addwallet($userId, $bet_amount, "-");
+                
+                // Update current_balance for next iteration (multiple bets)
+                $current_balance = $new_balance;
+                
+                // THEN save the bet record
+                $result = new Userbit;
+                $result->userid = $userId;
+                $result->amount = $bet_amount;
+                $result->type = $r->all_bets[$i]['bet_type'] ?? 0;
+                $result->gameid = currentid();
+                $result->section_no = $r->all_bets[$i]['section_no'] ?? 0;
+                $result->status = 0; // 0 = active bet, 1 = cashed out/completed
+                
+                if ($result->save()) {
+                    $status = true;
+                    array_push($returnbets, [
+                        "bet_id" => $result->id,
+                    ]);
+                    
+                    // Prepare data for socket broadcast
+                    $betData[] = [
+                        "betId" => $result->id,
+                        "odapuId" => $userId,
+                        "userId" => $userId,
+                        "username" => user('username') ?? user('name') ?? 'Player',
+                        "odapu" => user('username') ?? user('name') ?? 'Player',
+                        "amount" => $bet_amount,
+                        "avatar" => user('image') ?? '/images/avtar/av-1.png',
+                        "betType" => $r->all_bets[$i]['bet_type'] ?? 0,
+                        "sectionNo" => $r->all_bets[$i]['section_no'] ?? 0,
+                        "status" => "active"
+                    ];
+                    
+                    $message = "";
+                } else {
+                    // If save failed, refund the deducted amount
+                    addwallet($userId, $bet_amount, "+");
+                    $new_balance = $current_balance + $bet_amount; // Restore balance
+                    $status = false;
+                    $message = "Failed to save bet to database";
+                    break;
+                }
+            } else {
+                $status = false;
+                $message = "Insufficient funds! Balance: " . number_format($current_balance, 2) . ", Bet: " . number_format($bet_amount, 2);
+                break; // Stop processing more bets if insufficient funds
+            }
         }
-		}
+        
+        // Build final response data - use the latest balance
+        $final_balance = $status ? $new_balance : floatval(wallet($userId, 'num'));
+        $data = array(
+            "wallet_balance" => round($final_balance, 2),
+            "return_bets" => $returnbets,
+            "socket_data" => $betData
+        );
+        
         $response = array("isSuccess" => $status, "data" => $data, "message" => $message);
         return response()->json($response);
     }
@@ -183,34 +233,157 @@ class Gamesetting extends Controller
 	public function cashout(Request $r){
 		$game_id = $r->game_id;
 		$bet_id = $r->bet_id;
-		$win_multiplier = $r->win_multiplier;
+		$win_multiplier = floatval($r->win_multiplier);
 		$cash_out_amount = 0;
 		$status = false;
         $message = "";
         $data = array();
-		$result = resultbyid($game_id) == 0 ? $win_multiplier : resultbyid($game_id);
-		if(floatval($result) <= 1.20){
-			$result = 0;
-		}
-		$cash_out_amount = floatval(userbetdetail($bet_id,'amount'))*floatval($result);
-		addwallet(user('id'),$cash_out_amount); 
-		$data = array(
-                    "wallet_balance" => wallet(user('id'),"num"),
-                    "cash_out_amount" => $cash_out_amount,
-                    "socket_data" => [
-                        "betId" => $bet_id,
-                        "userId" => user('id'),
-                        "username" => user('username') ?? user('name') ?? 'Player',
-                        "multiplier" => $win_multiplier,
-                        "winAmount" => $cash_out_amount
-                    ]
-                );
-        Userbit::where('id', $bet_id)->update(["status"=> 1,"cashout_multiplier"=>$win_multiplier]);
+        
+        // Validate user is logged in
+        $userId = user('id');
+        if (!$userId) {
+            $response = array("isSuccess" => false, "data" => array(), "message" => "User not logged in");
+            return response()->json($response);
+        }
+        
+        // Validate bet_id
+        if (!$bet_id) {
+            $response = array("isSuccess" => false, "data" => array(), "message" => "Bet ID is required");
+            return response()->json($response);
+        }
+        
+        // Get the bet details
+        $bet = Userbit::where('id', $bet_id)->first();
+        
+        if (!$bet) {
+            $response = array("isSuccess" => false, "data" => array(), "message" => "Bet not found");
+            return response()->json($response);
+        }
+        
+        // Verify the bet belongs to the current user
+        if ($bet->userid != $userId) {
+            $response = array("isSuccess" => false, "data" => array(), "message" => "This bet does not belong to you");
+            return response()->json($response);
+        }
+        
+        $bet_amount = floatval($bet->amount);
+        $bet_status = intval($bet->status);
+        
+        if ($bet_status == 1) {
+            // Already cashed out
+            $response = array("isSuccess" => false, "data" => array(), "message" => "Already cashed out");
+            return response()->json($response);
+        }
+        
+        // Validate multiplier
+        if ($win_multiplier < 1.00) {
+            $win_multiplier = 1.00; // Minimum multiplier is 1.00 (break even)
+        }
+        
+        // Calculate cashout amount - player gets bet_amount * multiplier when they cash out
+        $cash_out_amount = $bet_amount * $win_multiplier;
+        
+        // Add winnings to wallet and get new balance
+		$new_balance = addwallet($userId, $cash_out_amount, "+");
+		
+		// Update bet status
+        Userbit::where('id', $bet_id)->update([
+            "status" => 1,
+            "cashout_multiplier" => $win_multiplier
+        ]);
+        
         $status = true;
+        $message = "Cashed out successfully at " . number_format($win_multiplier, 2) . "x";
+        
+		$data = array(
+            "wallet_balance" => round($new_balance, 2),
+            "cash_out_amount" => round($cash_out_amount, 2),
+            "socket_data" => [
+                "betId" => $bet_id,
+                "userId" => $userId,
+                "username" => user('username') ?? user('name') ?? 'Player',
+                "multiplier" => $win_multiplier,
+                "winAmount" => round($cash_out_amount, 2)
+            ]
+        );
+        
 		$response = array("isSuccess" => $status, "data" => $data, "message" => $message);
         return response()->json($response);
 	}
 	
+	/**
+	 * Auto cash-out endpoint for socket server
+	 * Called by the socket server when a player's auto cash-out multiplier is reached
+	 * This works even when the player's browser tab is inactive
+	 */
+	public function autoCashout(Request $r){
+		$bet_id = $r->bet_id;
+		$win_multiplier = floatval($r->win_multiplier);
+		$status = false;
+        $message = "";
+        $data = array();
+        
+        // Validate bet_id
+        if (!$bet_id) {
+            $response = array("isSuccess" => false, "data" => array(), "message" => "Bet ID is required");
+            return response()->json($response);
+        }
+        
+        // Get the bet details
+        $bet = Userbit::where('id', $bet_id)->first();
+        
+        if (!$bet) {
+            $response = array("isSuccess" => false, "data" => array(), "message" => "Bet not found");
+            return response()->json($response);
+        }
+        
+        $userId = $bet->userid;
+        $bet_amount = floatval($bet->amount);
+        $bet_status = intval($bet->status);
+        
+        if ($bet_status == 1) {
+            // Already cashed out
+            $response = array("isSuccess" => false, "data" => array(), "message" => "Already cashed out");
+            return response()->json($response);
+        }
+        
+        // Validate multiplier
+        if ($win_multiplier < 1.00) {
+            $win_multiplier = 1.00;
+        }
+        
+        // Calculate cashout amount
+        $cash_out_amount = $bet_amount * $win_multiplier;
+        
+        // Add winnings to wallet
+		$new_balance = addwallet($userId, $cash_out_amount, "+");
+		
+		// Update bet status
+        Userbit::where('id', $bet_id)->update([
+            "status" => 1,
+            "cashout_multiplier" => $win_multiplier
+        ]);
+        
+        $status = true;
+        $message = "Auto cashed out at " . number_format($win_multiplier, 2) . "x";
+        
+        // Get user details for response
+        $user = User::find($userId);
+        
+		$data = array(
+            "wallet_balance" => round($new_balance, 2),
+            "cash_out_amount" => round($cash_out_amount, 2),
+            "user_id" => $userId,
+            "username" => $user ? ($user->username ?? $user->name ?? 'Player') : 'Player',
+            "multiplier" => $win_multiplier
+        );
+        
+        \Log::info("Auto cash-out processed: Bet {$bet_id}, User {$userId}, Amount {$cash_out_amount}, Multiplier {$win_multiplier}x");
+        
+		$response = array("isSuccess" => $status, "data" => $data, "message" => $message);
+        return response()->json($response);
+	}
+
 	public function cronjob(){
 	    //0 = Game end & statrting soon
 	    //1 = Game start & and is in proccess

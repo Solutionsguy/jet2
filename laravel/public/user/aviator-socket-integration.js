@@ -200,9 +200,23 @@ function showFlyingPlane(gameId, multiplier, isMidGameSync = false) {
     // Show game elements
     $("#auto_increment_number_div").show();
     
+    // Update current game data FIRST (needed for bet placement)
+    if (typeof current_game_data !== 'undefined') {
+        current_game_data = { id: gameId };
+    }
+    window.currentGameId = gameId;
+    
     // Reset visual elements
     if (typeof new_game_generated === 'function') {
         new_game_generated();
+    }
+    
+    // IMPORTANT: Place any pending bets when the game starts (not mid-game sync)
+    if (!isMidGameSync && typeof bet_array !== 'undefined' && bet_array.length > 0) {
+        console.log('💰 Placing pending bets:', bet_array.length, 'bet(s)');
+        if (typeof place_bet_now === 'function') {
+            place_bet_now();
+        }
     }
     
     // Start plane animation - handle mid-game sync differently
@@ -219,12 +233,6 @@ function showFlyingPlane(gameId, multiplier, isMidGameSync = false) {
             lets_fly();
         }
     }
-    
-    // Update current game data
-    if (typeof current_game_data !== 'undefined') {
-        current_game_data = { id: gameId };
-    }
-    window.currentGameId = gameId;
     
     // Set multiplier display (important for reconnects)
     if (typeof incrementor === 'function') {
@@ -308,8 +316,59 @@ function setupSocketEventHandlers(socket) {
     
     // Player cashed out - update UI for ALL clients
     socket.on('onPlayerCashedOut', (data) => {
-        console.log('💸 [SOCKET] Player cashed out:', data.username, 'at', data.multiplier + 'x');
+        console.log('💸 [SOCKET] Player cashed out:', data.username, 'at', data.multiplier + 'x', data.isAutoCashout ? '(AUTO)' : '');
         updateBetCashOut(data.betId, data.multiplier, data.winAmount);
+    });
+    
+    // Auto cash-out triggered by server - update UI for this specific player
+    socket.on('onAutoCashoutTriggered', (data) => {
+        console.log('🤖 [AUTO CASH-OUT] Server triggered auto cash-out for bet', data.betId, 'at', data.multiplier + 'x');
+        
+        // Play cash-out sound
+        if (data.sectionNo == 0) {
+            if (typeof cashOutSound === 'function') cashOutSound();
+        } else {
+            if (typeof cashOutSoundOtherSection === 'function') cashOutSoundOtherSection();
+        }
+        
+        // Update the wallet balance - fetch fresh balance from server
+        updateWalletBalance();
+        
+        // Show the cash-out toaster notification
+        const amt = (parseFloat(data.winAmount)).toFixed(2);
+        if (data.sectionNo == 0) {
+            $(".cashout-toaster1 .stop-number").html(data.multiplier + 'x');
+            $(".cashout-toaster1 .out-amount").html(amt + currency_symbol);
+            $(".cashout-toaster1").addClass('show');
+            if (typeof firstToastr === 'function') firstToastr();
+            
+            // Reset main section UI
+            $("#main_bet_section").find("#bet_button").show();
+            $("#main_bet_section").find("#cancle_button").hide();
+            $("#main_bet_section").find("#cashout_button").hide();
+            $("#main_bet_section .controls").removeClass('bet-border-yellow');
+        } else if (data.sectionNo == 1) {
+            $(".cashout-toaster2 .stop-number").html(data.multiplier + 'x');
+            $(".cashout-toaster2 .out-amount").html(amt + currency_symbol);
+            $(".cashout-toaster2").addClass('show');
+            if (typeof secondToastr === 'function') secondToastr();
+            
+            // Reset extra section UI
+            $("#extra_bet_section").find("#bet_button").show();
+            $("#extra_bet_section").find("#cancle_button").hide();
+            $("#extra_bet_section").find("#cashout_button").hide();
+            $("#extra_bet_section .controls").removeClass('bet-border-yellow');
+        }
+        
+        // Remove bet from local bet_array
+        if (typeof bet_array !== 'undefined') {
+            for (let i = bet_array.length - 1; i >= 0; i--) {
+                if (bet_array[i].section_no == data.sectionNo) {
+                    bet_array.splice(i, 1);
+                    break;
+                }
+            }
+        }
     });
 
     // Multiplier update handler - ALL TABS receive the SAME multiplier

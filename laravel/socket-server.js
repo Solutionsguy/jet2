@@ -148,7 +148,10 @@ io.on('connection', (socket) => {
             socketId: socket.id,
             avatar: data.avatar || null,
             status: 'active',
-            cashOutMultiplier: null
+            cashOutMultiplier: null,
+            // AUTO CASH-OUT: Store the target multiplier for server-side auto cash-out
+            autoCashOutAt: data.autoCashOutAt ? parseFloat(data.autoCashOutAt) : null,
+            sectionNo: data.sectionNo || 0
         };
         
         gameState.bets.set(data.betId, betData);
@@ -163,6 +166,9 @@ io.on('connection', (socket) => {
             avatar: betData.avatar
         });
         
+        if (betData.autoCashOutAt) {
+            console.log(`💰 Bet ${data.betId} has AUTO CASH-OUT set at ${betData.autoCashOutAt}x`);
+        }
         console.log(`Total bets this round: ${gameState.bets.size}`);
     });
 
@@ -535,6 +541,9 @@ function startFlying() {
             multiplier: gameState.currentMultiplier
         });
         
+        // IMPORTANT: Process auto cash-outs for real players (works even when tab is inactive)
+        processAutoCashouts(gameState.currentMultiplier);
+        
         // Simulate fake cashouts randomly (makes it look more realistic)
         simulateFakeCashouts(gameState.currentMultiplier);
         
@@ -544,6 +553,115 @@ function startFlying() {
             crashGame();
         }
     }, GAME_CONFIG.incrementSpeed);
+}
+
+/**
+ * Process auto cash-outs for real player bets
+ * This runs on EVERY multiplier tick to ensure auto cash-outs work even when tab is inactive
+ */
+async function processAutoCashouts(currentMultiplier) {
+    // Get all active REAL bets (not fake) that have auto cash-out enabled
+    const autoCashoutBets = Array.from(gameState.bets.values())
+        .filter(bet => 
+            !bet.isFake && 
+            bet.status === 'active' && 
+            bet.autoCashOutAt && 
+            currentMultiplier >= bet.autoCashOutAt
+        );
+    
+    for (const bet of autoCashoutBets) {
+        console.log(`🤖 AUTO CASH-OUT triggered for bet ${bet.betId} at ${bet.autoCashOutAt}x (current: ${currentMultiplier}x)`);
+        
+        // Update bet status in socket server
+        bet.status = 'cashed_out';
+        bet.cashOutMultiplier = bet.autoCashOutAt; // Use the target multiplier, not current
+        bet.winAmount = bet.amount * bet.autoCashOutAt;
+        
+        // Call Laravel API to process the actual cash-out (update database and wallet)
+        try {
+            await callLaravelCashout(bet.betId, bet.autoCashOutAt);
+        } catch (error) {
+            console.error(`❌ Failed to process auto cash-out for bet ${bet.betId}:`, error.message);
+        }
+        
+        // Broadcast the cash-out to ALL clients
+        io.emit('playerCashedOut', {
+            odapuId: bet.odapuId,
+            username: bet.username || bet.odapu,
+            betId: bet.betId,
+            multiplier: bet.autoCashOutAt,
+            winAmount: bet.winAmount,
+            isAutoCashout: true
+        });
+        
+        // Notify the specific player's socket about their auto cash-out
+        const playerSocket = io.sockets.sockets.get(bet.socketId);
+        if (playerSocket) {
+            playerSocket.emit('autoCashoutTriggered', {
+                betId: bet.betId,
+                multiplier: bet.autoCashOutAt,
+                winAmount: bet.winAmount,
+                sectionNo: bet.sectionNo
+            });
+        }
+    }
+}
+
+/**
+ * Call Laravel API to process cash-out (update database and wallet)
+ */
+async function callLaravelCashout(betId, multiplier) {
+    const http = require('http');
+    
+    return new Promise((resolve, reject) => {
+        const postData = JSON.stringify({
+            bet_id: betId,
+            win_multiplier: multiplier,
+            is_auto_cashout: true
+        });
+        
+        const options = {
+            hostname: 'localhost',
+            port: 8000,
+            path: '/api/auto-cashout',
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Content-Length': Buffer.byteLength(postData)
+            }
+        };
+        
+        const req = http.request(options, (res) => {
+            let data = '';
+            res.on('data', chunk => data += chunk);
+            res.on('end', () => {
+                try {
+                    const result = JSON.parse(data);
+                    if (result.isSuccess) {
+                        console.log(`✅ Auto cash-out processed for bet ${betId}: +${result.data.cash_out_amount}`);
+                        resolve(result);
+                    } else {
+                        reject(new Error(result.message || 'Cash-out failed'));
+                    }
+                } catch (e) {
+                    reject(new Error('Invalid response from Laravel'));
+                }
+            });
+        });
+        
+        req.on('error', (e) => {
+            console.error(`❌ Laravel API error: ${e.message}`);
+            reject(e);
+        });
+        
+        req.setTimeout(5000, () => {
+            req.destroy();
+            reject(new Error('Request timeout'));
+        });
+        
+        req.write(postData);
+        req.end();
+    });
 }
 
 /**

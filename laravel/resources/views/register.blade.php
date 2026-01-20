@@ -71,7 +71,7 @@
                         </span>
                     </span>
                     <select class="form-select custom-select" id="currency" name="currency">
-                        <option selected value="₹">INR</option>
+                        <option selected value="₹">KES</option>
                         <option value="$">USD</option>
                     </select>
                 </div>
