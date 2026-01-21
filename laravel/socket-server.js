@@ -88,25 +88,34 @@ function generateCrashPoint(minMultiplier = 1.00) {
     const totalRealBetAmount = realBets.reduce((sum, bet) => sum + bet.amount, 0);
     
     // ========== HOUSE EDGE CONFIGURATION ==========
+    // Both configs use the SAME structure for consistency
+    // All crash points are calculated as ABSOLUTE values (not relative to minMultiplier)
+    // minMultiplier is only used as a floor to prevent crashes below current position
+    
     // AGGRESSIVE CONFIG: Used when real bets exist (protects house)
+    // Lower multipliers = house wins more often
     const AGGRESSIVE_CONFIG = {
-        // Crash ranges are relative to minMultiplier (current game position)
-        // This means "instant crash" = crash very soon after bet window closes
-        instantCrashChance: 0.12,    // 12% chance of crash within 0.10x of current
-        lowCrashChance: 0.50,        // 50% chance of crash within 0.10x - 0.60x of current
-        mediumCrashChance: 0.30,     // 30% chance of crash within 0.60x - 1.50x of current
-        // Remaining 8% allows higher multipliers
-        maxAllowed: 5.00             // Maximum multiplier when real bets exist
+        instantCrashChance: 0.35,    // 8% chance of crash at 1.00x - 1.20x (instant loss)
+        lowCrashChance: 0.45,        // 45% chance of crash at 1.20x - 1.80x (low multiplier)
+        mediumCrashChance: 0.20,     // 35% chance of crash at 1.80x - 3.00x (medium)
+        // Remaining 12% chance of crash at 3.00x - 5.00x (high)
+        instantMax: 1.05,
+        lowMax: 1.5,
+        mediumMax: 1.75,
+        maxAllowed: 2.00
     };
     
     // RELAXED CONFIG: Used when no real bets (just for display/entertainment)
-    // Higher multipliers make the game look more exciting for spectators
+    // Higher multipliers make the game look exciting for spectators
     const RELAXED_CONFIG = {
-        instantCrashChance: 0.02,    // 2% chance of crash soon (rare)
-        lowCrashChance: 0.15,        // 15% chance of low crash
-        mediumCrashChance: 0.35,     // 35% chance of medium crash
-        // Remaining 48% allows higher multipliers (up to 15.00x)
-        maxAllowed: 15.00            // Allow high multipliers up to 15x when no real bets
+        instantCrashChance: 0.02,    // 2% chance of crash at 1.00x - 1.50x (rare instant)
+        lowCrashChance: 0.13,        // 13% chance of crash at 1.50x - 3.00x (low)
+        mediumCrashChance: 0.35,     // 35% chance of crash at 3.00x - 7.00x (medium)
+        // Remaining 50% chance of crash at 7.00x - 15.00x (high - exciting!)
+        instantMax: 1.50,
+        lowMax: 3.00,
+        mediumMax: 7.00,
+        maxAllowed: 15.00
     };
     // ==============================================
     
@@ -116,56 +125,28 @@ function generateCrashPoint(minMultiplier = 1.00) {
     const random = Math.random();
     let crashPoint;
     
-    // IMPORTANT: All crash points must be >= minMultiplier (current game position)
-    // We calculate crash point as: minMultiplier + additional distance
-    
-    if (hasRealBets) {
-        // AGGRESSIVE MODE: Crash relatively soon after bet window
-        if (random < CONFIG.instantCrashChance) {
-            // Crash very soon (within 0.10x of current position)
-            crashPoint = minMultiplier + (Math.random() * 0.10);
-        }
-        else if (random < CONFIG.instantCrashChance + CONFIG.lowCrashChance) {
-            // Low crash: 0.10x to 0.60x above current
-            crashPoint = minMultiplier + 0.10 + (Math.random() * 0.50);
-        }
-        else if (random < CONFIG.instantCrashChance + CONFIG.lowCrashChance + CONFIG.mediumCrashChance) {
-            // Medium crash: 0.60x to 1.50x above current
-            crashPoint = minMultiplier + 0.60 + (Math.random() * 0.90);
-        }
-        else {
-            // High crash: 1.50x to maxAllowed
-            const highMin = minMultiplier + 1.50;
-            crashPoint = highMin + (Math.pow(Math.random(), 2) * (CONFIG.maxAllowed - highMin));
-        }
-        
-        // Cap at maxAllowed for aggressive mode
-        crashPoint = Math.min(crashPoint, CONFIG.maxAllowed);
-        
-    } else {
-        // RELAXED MODE: Allow much higher multipliers for entertainment
-        if (random < CONFIG.instantCrashChance) {
-            // Crash soon (within 0.20x of current position) - rare
-            crashPoint = minMultiplier + (Math.random() * 0.20);
-        }
-        else if (random < CONFIG.instantCrashChance + CONFIG.lowCrashChance) {
-            // Low crash: reach 1.50x to 3.00x
-            crashPoint = 1.50 + (Math.random() * 1.50);
-        }
-        else if (random < CONFIG.instantCrashChance + CONFIG.lowCrashChance + CONFIG.mediumCrashChance) {
-            // Medium crash: reach 3.00x to 7.00x
-            crashPoint = 3.00 + (Math.random() * 4.00);
-        }
-        else {
-            // High crash: reach 7.00x to 15.00x
-            crashPoint = 7.00 + (Math.random() * 8.00);
-        }
-        
-        // Ensure crash point is above current position
-        crashPoint = Math.max(crashPoint, minMultiplier + 0.10);
+    // Generate crash point based on probability ranges
+    // All values are ABSOLUTE (not relative to minMultiplier)
+    if (random < CONFIG.instantCrashChance) {
+        // Instant/very low crash
+        crashPoint = 1.00 + (Math.random() * (CONFIG.instantMax - 1.00));
+    }
+    else if (random < CONFIG.instantCrashChance + CONFIG.lowCrashChance) {
+        // Low crash range
+        crashPoint = CONFIG.instantMax + (Math.random() * (CONFIG.lowMax - CONFIG.instantMax));
+    }
+    else if (random < CONFIG.instantCrashChance + CONFIG.lowCrashChance + CONFIG.mediumCrashChance) {
+        // Medium crash range
+        crashPoint = CONFIG.lowMax + (Math.random() * (CONFIG.mediumMax - CONFIG.lowMax));
+    }
+    else {
+        // High crash range (the remaining percentage)
+        // Use exponential distribution to make max values rarer
+        crashPoint = CONFIG.mediumMax + (Math.pow(Math.random(), 1.5) * (CONFIG.maxAllowed - CONFIG.mediumMax));
     }
     
-    // Final safety: ensure crash point is always above current multiplier
+    // IMPORTANT: Ensure crash point is above current game position
+    // This handles the 800ms delay where game has already started
     crashPoint = Math.max(crashPoint, minMultiplier + 0.05);
     
     // Logging
@@ -254,16 +235,17 @@ io.on('connection', (socket) => {
             return;
         }
         
-        // If game is flying but just started (< 1 second), allow the bet
+        // If game is flying but within bet window (< 2 seconds), allow the bet
         // This handles the race condition where bet is placed right as game starts
+        // Must match the 2000ms bet window in startFlying()
         if (gameState.gameStatus === 'flying') {
             const gameRunningTime = Date.now() - gameState.startTime;
-            if (gameRunningTime > 1000) {
-                console.log('❌ Bet rejected - game already running for', gameRunningTime, 'ms');
+            if (gameRunningTime > 2000) {
+                console.log('❌ Bet rejected - game already running for', gameRunningTime, 'ms (bet window closed)');
                 socket.emit('betError', { message: 'Cannot place bet - game already in progress' });
                 return;
             }
-            console.log('⚠️ Late bet accepted (game running for', gameRunningTime, 'ms)');
+            console.log('⚠️ Late bet accepted (game running for', gameRunningTime, 'ms, within bet window)');
         }
 
         const betData = {
@@ -686,11 +668,21 @@ function startFlying() {
     gameState.currentMultiplier = 1.00;
     gameState.startTime = Date.now();
     
-    // Set a temporary high target - will be recalculated after bet window
-    gameState.targetMultiplier = 100.00; // Temporary - will be set properly after bet window
-    gameState.crashPointCalculated = false; // Flag to track if we've calculated crash point
+    // Check if there are already real bets (placed during waiting/countdown phase)
+    const existingRealBets = Array.from(gameState.bets.values()).filter(bet => !bet.isFake).length;
     
-    console.log(`🛫 Game ${gameState.currentGameId} started! (crash point will be calculated after bet window)`);
+    if (existingRealBets > 0) {
+        // Real bets already placed - calculate crash point immediately at 1.00x
+        // This allows instant crashes at 1.00x - 1.10x
+        gameState.targetMultiplier = generateCrashPoint(1.00);
+        gameState.crashPointCalculated = true;
+        console.log(`🛫 Game ${gameState.currentGameId} started with ${existingRealBets} real bets! Crash point: ${gameState.targetMultiplier}x`);
+    } else {
+        // No real bets yet - use RELAXED mode initially, will recalculate if bets arrive
+        gameState.targetMultiplier = generateCrashPoint(1.00); // Calculate with RELAXED (no real bets)
+        gameState.crashPointCalculated = false; // Allow recalculation if real bets arrive
+        console.log(`🛫 Game ${gameState.currentGameId} started! Initial crash point: ${gameState.targetMultiplier}x (may recalculate if bets arrive)`);
+    }
     
     // Notify all clients FIRST - this triggers bet placement on clients
     io.emit('gameStarted', {
@@ -726,20 +718,39 @@ function startFlying() {
         }
     }, GAME_CONFIG.incrementSpeed);
     
-    // IMPORTANT: Calculate crash point AFTER a short delay to allow late bets
-    // This gives clients time to receive gameStarted event and place their bets
-    // The delay is 800ms which is enough for network latency + bet processing
+    // IMPORTANT: Recalculate crash point AFTER bet window if real bets arrived late
+    // Timeline:
+    // - Server emits gameStarted event
+    // - Client receives event (~50-100ms network latency)
+    // - Client calls place_bet_now() which makes AJAX to Laravel (~200-500ms)
+    // - Laravel processes bet and returns response
+    // - Client sends socket.placeBet() (~50-100ms)
+    // Total: Could be 500-1000ms before socket receives the bet
+    // We use 2000ms (2 seconds) to be safe
     setTimeout(() => {
-        if (!gameState.crashPointCalculated && gameState.gameStatus === 'flying') {
-            // Get the current multiplier at the time of calculation
-            const currentMultiplierAtCalculation = gameState.currentMultiplier;
+        if (gameState.gameStatus === 'flying') {
+            const realBetsCount = Array.from(gameState.bets.values()).filter(bet => !bet.isFake).length;
             
-            // Generate crash point, passing current multiplier as minimum
-            gameState.targetMultiplier = generateCrashPoint(currentMultiplierAtCalculation);
-            gameState.crashPointCalculated = true;
-            console.log(`🎯 Crash point calculated: ${gameState.targetMultiplier}x (current: ${currentMultiplierAtCalculation}x, after bet window)`);
+            if (!gameState.crashPointCalculated && realBetsCount > 0) {
+                // Real bets arrived during bet window - recalculate with AGGRESSIVE mode
+                // But use current multiplier as minimum (can't crash in the past)
+                const currentMultiplierAtCalculation = gameState.currentMultiplier;
+                
+                console.log(`⏰ Bet window closed. Real bets received: ${realBetsCount} - RECALCULATING crash point`);
+                
+                gameState.targetMultiplier = generateCrashPoint(currentMultiplierAtCalculation);
+                gameState.crashPointCalculated = true;
+                console.log(`🎯 Crash point RECALCULATED: ${gameState.targetMultiplier}x (current: ${currentMultiplierAtCalculation}x, AGGRESSIVE mode)`);
+            } else if (!gameState.crashPointCalculated) {
+                // No real bets - keep the RELAXED crash point but mark as calculated
+                gameState.crashPointCalculated = true;
+                console.log(`⏰ Bet window closed. No real bets - keeping RELAXED crash point: ${gameState.targetMultiplier}x`);
+            } else {
+                // Crash point was already calculated at game start (had real bets waiting)
+                console.log(`⏰ Bet window closed. Crash point was pre-calculated: ${gameState.targetMultiplier}x`);
+            }
         }
-    }, 800); // 800ms bet window after game starts
+    }, 2000); // 2000ms (2 seconds) bet window to account for Laravel API processing
 }
 
 /**
