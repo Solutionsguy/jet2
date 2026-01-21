@@ -107,7 +107,8 @@ Route::group(['middleware' => ['isUser']], function () {
     Route::post('/game/increamentor', [Gamesetting::class, "increamentor"]);
     Route::post('/game/game_over', [Gamesetting::class, "game_over"]);
     Route::post('/game/add_bet', [Gamesetting::class, "betNow"]);
-	Route::get('/cash_out', [Gamesetting::class, "cashout"]);
+	// SECURITY: Changed from GET to POST to prevent CSRF and URL parameter exposure
+Route::post('/cash_out', [Gamesetting::class, "cashout"]);
     Route::post('/game/currentlybet', [Gamesetting::class, "currentlybet"]);
     Route::post('/game/my_active_bets', [Gamesetting::class, "getMyActiveBets"]);
     Route::post('/game/my_bets_history', [Gamesetting::class, "my_bets_history"]);

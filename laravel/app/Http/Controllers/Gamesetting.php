@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Gameresult;
 use App\Models\Setting;
+use App\Models\User;
 use App\Models\Userbit;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
@@ -57,7 +58,7 @@ class Gamesetting extends Controller
             $res =  rand(8,11);
         }else{
             $randomresult = array(1.1,1.1,1.2,1.3,1.4,1.5,1.6,1.7,1.8,1.9);
-            $res = $randomresult[rand(0,8)];
+            $res = $randomresult[rand(0,9)]; // Fixed: use full array range (0-9)
             
         }
         
@@ -284,6 +285,9 @@ class Gamesetting extends Controller
         $message = "";
         $data = array();
         
+        // SECURITY: Maximum allowed multiplier (matches GAME_CONFIG.maxMultiplier in socket-server.js)
+        $MAX_MULTIPLIER = 10.00;
+        
         // Validate user is logged in
         $userId = user('id');
         if (!$userId) {
@@ -311,6 +315,13 @@ class Gamesetting extends Controller
             return response()->json($response);
         }
         
+        // SECURITY: Verify bet belongs to current game (prevent cashing out old bets)
+        $currentGameId = currentid();
+        if ($bet->gameid != $currentGameId) {
+            $response = array("isSuccess" => false, "data" => array(), "message" => "Bet does not belong to current game");
+            return response()->json($response);
+        }
+        
         $bet_amount = floatval($bet->amount);
         $bet_status = intval($bet->status);
         
@@ -320,9 +331,40 @@ class Gamesetting extends Controller
             return response()->json($response);
         }
         
-        // Validate multiplier
+        // SECURITY: Validate multiplier - minimum 1.00
         if ($win_multiplier < 1.00) {
             $win_multiplier = 1.00; // Minimum multiplier is 1.00 (break even)
+        }
+        
+        // SECURITY: Validate multiplier - maximum cap to prevent exploitation
+        if ($win_multiplier > $MAX_MULTIPLIER) {
+            $response = array("isSuccess" => false, "data" => array(), "message" => "Invalid multiplier: exceeds maximum allowed (" . $MAX_MULTIPLIER . "x)");
+            return response()->json($response);
+        }
+        
+        // SECURITY: Verify against socket server's current multiplier (if available)
+        // This prevents clients from claiming a higher multiplier than the game has reached
+        try {
+            $socketState = @file_get_contents('http://localhost:3000/game-state');
+            if ($socketState) {
+                $gameState = json_decode($socketState, true);
+                if ($gameState && isset($gameState['status']) && isset($gameState['multiplier'])) {
+                    // If game has crashed, reject the cashout
+                    if ($gameState['status'] === 'crashed') {
+                        $response = array("isSuccess" => false, "data" => array(), "message" => "Game has already crashed. Cannot cash out.");
+                        return response()->json($response);
+                    }
+                    // If claimed multiplier is higher than current game multiplier, reject
+                    $currentMultiplier = floatval($gameState['multiplier']);
+                    if ($win_multiplier > $currentMultiplier + 0.02) { // Allow small tolerance for network latency
+                        $response = array("isSuccess" => false, "data" => array(), "message" => "Invalid multiplier: game is currently at " . number_format($currentMultiplier, 2) . "x");
+                        return response()->json($response);
+                    }
+                }
+            }
+        } catch (\Exception $e) {
+            // If socket server is unreachable, log but continue (fallback to max multiplier validation)
+            \Log::warning("Could not verify multiplier with socket server: " . $e->getMessage());
         }
         
         // Calculate cashout amount - player gets bet_amount * multiplier when they cash out
@@ -360,6 +402,8 @@ class Gamesetting extends Controller
 	 * Auto cash-out endpoint for socket server
 	 * Called by the socket server when a player's auto cash-out multiplier is reached
 	 * This works even when the player's browser tab is inactive
+	 * 
+	 * SECURITY: Requires a shared secret to prevent unauthorized access
 	 */
 	public function autoCashout(Request $r){
 		$bet_id = $r->bet_id;
@@ -367,6 +411,19 @@ class Gamesetting extends Controller
 		$status = false;
         $message = "";
         $data = array();
+        
+        // SECURITY: Shared secret for server-to-server authentication
+        // This must match the secret in socket-server.js
+        $SOCKET_SERVER_SECRET = 'aviator_socket_secret_2024_xK9mP2nQ';
+        $MAX_MULTIPLIER = 10.00;
+        
+        // SECURITY: Validate the shared secret
+        $providedSecret = $r->header('X-Socket-Secret') ?? $r->input('socket_secret');
+        if ($providedSecret !== $SOCKET_SERVER_SECRET) {
+            \Log::warning("Unauthorized auto-cashout attempt. IP: " . $r->ip());
+            $response = array("isSuccess" => false, "data" => array(), "message" => "Unauthorized: Invalid or missing authentication");
+            return response()->json($response, 401);
+        }
         
         // Validate bet_id
         if (!$bet_id) {
@@ -392,9 +449,16 @@ class Gamesetting extends Controller
             return response()->json($response);
         }
         
-        // Validate multiplier
+        // SECURITY: Validate multiplier - minimum 1.00
         if ($win_multiplier < 1.00) {
             $win_multiplier = 1.00;
+        }
+        
+        // SECURITY: Validate multiplier - maximum cap
+        if ($win_multiplier > $MAX_MULTIPLIER) {
+            \Log::warning("Auto-cashout blocked: multiplier {$win_multiplier} exceeds max {$MAX_MULTIPLIER}");
+            $response = array("isSuccess" => false, "data" => array(), "message" => "Invalid multiplier: exceeds maximum allowed");
+            return response()->json($response);
         }
         
         // Calculate cashout amount

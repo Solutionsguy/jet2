@@ -247,14 +247,16 @@ function cash_out_now(element, section_no, increment = '') {
 
     // toastr.success('You have cashed out! ' + incrementor + 'x You got ' + amt + currency_symbol);
 
+    // SECURITY: Using POST instead of GET to prevent CSRF and URL exposure
     $.ajax({
         url: 'cash_out',
         data: {
+            _token: hash_id,  // CSRF token
             game_id: game_id,
             bet_id: bet_id,
             win_multiplier: incrementor,
         },
-        type: "get",
+        type: "POST",
         dataType: "json",
         success: function (result) {
             if (result.isSuccess) {
@@ -936,6 +938,11 @@ function bet_now(element, section_no) {
             }
             
             bet_array.push({ bet_type: bet_type, bet_amount: bet_amount, section_no: section_no });
+            
+            // Save pending bets to localStorage
+            if (typeof savePendingBets === 'function') {
+                savePendingBets();
+            }
         }
     }
 }
@@ -965,6 +972,11 @@ function cancle_now(element, section_no) {
             }
         }
 
+        // Save pending bets to localStorage (or clear if empty)
+        if (typeof savePendingBets === 'function') {
+            savePendingBets();
+        }
+
         // delete bet_array[section_no];
         $(element).parent().parent().find("#bet_button").show();
         $(element).parent().parent().find("#cancle_button").hide();
@@ -987,6 +999,10 @@ function place_bet_now() {
         dataType: "json",
         success: function (result) {
             if (result.isSuccess) {
+                // Clear pending bets from localStorage since they've been placed
+                if (typeof clearPendingBetsStorage === 'function') {
+                    clearPendingBetsStorage();
+                }
 
                 if (result.data.wallet_balance != '' && result.data.wallet_balance != NaN && result.data.wallet_balance != 'NaN') {
                     $("#wallet_balance").text(currency_symbol + result.data.wallet_balance);

@@ -359,12 +359,13 @@ app.get('/health', (req, res) => {
 });
 
 // Get current game state endpoint
+// SECURITY: targetMultiplier removed to prevent players from knowing crash point in advance
 app.get('/game-state', (req, res) => {
     res.json({
         gameId: gameState.currentGameId,
         status: gameState.gameStatus,
         multiplier: gameState.currentMultiplier,
-        targetMultiplier: gameState.targetMultiplier,
+        // targetMultiplier intentionally omitted for security
         betsCount: gameState.bets.size,
         playersCount: gameState.players.size
     });
@@ -609,9 +610,13 @@ async function processAutoCashouts(currentMultiplier) {
 
 /**
  * Call Laravel API to process cash-out (update database and wallet)
+ * SECURITY: Includes shared secret for authentication
  */
 async function callLaravelCashout(betId, multiplier) {
     const http = require('http');
+    
+    // SECURITY: Shared secret - must match the one in Laravel Gamesetting.php
+    const SOCKET_SERVER_SECRET = 'aviator_socket_secret_2024_xK9mP2nQ';
     
     return new Promise((resolve, reject) => {
         const postData = JSON.stringify({
@@ -627,7 +632,8 @@ async function callLaravelCashout(betId, multiplier) {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Content-Length': Buffer.byteLength(postData)
+                'Content-Length': Buffer.byteLength(postData),
+                'X-Socket-Secret': SOCKET_SERVER_SECRET  // SECURITY: Authentication header
             }
         };
         

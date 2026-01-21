@@ -116,15 +116,17 @@ function placeBetWithSocket(betData) {
 
 /**
  * Intercept cash out to broadcast via socket
+ * SECURITY: Uses POST method to prevent CSRF and URL exposure
  */
 function cashOutWithSocket(gameId, betId, multiplier) {
     const socket = getAviatorSocket();
     
-    // First process cash out on server
+    // First process cash out on server (SECURITY: Using POST instead of GET)
     return $.ajax({
         url: '/cash_out',
-        type: "GET",
+        type: "POST",
         data: {
+            _token: hash_id,  // CSRF token
             game_id: gameId,
             bet_id: betId,
             win_multiplier: multiplier

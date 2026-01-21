@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 namespace App\Http\Controllers;
 
@@ -13,7 +13,7 @@ class Authentication extends Controller
     {
         $validated = $r->validate([
             'username' => 'required',
-            'body' => 'password',
+            'password' => 'required',
         ]);
         $data = "";
         $isSuccess = false;
@@ -56,7 +56,7 @@ class Authentication extends Controller
                     $wallet = new Wallet;
                     $user = new User;
                     $user->name = $r->name;
-					$user->image = "/images/avtar/av-".rand(1,72).".png";
+                    $user->image = "/images/avtar/av-".rand(1,72).".png";
                     $user->mobile = $r->mobile;
                     $user->email = $r->email;
                     $user->password = Hash::make($r->password);

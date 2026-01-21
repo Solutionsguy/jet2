@@ -1235,7 +1235,42 @@
         var successMessage = '';
         var errorMessage = '';
         let game_id = 0;
+        
+        // Pending bet persistence - restore from localStorage on page load
         var bet_array = [];
+        try {
+            var savedPendingBets = localStorage.getItem('aviator_pending_bets_' + user_id);
+            if (savedPendingBets) {
+                var parsed = JSON.parse(savedPendingBets);
+                // Only restore bets that are not yet placed (no is_bet flag)
+                bet_array = parsed.filter(function(bet) { return !bet.is_bet; });
+                console.log('🔄 Restored', bet_array.length, 'pending bet(s) from localStorage');
+            }
+        } catch (e) {
+            console.log('Could not restore pending bets:', e);
+            bet_array = [];
+        }
+        
+        // Function to save pending bets to localStorage
+        function savePendingBets() {
+            try {
+                // Only save bets that haven't been placed yet (no is_bet flag)
+                var pendingOnly = bet_array.filter(function(bet) { return !bet.is_bet; });
+                localStorage.setItem('aviator_pending_bets_' + user_id, JSON.stringify(pendingOnly));
+            } catch (e) {
+                console.log('Could not save pending bets:', e);
+            }
+        }
+        
+        // Function to clear pending bets from localStorage
+        function clearPendingBetsStorage() {
+            try {
+                localStorage.removeItem('aviator_pending_bets_' + user_id);
+            } catch (e) {
+                console.log('Could not clear pending bets:', e);
+            }
+        }
+        
         let currentbet;
         var main_cash_out = 0;
         var extra_cash_out = 0;
@@ -1252,6 +1287,25 @@
         
         <script>
         $(document).ready(function(){
+        
+        // Restore UI for pending bets from localStorage
+        if (bet_array && bet_array.length > 0) {
+            console.log('🔄 Restoring UI for', bet_array.length, 'pending bet(s)');
+            bet_array.forEach(function(bet) {
+                var sectionId = bet.section_no == 0 ? '#main_bet_section' : '#extra_bet_section';
+                
+                // Show cancel button, hide bet button
+                $(sectionId).find("#bet_button").hide();
+                $(sectionId).find("#cancle_button").show();
+                $(sectionId).find("#cancle_button #waiting").show();
+                $(sectionId + " .controls").addClass('bet-border-red');
+                
+                // Update bet amount display
+                $(sectionId).find("#bet_amount").val(bet.bet_amount);
+                
+                console.log('✅ Restored pending bet UI - Section:', bet.section_no, 'Amount:', bet.bet_amount);
+            });
+        }
         
         if (successMessage != undefined && successMessage != '') {
             swal('Success', successMessage, "success");

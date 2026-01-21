@@ -250,14 +250,16 @@ function cash_out_now(element, section_no, increment = '') {
 
     // toastr.success('You have cashed out! ' + incrementor + 'x You got ' + amt + currency_symbol);
 
+    // SECURITY: Using POST instead of GET to prevent CSRF and URL exposure
     $.ajax({
         url: 'cash_out',
         data: {
+            _token: hash_id,  // CSRF token
             game_id: game_id,
             bet_id: bet_id,
             win_multiplier: incrementor,
         },
-        type: "get",
+        type: "POST",
         dataType: "json",
         success: function (result) {
             if (result.isSuccess) {
