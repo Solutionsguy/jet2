@@ -12,6 +12,15 @@
 window.currentRoundBets = [];
 window.totalBetsCount = 0;
 
+// Track tab visibility state for resync
+window.tabWasHidden = false;
+window.lastKnownMultiplier = 1.00;
+window.lastMultiplierUpdateTime = Date.now();
+
+// Track animation state to prevent duplicates
+window.isAnimationInProgress = false;
+window.currentAnimationGameId = null;
+
 // Initialize socket when document is ready
 (function() {
     // Wait for both DOM and jQuery to be ready
@@ -30,9 +39,110 @@ window.totalBetsCount = 0;
         // Setup socket event handlers
         setupSocketEventHandlers(socket);
         
+        // Setup visibility change handler for tab resync
+        setupVisibilityHandler(socket);
+        
         console.log('Aviator Socket Integration initialized');
     });
 })();
+
+/**
+ * Setup visibility change handler to resync game when tab becomes active
+ * This prevents flickering and disorganized animations after tab was dormant
+ */
+function setupVisibilityHandler(socket) {
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            // Tab is becoming hidden - mark it
+            window.tabWasHidden = true;
+            window.hiddenTimestamp = Date.now();
+            
+            // IMPORTANT: Stop plane animations to prevent corrupted state
+            if (typeof window.stopPlaneAnimations === 'function') {
+                window.stopPlaneAnimations();
+            }
+            
+            console.log('👁️ Tab hidden - animations stopped, will resync when visible');
+        } else {
+            // Tab is becoming visible again
+            if (window.tabWasHidden) {
+                const hiddenDuration = Date.now() - (window.hiddenTimestamp || 0);
+                console.log(`👁️ Tab visible again after ${Math.round(hiddenDuration/1000)}s - requesting resync...`);
+                
+                // Immediately snap UI to last known state to prevent flicker
+                resyncUIState();
+                
+                // DON'T call resumePlaneAnimation here - let the socket sync handle it
+                // This prevents duplicate animation triggers
+                // The onSyncGameInProgress handler will call showFlyingPlane which starts the animation
+                
+                // Request current game state from server
+                // Server will respond with syncGameInProgress (if game is flying) or gamePhase
+                if (socket && socket.isSocketConnected()) {
+                    // Use the requestSync method on the socket client
+                    if (typeof socket.requestSync === 'function') {
+                        socket.requestSync();
+                    } else {
+                        // Fallback: access raw socket
+                        const rawSocket = socket.getSocket ? socket.getSocket() : null;
+                        if (rawSocket) {
+                            rawSocket.emit('requestSync');
+                            console.log('📡 Requested game state sync from server');
+                        }
+                    }
+                }
+                
+                // Clear the hidden flag after a short delay to allow catch-up events to be skipped
+                setTimeout(() => {
+                    window.tabWasHidden = false;
+                    console.log('✅ Tab resync complete - normal updates resumed');
+                }, 200);
+            }
+        }
+    });
+    
+    console.log('👁️ Visibility handler setup complete');
+}
+
+/**
+ * Resync UI state after tab becomes visible
+ * This resets ALL UI to a clean state - the socket sync will set the correct state
+ */
+function resyncUIState() {
+    console.log('🔄 Resyncing UI state - hiding all overlays until sync completes...');
+    
+    // IMPORTANT: Hide ALL state-dependent UI elements first
+    // The socket sync response will show the correct ones
+    $('.loading-game').removeClass('show');      // Hide loading screen
+    $('.flew_away_section').hide();              // Hide "flew away" message
+    $('.blink-section').removeClass('blink-section-active'); // Stop blink
+    
+    // Stop any ongoing CSS animations temporarily
+    const planeElements = document.querySelectorAll('.plane, .flying-plane, #plane, .bottom-left-plane, .rotateimage');
+    planeElements.forEach(el => {
+        el.style.transition = 'none';
+        el.style.animation = 'none';
+    });
+    
+    // DON'T clear the canvas here - let the sync handler do it
+    // This prevents a flash of empty canvas
+    
+    // Re-enable CSS animations after a brief delay
+    setTimeout(() => {
+        planeElements.forEach(el => {
+            el.style.transition = '';
+            el.style.animation = '';
+        });
+    }, 100);
+    
+    // Update multiplier display to last known value (prevents showing 1.00x briefly)
+    if (window.lastKnownMultiplier > 1.00) {
+        updateMultiplierDisplay(window.lastKnownMultiplier);
+        if (typeof incrementor === 'function') {
+            incrementor(window.lastKnownMultiplier);
+        }
+    }
+}
 
 /**
  * Load current bets from server for the running round
@@ -264,11 +374,24 @@ function updateBetCashOut(betId, multiplier, winAmount) {
  * @param {boolean} isMidGameSync - Whether this is a mid-game sync (page refresh/reconnect)
  */
 function showFlyingPlane(gameId, multiplier, isMidGameSync = false) {
-    // Hide loading screen
-    if (typeof hide_loading_game === 'function') {
-        hide_loading_game();
+    console.log('🎮 showFlyingPlane called:', { gameId, multiplier, isMidGameSync });
+    
+    // PREVENT DUPLICATE ANIMATIONS for same game (but allow mid-game sync)
+    if (!isMidGameSync) {
+        if (window.isAnimationInProgress && window.currentAnimationGameId === gameId) {
+            console.log('⚠️ Animation already in progress for game', gameId, '- skipping duplicate');
+            return;
+        }
     }
-    $('.loading-game').removeClass('show');
+    
+    // Mark animation as in progress
+    window.isAnimationInProgress = true;
+    window.currentAnimationGameId = gameId;
+    
+    // IMPORTANT: First hide ALL conflicting UI elements to prevent overlap
+    $('.loading-game').removeClass('show');      // Hide loading screen
+    $('.flew_away_section').hide();              // Hide "flew away" message
+    $('#auto_increment_number').removeClass('text-danger'); // Reset multiplier color
     
     // Show game elements
     $("#auto_increment_number_div").show();
@@ -279,26 +402,52 @@ function showFlyingPlane(gameId, multiplier, isMidGameSync = false) {
     }
     window.currentGameId = gameId;
     
-    // Reset visual elements
-    if (typeof new_game_generated === 'function') {
-        new_game_generated();
-    }
-    
-    // IMPORTANT: Place any pending bets when the game starts (not mid-game sync)
-    if (!isMidGameSync && typeof bet_array !== 'undefined' && bet_array.length > 0) {
-        console.log('💰 Placing pending bets:', bet_array.length, 'bet(s)');
-        if (typeof place_bet_now === 'function') {
-            place_bet_now();
+    // Handle animation based on whether this is mid-game sync or new game
+    if (isMidGameSync && multiplier > 1.00) {
+        // ============ MID-GAME SYNC ============
+        // User is returning to tab during active game
+        // Position plane at correct multiplier WITHOUT starting from bottom
+        console.log('🔄 Mid-game sync: Positioning plane at', multiplier + 'x');
+        
+        // Stop ALL existing animations first
+        if (typeof window.stopPlaneAnimations === 'function') {
+            window.stopPlaneAnimations();
         }
-    }
-    
-    // Start plane animation - handle mid-game sync differently
-    if (isMidGameSync && multiplier > 1.00 && typeof window.startPlaneAtMultiplier === 'function') {
-        // Mid-game sync: Position plane at current multiplier position
-        console.log('🔄 Syncing plane position to multiplier:', multiplier + 'x');
-        window.startPlaneAtMultiplier(multiplier);
+        
+        // Add rotating background (in case it was stopped)
+        $(".rotateimage").addClass('rotatebg');
+        
+        // Position plane at current multiplier (NOT starting new animation from bottom)
+        if (typeof window.startPlaneAtMultiplier === 'function') {
+            // Small delay to ensure clean state after stopping animations
+            setTimeout(() => {
+                window.startPlaneAtMultiplier(multiplier);
+            }, 50);
+        }
+        
+        // Restore user's active bets so they can still cash out
+        restoreMyActiveBets();
+        
     } else {
-        // New game: Start from beginning
+        // ============ NEW GAME START ============
+        // Fresh game starting from beginning
+        console.log('🆕 New game: Starting plane animation from beginning');
+        
+        // 1. Reset visual elements (UI state, buttons, etc)
+        if (typeof new_game_generated === 'function') {
+            new_game_generated();
+        }
+        
+        // 2. Place any pending bets when the game starts
+        if (typeof bet_array !== 'undefined' && bet_array.length > 0) {
+            console.log('💰 Placing pending bets:', bet_array.length, 'bet(s)');
+            if (typeof place_bet_now === 'function') {
+                place_bet_now();
+            }
+        }
+        
+        // 3. Start plane animation sequence from beginning
+        // lets_fly_one adds blink effect, lets_fly starts the actual animation
         if (typeof lets_fly_one === 'function') {
             lets_fly_one();
         }
@@ -307,12 +456,13 @@ function showFlyingPlane(gameId, multiplier, isMidGameSync = false) {
         }
     }
     
-    // Set multiplier display (important for reconnects)
+    // Set multiplier display
     if (typeof incrementor === 'function') {
         incrementor(multiplier);
     }
+    updateMultiplierDisplay(multiplier);
     
-    // Load current bets for this round (especially important for reconnects)
+    // Load current bets for this round
     loadCurrentBets();
     
     console.log('✈️ Plane flying - multiplier:', multiplier + 'x', isMidGameSync ? '(synced)' : '(new game)');
@@ -342,17 +492,39 @@ function setupSocketEventHandlers(socket) {
         
         if (data.phase === 'waiting') {
             // Waiting for bets phase - NEW ROUND STARTING
-            $('.loading-game').addClass('show');
+            // Hide any previous game elements
+            $('.flew_away_section').hide();
+            $('#auto_increment_number').removeClass('text-danger');
             $("#auto_increment_number_div").hide();
-            console.log('⏳ Waiting for next round... (' + (data.duration/1000) + 's)');
             
-            // DON'T clear bets here - server will send syncBets event with new bets
-            // The syncBets handler will clear and repopulate
+            // Show loading screen
+            $('.loading-game').addClass('show');
+            
+            // IMPORTANT: Reset animation state for new round
+            window.isAnimationInProgress = false;
+            window.currentAnimationGameId = null;
+            window.lastKnownMultiplier = 1.00;
+            
+            // Stop any running plane animations
+            if (typeof window.stopPlaneAnimations === 'function') {
+                window.stopPlaneAnimations();
+            }
+            
+            console.log('⏳ Waiting for next round... (' + (data.duration/1000) + 's)');
             
         } else if (data.phase === 'countdown') {
             // Countdown phase before game starts
-            console.log('🕐 Game starting in ' + (data.duration/1000) + ' seconds...');
+            // Keep loading screen visible during countdown
             $('.loading-game').addClass('show');
+            $('.flew_away_section').hide();
+            
+            console.log('🕐 Game starting in ' + (data.duration/1000) + ' seconds...');
+            
+        } else if (data.phase === 'crashed') {
+            // Game just crashed - show flew away
+            $('.loading-game').removeClass('show');
+            $('.flew_away_section').show();
+            console.log('💥 Game crashed');
         }
     });
 
@@ -370,10 +542,8 @@ function setupSocketEventHandlers(socket) {
         console.log('🔄 [SYNC] Joining game in progress at', data.multiplier + 'x');
         
         // Mid-game sync - position plane at current multiplier
+        // restoreMyActiveBets is called inside showFlyingPlane for mid-game sync
         showFlyingPlane(data.gameId, data.multiplier, true);
-        
-        // Restore user's active bets so they can still cash out
-        restoreMyActiveBets();
     });
     
     // Sync bets list - for clients that connect/reconnect
@@ -449,6 +619,26 @@ function setupSocketEventHandlers(socket) {
 
     // Multiplier update handler - ALL TABS receive the SAME multiplier
     socket.on('onMultiplierUpdate', (data) => {
+        const now = Date.now();
+        const timeSinceLastUpdate = now - window.lastMultiplierUpdateTime;
+        
+        // Track last known multiplier for resync
+        window.lastKnownMultiplier = data.multiplier;
+        window.lastMultiplierUpdateTime = now;
+        
+        // If tab was hidden and we're getting rapid updates (catch-up), skip intermediate ones
+        // This prevents the flickering caused by processing queued events
+        if (document.hidden) {
+            // Tab is hidden - just track state, don't update UI
+            return;
+        }
+        
+        // If we're catching up (updates coming faster than 50ms apart after being hidden)
+        // Skip to prevent animation overload
+        if (timeSinceLastUpdate < 50 && window.tabWasHidden) {
+            return;
+        }
+        
         // Log every 0.5x increase for debugging
         if (Math.floor(data.multiplier * 2) !== Math.floor((data.multiplier - 0.01) * 2)) {
             console.log('📈 [SYNC] Multiplier:', data.multiplier.toFixed(2) + 'x');
@@ -470,15 +660,26 @@ function setupSocketEventHandlers(socket) {
     socket.on('onGameCrashed', (data) => {
         console.log('💥 [SERVER] Game crashed at', data.crashMultiplier + 'x');
         
+        // IMPORTANT: Reset animation state so next game can start
+        window.isAnimationInProgress = false;
+        window.currentAnimationGameId = null;
+        window.lastKnownMultiplier = 1.00; // Reset multiplier tracker
+        
+        // Hide loading screen (in case it was showing)
+        $('.loading-game').removeClass('show');
+        
         // Mark all remaining active bets as lost in the sidebar
         markActiveBetsAsLost();
         
-        // Show crash animation
+        // Show crash animation - this handles:
+        // - Playing crash sound
+        // - Showing "FLEW AWAY" message
+        // - Stopping plane animation
         if (typeof crash_plane === 'function') {
             crash_plane(data.crashMultiplier);
         }
         
-        // Update game over
+        // Update game over display
         if (typeof gameover === 'function') {
             gameover(data.crashMultiplier);
         }
@@ -490,7 +691,7 @@ function setupSocketEventHandlers(socket) {
         updateWalletBalance();
         
         // Server will automatically start the next game cycle
-        // Bets will be cleared when 'waiting' phase begins
+        // The 'waiting' phase event will hide flew_away and show loading
         console.log('⏳ Waiting for server to start next round...');
     });
     

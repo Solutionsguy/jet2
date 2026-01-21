@@ -1,0 +1,17 @@
+
+
+
+Cottiewharrison@gmail.com 
+
+
+Invoke-WebRequest -Uri  https://acli.atlassian.com/windows/latest/acli_windows_amd64/acli.exe -OutFile acli.exe
+
+
+.\acli.exe rovodev auth login
+.\acli.exe rovodev run
+
+
+
+1864damian@gmail.com
+
+

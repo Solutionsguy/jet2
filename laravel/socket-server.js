@@ -42,28 +42,138 @@ let gameState = {
 let connectedClients = new Set();
 
 /**
- * Generate a random crash multiplier using provably fair algorithm
- * Distribution: Most crashes are low (1.x - 2.x), occasional high ones
+ * Generate a random crash multiplier with house edge control
+ * 
+ * ADAPTIVE ALGORITHM:
+ * - When NO real bets exist: Use relaxed config (allows higher multipliers for display)
+ * - When REAL bets exist: Use aggressive config (crash at lower multipliers to protect house)
+ * 
+ * HOUSE EDGE CONFIGURATION:
+ * - instantCrashChance: % of games that crash at 1.00x (instant loss)
+ * - lowCrashChance: % of games that crash between 1.01x - 1.50x
+ * - mediumCrashChance: % of games that crash between 1.51x - 3.00x
+ * - Remaining % allows for higher multipliers (3.01x - maxMultiplier)
  */
-function generateCrashPoint() {
-    // House edge of 4% (casino advantage)
-    const houseEdge = 0.04;
-    const random = Math.random();
+function generateCrashPoint(minMultiplier = 1.00) {
+    // DEBUG: Log all bets to see what's in the Map
+    console.log('🔍 DEBUG: Total bets in gameState.bets:', gameState.bets.size);
+    console.log('🔍 DEBUG: Minimum multiplier (current game position):', minMultiplier);
     
-    // Instant crash chance (1.00x) - about 4% of games
-    if (random < houseEdge) {
-        return 1.00;
+    const allBets = Array.from(gameState.bets.values());
+    const realBets = allBets.filter(bet => !bet.isFake);
+    const fakeBets = allBets.filter(bet => bet.isFake);
+    
+    console.log('🔍 DEBUG: Fake bets count:', fakeBets.length);
+    console.log('🔍 DEBUG: Real bets count:', realBets.length);
+    
+    // Log each real bet for debugging
+    if (realBets.length > 0) {
+        console.log('🔍 DEBUG: Real bets details:');
+        realBets.forEach((bet, index) => {
+            console.log(`   [${index}] betId: ${bet.betId}, username: ${bet.username}, amount: ${bet.amount}, isFake: ${bet.isFake}`);
+        });
+    } else {
+        // Log a sample of bets to see their isFake status
+        console.log('🔍 DEBUG: Sample of first 3 bets:');
+        allBets.slice(0, 3).forEach((bet, index) => {
+            console.log(`   [${index}] betId: ${bet.betId}, username: ${bet.username}, isFake: ${bet.isFake}, typeof isFake: ${typeof bet.isFake}`);
+        });
     }
     
-    // Crash point formula with house edge
-    // This creates an exponential distribution where:
-    // ~50% crash below 2x
-    // ~33% crash below 1.5x
-    // ~10% crash above 5x
-    let crashPoint = (1 - houseEdge) / (1 - random);
+    // Count REAL bets (not fake bets used for display)
+    const realBetsCount = realBets.length;
+    const hasRealBets = realBetsCount > 0;
     
-    // Clamp between min and max
-    crashPoint = Math.max(GAME_CONFIG.minMultiplier, Math.min(GAME_CONFIG.maxMultiplier, crashPoint));
+    // Calculate total real bet amount for logging
+    const totalRealBetAmount = realBets.reduce((sum, bet) => sum + bet.amount, 0);
+    
+    // ========== HOUSE EDGE CONFIGURATION ==========
+    // AGGRESSIVE CONFIG: Used when real bets exist (protects house)
+    const AGGRESSIVE_CONFIG = {
+        // Crash ranges are relative to minMultiplier (current game position)
+        // This means "instant crash" = crash very soon after bet window closes
+        instantCrashChance: 0.12,    // 12% chance of crash within 0.10x of current
+        lowCrashChance: 0.50,        // 50% chance of crash within 0.10x - 0.60x of current
+        mediumCrashChance: 0.30,     // 30% chance of crash within 0.60x - 1.50x of current
+        // Remaining 8% allows higher multipliers
+        maxAllowed: 5.00             // Maximum multiplier when real bets exist
+    };
+    
+    // RELAXED CONFIG: Used when no real bets (just for display/entertainment)
+    // Higher multipliers make the game look more exciting for spectators
+    const RELAXED_CONFIG = {
+        instantCrashChance: 0.02,    // 2% chance of crash soon (rare)
+        lowCrashChance: 0.15,        // 15% chance of low crash
+        mediumCrashChance: 0.35,     // 35% chance of medium crash
+        // Remaining 48% allows higher multipliers (up to 15.00x)
+        maxAllowed: 15.00            // Allow high multipliers up to 15x when no real bets
+    };
+    // ==============================================
+    
+    // Select config based on whether real bets exist
+    const CONFIG = hasRealBets ? AGGRESSIVE_CONFIG : RELAXED_CONFIG;
+    
+    const random = Math.random();
+    let crashPoint;
+    
+    // IMPORTANT: All crash points must be >= minMultiplier (current game position)
+    // We calculate crash point as: minMultiplier + additional distance
+    
+    if (hasRealBets) {
+        // AGGRESSIVE MODE: Crash relatively soon after bet window
+        if (random < CONFIG.instantCrashChance) {
+            // Crash very soon (within 0.10x of current position)
+            crashPoint = minMultiplier + (Math.random() * 0.10);
+        }
+        else if (random < CONFIG.instantCrashChance + CONFIG.lowCrashChance) {
+            // Low crash: 0.10x to 0.60x above current
+            crashPoint = minMultiplier + 0.10 + (Math.random() * 0.50);
+        }
+        else if (random < CONFIG.instantCrashChance + CONFIG.lowCrashChance + CONFIG.mediumCrashChance) {
+            // Medium crash: 0.60x to 1.50x above current
+            crashPoint = minMultiplier + 0.60 + (Math.random() * 0.90);
+        }
+        else {
+            // High crash: 1.50x to maxAllowed
+            const highMin = minMultiplier + 1.50;
+            crashPoint = highMin + (Math.pow(Math.random(), 2) * (CONFIG.maxAllowed - highMin));
+        }
+        
+        // Cap at maxAllowed for aggressive mode
+        crashPoint = Math.min(crashPoint, CONFIG.maxAllowed);
+        
+    } else {
+        // RELAXED MODE: Allow much higher multipliers for entertainment
+        if (random < CONFIG.instantCrashChance) {
+            // Crash soon (within 0.20x of current position) - rare
+            crashPoint = minMultiplier + (Math.random() * 0.20);
+        }
+        else if (random < CONFIG.instantCrashChance + CONFIG.lowCrashChance) {
+            // Low crash: reach 1.50x to 3.00x
+            crashPoint = 1.50 + (Math.random() * 1.50);
+        }
+        else if (random < CONFIG.instantCrashChance + CONFIG.lowCrashChance + CONFIG.mediumCrashChance) {
+            // Medium crash: reach 3.00x to 7.00x
+            crashPoint = 3.00 + (Math.random() * 4.00);
+        }
+        else {
+            // High crash: reach 7.00x to 15.00x
+            crashPoint = 7.00 + (Math.random() * 8.00);
+        }
+        
+        // Ensure crash point is above current position
+        crashPoint = Math.max(crashPoint, minMultiplier + 0.10);
+    }
+    
+    // Final safety: ensure crash point is always above current multiplier
+    crashPoint = Math.max(crashPoint, minMultiplier + 0.05);
+    
+    // Logging
+    if (hasRealBets) {
+        console.log(`🎯 AGGRESSIVE MODE: ${realBetsCount} real bets (₹${totalRealBetAmount}) - Crash point: ${crashPoint.toFixed(2)}x (min was ${minMultiplier}x)`);
+    } else {
+        console.log(`🎲 RELAXED MODE: No real bets - Crash point: ${crashPoint.toFixed(2)}x (min was ${minMultiplier}x)`);
+    }
     
     return parseFloat(crashPoint.toFixed(2));
 }
@@ -133,10 +243,27 @@ io.on('connection', (socket) => {
     // Handle new bet placement
     socket.on('placeBet', (data) => {
         console.log('Bet placed:', data);
+        console.log('🔍 DEBUG placeBet: gameStatus =', gameState.gameStatus, ', betId =', data.betId);
         
-        if (gameState.gameStatus !== 'waiting' && gameState.gameStatus !== 'countdown') {
+        // Allow bets during waiting, countdown, AND at the very start of flying
+        // This is needed because clients receive gameStarted event and then try to place bets
+        // There's a small race condition where status becomes 'flying' before bet is placed
+        if (gameState.gameStatus !== 'waiting' && gameState.gameStatus !== 'countdown' && gameState.gameStatus !== 'flying') {
+            console.log('❌ Bet rejected - invalid game status:', gameState.gameStatus);
             socket.emit('betError', { message: 'Cannot place bet while game is in progress' });
             return;
+        }
+        
+        // If game is flying but just started (< 1 second), allow the bet
+        // This handles the race condition where bet is placed right as game starts
+        if (gameState.gameStatus === 'flying') {
+            const gameRunningTime = Date.now() - gameState.startTime;
+            if (gameRunningTime > 1000) {
+                console.log('❌ Bet rejected - game already running for', gameRunningTime, 'ms');
+                socket.emit('betError', { message: 'Cannot place bet - game already in progress' });
+                return;
+            }
+            console.log('⚠️ Late bet accepted (game running for', gameRunningTime, 'ms)');
         }
 
         const betData = {
@@ -151,7 +278,9 @@ io.on('connection', (socket) => {
             cashOutMultiplier: null,
             // AUTO CASH-OUT: Store the target multiplier for server-side auto cash-out
             autoCashOutAt: data.autoCashOutAt ? parseFloat(data.autoCashOutAt) : null,
-            sectionNo: data.sectionNo || 0
+            sectionNo: data.sectionNo || 0,
+            // IMPORTANT: Mark as real bet (not fake) so aggressive mode is triggered
+            isFake: false
         };
         
         gameState.bets.set(data.betId, betData);
@@ -169,7 +298,10 @@ io.on('connection', (socket) => {
         if (betData.autoCashOutAt) {
             console.log(`💰 Bet ${data.betId} has AUTO CASH-OUT set at ${betData.autoCashOutAt}x`);
         }
-        console.log(`Total bets this round: ${gameState.bets.size}`);
+        
+        // Log real bet placement for debugging aggressive mode
+        const realBetsCount = Array.from(gameState.bets.values()).filter(bet => !bet.isFake).length;
+        console.log(`✅ REAL BET placed: ${data.username} - ${data.amount} (Total real bets: ${realBetsCount}, Total bets: ${gameState.bets.size})`);
     });
 
     // Handle cash out
@@ -251,6 +383,40 @@ io.on('connection', (socket) => {
         socket.emit('playersCount', {
             count: connectedClients.size
         });
+    });
+
+    // Handle resync request (when tab becomes visible after being hidden)
+    socket.on('requestSync', () => {
+        console.log(`🔄 Resync requested by ${socket.id}`);
+        
+        // Send current game state
+        if (gameState.gameStatus === 'flying') {
+            socket.emit('syncGameInProgress', {
+                gameId: gameState.currentGameId,
+                multiplier: gameState.currentMultiplier,
+                status: 'flying'
+            });
+        } else {
+            socket.emit('gamePhase', {
+                phase: gameState.gameStatus,
+                gameId: gameState.currentGameId,
+                duration: 0
+            });
+        }
+        
+        // Send current bets
+        const currentBets = Array.from(gameState.bets.values()).map(bet => ({
+            odapuId: bet.odapuId,
+            username: bet.username,
+            amount: bet.amount,
+            betId: bet.betId,
+            avatar: bet.avatar,
+            status: bet.status,
+            cashOutMultiplier: bet.cashOutMultiplier || null
+        }));
+        socket.emit('syncBets', { bets: currentBets });
+        
+        console.log(`✅ Resync sent to ${socket.id} - Status: ${gameState.gameStatus}, Multiplier: ${gameState.currentMultiplier}x`);
     });
 
     // Admin: Force crash game
@@ -494,9 +660,10 @@ function runGameCycle() {
 function startCountdown() {
     gameState.gameStatus = 'countdown';
     gameState.currentGameId = generateGameId();
-    gameState.targetMultiplier = generateCrashPoint();
+    // NOTE: Crash point will be generated at the END of countdown (in startFlying)
+    // This ensures we check for real bets AFTER players have had time to place them
     
-    console.log(`🕐 Countdown starting - Game ${gameState.currentGameId}, Target: ${gameState.targetMultiplier}x`);
+    console.log(`🕐 Countdown starting - Game ${gameState.currentGameId}`);
     
     // Emit countdown event
     io.emit('gamePhase', {
@@ -519,9 +686,13 @@ function startFlying() {
     gameState.currentMultiplier = 1.00;
     gameState.startTime = Date.now();
     
-    console.log(`🛫 Game ${gameState.currentGameId} started! Target crash: ${gameState.targetMultiplier}x`);
+    // Set a temporary high target - will be recalculated after bet window
+    gameState.targetMultiplier = 100.00; // Temporary - will be set properly after bet window
+    gameState.crashPointCalculated = false; // Flag to track if we've calculated crash point
     
-    // Notify all clients
+    console.log(`🛫 Game ${gameState.currentGameId} started! (crash point will be calculated after bet window)`);
+    
+    // Notify all clients FIRST - this triggers bet placement on clients
     io.emit('gameStarted', {
         gameId: gameState.currentGameId,
         timestamp: gameState.startTime
@@ -554,6 +725,21 @@ function startFlying() {
             crashGame();
         }
     }, GAME_CONFIG.incrementSpeed);
+    
+    // IMPORTANT: Calculate crash point AFTER a short delay to allow late bets
+    // This gives clients time to receive gameStarted event and place their bets
+    // The delay is 800ms which is enough for network latency + bet processing
+    setTimeout(() => {
+        if (!gameState.crashPointCalculated && gameState.gameStatus === 'flying') {
+            // Get the current multiplier at the time of calculation
+            const currentMultiplierAtCalculation = gameState.currentMultiplier;
+            
+            // Generate crash point, passing current multiplier as minimum
+            gameState.targetMultiplier = generateCrashPoint(currentMultiplierAtCalculation);
+            gameState.crashPointCalculated = true;
+            console.log(`🎯 Crash point calculated: ${gameState.targetMultiplier}x (current: ${currentMultiplierAtCalculation}x, after bet window)`);
+        }
+    }, 800); // 800ms bet window after game starts
 }
 
 /**

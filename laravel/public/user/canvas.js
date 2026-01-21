@@ -68,13 +68,14 @@ var imgTag;
 // ctx.fillRect(0, 0, 40, 40);
 let bmp;
 
-setVariable();
-function setVariable(is_plan = '') {
+/**
+ * Initialize canvas variables without starting animation
+ * Used by startPlaneAtMultiplier to set up canvas state
+ */
+function initializeCanvasVariables() {
     cW = $('.stage-board').width();
     cH = $('.stage-board').height();
     $('#myCanvas').attr('width', cW).attr('height', cH);
-    // var canvas = $('#myCanvas');
-    // var ctx = canvas[0].getContext('2d');
     screenHeight = $(window).height() - 4;
     screenWidth = $(window).width();
     x = 0;
@@ -87,7 +88,6 @@ function setVariable(is_plan = '') {
         diffx = calcwidth * 45;
         horizontalLine = calcwidth * 10;
         verticalLine = calcheight * 10;
-        // console.log('calcheight', calcheight);
     }
     else {
         diffx = calcwidth * 30;
@@ -95,8 +95,6 @@ function setVariable(is_plan = '') {
         verticalLine = calcheight * 5;
     }
 
-    // horizontalLine = calcwidth * 5;
-    // verticalLine = calcheight * 5;
     verticaldots = verticalLine / 100;
     verticalDotSize = (verticaldots * 50);
     boardWidth = canvasWidth;
@@ -105,14 +103,8 @@ function setVariable(is_plan = '') {
     xPoint = 0 - (boardWidth * 1.25);
     yPoint = boardheight - (boardWidth * 1.25);
     $(".rotateimage").css("width", widthDouble).css("height", widthDouble).css("top", yPoint).css("left", xPoint);
-    $(".rotateimage").addClass('rotatebg');
+    
     imgTag = new Image();
-    // if (canvasWidth < 992) {
-    //     diffx = calcwidth * 45;
-    // }
-    // else {
-    //     diffx = calcwidth * 30;
-    // }
 
     if (canvasWidth < 992) {
         imgheight = 48;
@@ -122,7 +114,6 @@ function setVariable(is_plan = '') {
         imgTag.src = "./images/sprite2.png";
         settimeinterval = 40;
         checkuplinedownlinecount = 50;
-
     }
     else {
         imgheight = 71;
@@ -134,7 +125,7 @@ function setVariable(is_plan = '') {
         checkuplinedownlinecount = 150;
     }
     diffy = calcheight * 70;
-    diffx1 = canvasWidth - (calcwidth * 60)
+    diffx1 = canvasWidth - (calcwidth * 60);
 
     yend = canvasHeight - diffy;
     xend = canvasWidth - diffx;
@@ -155,6 +146,42 @@ function setVariable(is_plan = '') {
     y2 = yend;
     x2 = xend;
     startupdown = 0;
+    // NOTE: Don't reset stopPlaneEvent here - caller controls it
+}
+
+setVariable();
+function setVariable(is_plan = '') {
+    // IMPORTANT: Stop any running fly-away animation before starting new game
+    if (isStopPlaneAnimationRunning) {
+        isStopPlaneAnimationRunning = false;
+        if (StopPlaneIntervalID) {
+            window.clearInterval(StopPlaneIntervalID);
+            StopPlaneIntervalID = null;
+        }
+        StopPlaneIntervalID1 = 0;
+        console.log('✈️ Aborted fly-away animation for new game');
+    }
+    
+    // Clear any other running intervals
+    if (intervalID) {
+        window.clearInterval(intervalID);
+        intervalID = null;
+    }
+    if (intervalID1) {
+        window.clearInterval(intervalID1);
+        intervalID1 = null;
+    }
+    
+    // Set stop flag to halt any running requestAnimationFrame loops
+    stopPlaneEvent = 1;
+    
+    // Initialize all canvas variables
+    initializeCanvasVariables();
+    
+    // Add rotating background
+    $(".rotateimage").addClass('rotatebg');
+    
+    // Reset stopPlaneEvent to allow new animation
     stopPlaneEvent = 0;
    
     if (is_plan != '') {
@@ -168,6 +195,12 @@ function setVariable(is_plan = '') {
 
 function animatePathDrawing(ctx, x0, y0, x1, y1, x2, y2, duration, imgTag) {
     var step = function animatePathDrawingStep(timestamp) {
+        // IMPORTANT: Check if animation should stop before proceeding
+        if (stopPlaneEvent === 1) {
+            console.log('✈️ animatePathDrawing stopped by stopPlaneEvent');
+            return; // Exit animation loop
+        }
+        
         if (start === null)
             start = timestamp;
 
@@ -180,7 +213,7 @@ function animatePathDrawing(ctx, x0, y0, x1, y1, x2, y2, duration, imgTag) {
         }
 
 
-        if (progress < 1) {
+        if (progress < 1 && stopPlaneEvent === 0) {
             window.requestAnimationFrame(step);
         }
     };
@@ -188,13 +221,26 @@ function animatePathDrawing(ctx, x0, y0, x1, y1, x2, y2, duration, imgTag) {
 }
 
 var StopPlaneIntervalID;
+var isStopPlaneAnimationRunning = false; // Track if fly-away animation is in progress
+
 function stopPlane() {
     // console.log('-----------stopPlane-------------');
 if(StopPlaneIntervalID1 == 0){
     ctx.beginPath();
-    clearInterval(intervalID);
-    clearInterval(intervalID1);
+    
+    // Clear any existing animation intervals
+    if (intervalID) {
+        clearInterval(intervalID);
+        intervalID = null;
+    }
+    if (intervalID1) {
+        clearInterval(intervalID1);
+        intervalID1 = null;
+    }
+    
+    // Keep stopPlaneEvent = 1 to prevent other animations from running
     stopPlaneEvent = 1;
+    isStopPlaneAnimationRunning = true; // Mark fly-away animation as running
     $(".rotateimage").removeClass('rotatebg');
 
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
@@ -211,7 +257,21 @@ if(StopPlaneIntervalID1 == 0){
     // console.log('ctx.canvas.width',ctx.canvas.width);
     // console.log('estimateWidth',estimateWidth);
 
+    // Clear any existing stopPlane interval first
+    if (StopPlaneIntervalID) {
+        window.clearInterval(StopPlaneIntervalID);
+        StopPlaneIntervalID = null;
+    }
+
     StopPlaneIntervalID = setInterval(() => {
+        // Check if we should abort (new game starting)
+        if (!isStopPlaneAnimationRunning) {
+            window.clearInterval(StopPlaneIntervalID);
+            StopPlaneIntervalID = null;
+            StopPlaneIntervalID1 = 0;
+            return;
+        }
+        
         // console.log(canvasWidth);
         // console.log((nx2 + intervalTimex) - imgxposition);
         // if (canvasWidth >= ((nx2 + intervalTimex) - imgxposition)) {
@@ -231,7 +291,9 @@ if(StopPlaneIntervalID1 == 0){
             // console.log('-----------------StopPlaneIntervalID1--------1-----------');
 
             window.clearInterval(StopPlaneIntervalID);
+            StopPlaneIntervalID = null;
             StopPlaneIntervalID1 = 0;
+            isStopPlaneAnimationRunning = false; // Mark fly-away animation as complete
             // $('.loading-game').addClass('show');
             // setTimeout(function () {
             // setVariable();
@@ -466,10 +528,27 @@ function drawBezierSplit(ctx, x0, y0, x1, y1, x2, y2, t0, t1, imgTag) {
 
 }
 function startfirstinterval() {
+    // Clear any existing interval first to prevent duplicates
+    if (intervalID) {
+        window.clearInterval(intervalID);
+        intervalID = null;
+    }
+    
+    // Don't start if animations are stopped
+    if (stopPlaneEvent === 1) return;
+    
     intervalID = setInterval(() => {
+        // Check if we should stop
+        if (stopPlaneEvent === 1) {
+            window.clearInterval(intervalID);
+            intervalID = null;
+            return;
+        }
+        
         downplane(x0, y0, x1, y1, x2, y2);
         if (++countInterval >= checkuplinedownlinecount) {
             window.clearInterval(intervalID);
+            intervalID = null;
             countInterval = 0;
             startsecondinterval();
         }
@@ -477,10 +556,27 @@ function startfirstinterval() {
     }, settimeinterval);
 }
 function startsecondinterval() {
+    // Clear any existing interval first to prevent duplicates
+    if (intervalID1) {
+        window.clearInterval(intervalID1);
+        intervalID1 = null;
+    }
+    
+    // Don't start if animations are stopped
+    if (stopPlaneEvent === 1) return;
+    
     intervalID1 = setInterval(() => {
+        // Check if we should stop
+        if (stopPlaneEvent === 1) {
+            window.clearInterval(intervalID1);
+            intervalID1 = null;
+            return;
+        }
+        
         upplane(x0, y0, x1, y1, x2, y2);
         if (++countInterval >= checkuplinedownlinecount) {
             window.clearInterval(intervalID1);
+            intervalID1 = null;
             countInterval = 0;
             startfirstinterval();
         }
@@ -573,95 +669,238 @@ function startPlaneAtMultiplier(multiplier) {
     // Ensure multiplier is at least 1.00
     multiplier = Math.max(1.00, multiplier);
     
-    // Calculate progress based on multiplier
-    // The animation duration is 5000ms, and multiplier grows over time
-    // We need to map multiplier to a progress value (0 to 1)
-    // Assuming multiplier increases by ~0.01 every 100ms, 
-    // multiplier 1.00 = progress 0, multiplier ~2.00 = progress ~1.0 (end of initial curve)
+    // IMPORTANT: Stop fly-away animation if running
+    isStopPlaneAnimationRunning = false;
     
-    // For multipliers beyond the initial curve (> ~2.0), we use the oscillating animation
-    var progressFromMultiplier = Math.min((multiplier - 1.00) / 1.5, 1.0);
+    // IMPORTANT: Clear any existing animation intervals first to prevent duplicates
+    if (intervalID) {
+        window.clearInterval(intervalID);
+        intervalID = null;
+    }
+    if (intervalID1) {
+        window.clearInterval(intervalID1);
+        intervalID1 = null;
+    }
+    if (typeof StopPlaneIntervalID !== 'undefined' && StopPlaneIntervalID) {
+        window.clearInterval(StopPlaneIntervalID);
+        StopPlaneIntervalID = null;
+    }
+    StopPlaneIntervalID1 = 0;
     
-    // Reset variables
-    setVariable();
+    // Set stopPlaneEvent to prevent any running animations from continuing
+    stopPlaneEvent = 1;
     
-    // Calculate the plane position based on multiplier
-    // The curve goes from (x0, y0) through control point (x1, y1) to end (x2, y2)
-    var t = progressFromMultiplier;
+    // Reset variables WITHOUT starting animation - we'll position manually
+    // This is a copy of setVariable initialization but without calling animatePathDrawing
+    initializeCanvasVariables();
     
-    if (t >= 1.0) {
-        // Multiplier is high enough that we're in the oscillating phase
-        // Start at the end of the bezier curve and begin oscillation
+    // The initial bezier curve animation takes about 5 seconds (5000ms)
+    // During this time, multiplier goes from 1.00 to about 1.50 (0.01 per 100ms = 0.50 in 5s)
+    // After the initial curve, the plane oscillates at the end position
+    
+    // Calculate if we're past the initial curve phase
+    // Initial curve ends at around multiplier 1.50
+    var initialCurveEndMultiplier = 1.50;
+    var progressInCurve = Math.min((multiplier - 1.00) / (initialCurveEndMultiplier - 1.00), 1.0);
+    
+    stopPlaneEvent = 0;
+    
+    if (multiplier >= initialCurveEndMultiplier) {
+        // We're past the initial bezier curve - plane is in oscillating phase
+        // Calculate how far along the oscillation we should be
+        
+        // The plane oscillates at the end of the curve (x2, y2)
+        // For higher multipliers, the plane moves slightly further right/down
+        var extraProgress = Math.min((multiplier - initialCurveEndMultiplier) / 10.0, 0.5);
+        
+        // Calculate the oscillation position
+        // The plane oscillates between (x2, y2) and (x2 + offset, y2 + offset)
+        var oscillationOffset = checkuplinedownlinecount * 0.5; // Half of the oscillation range
+        
+        // Set the plane's current position for oscillation
+        estimateWidth = x2 + (extraProgress * oscillationOffset);
+        estimateHeight = y2 + (extraProgress * oscillationOffset * 0.3); // Less vertical movement
+        
         startupdown = 1;
-        stopPlaneEvent = 0;
         
-        // Calculate extra distance based on multiplier beyond initial curve
-        var extraProgress = (multiplier - 2.50) / 5.0; // Adjust for higher multipliers
-        extraProgress = Math.max(0, Math.min(extraProgress, 1.0));
-        
-        // Position plane at extended position
-        estimateWidth = xend + (countInterval * extraProgress * 2);
-        estimateHeight = yend + (countInterval * extraProgress * 0.5);
-        
-        // Start the drawing loop
+        // Draw the complete curve with plane at oscillation position
         ctx.beginPath();
         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-        $.when(drawLine()).then(animationHorizontalDots());
+        drawLine();
+        animationHorizontalDots();
         animationVerticalDots();
+        
+        // Draw the bezier curve
+        ctx.beginPath();
         ctx.moveTo(x0, y0);
         ctx.quadraticCurveTo(x1, y1, estimateWidth, estimateHeight);
-        GameObject(imgTag, estimateWidth - imgxposition, estimateHeight - imgyposition, imgwidth, imgheight, 300, 2, ctx);
         ctx.lineWidth = 5;
         ctx.strokeStyle = '#F00B3E';
         ctx.stroke();
         ctx.closePath();
+        
+        // Draw the plane sprite at the end
+        GameObject(imgTag, estimateWidth - imgxposition, estimateHeight - imgyposition, imgwidth, imgheight, 300, 2, ctx);
+        
+        // Fill the area under the curve
         fillShape(estimateWidth, estimateHeight, x0, y0, x1, y1, 1);
         
-        // Start the oscillation intervals
+        // Start oscillation from current position
+        countInterval = Math.floor(oscillationOffset * extraProgress);
         startfirstinterval();
         
-    } else if (t > 0) {
+    } else if (progressInCurve > 0) {
         // We're still in the initial bezier curve phase
-        stopPlaneEvent = 0;
+        // Calculate position on the curve based on progress
         
-        // Calculate position on bezier curve at time t
-        var t00 = t * t;
-        var t01 = 1.0 - t;
-        var t02 = t01 * t01;
-        var t03 = 2.0 * t * t01;
+        var t = progressInCurve;
         
-        nx0 = x0;
-        ny0 = y0;
-        nx2 = t02 * x0 + t03 * x1 + t00 * x2;
-        ny2 = t02 * y0 + t03 * y1 + t00 * y2;
-        nx1 = lerp(lerp(x0, x1, 0), lerp(x1, x2, 0), t);
-        ny1 = lerp(lerp(y0, y1, 0), lerp(y1, y2, 0), t);
+        // Quadratic bezier formula: B(t) = (1-t)²P0 + 2(1-t)tP1 + t²P2
+        var t2 = t * t;
+        var mt = 1 - t;
+        var mt2 = mt * mt;
+        var twoMtT = 2 * mt * t;
         
-        // Draw the curve up to this point
+        // Calculate the point on the curve
+        var curveX = mt2 * x0 + twoMtT * x1 + t2 * x2;
+        var curveY = mt2 * y0 + twoMtT * y1 + t2 * y2;
+        
+        // Draw everything up to this point
         ctx.beginPath();
         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-        $.when(drawLine()).then(drawHorizontalDots());
-        $.when(drawHorizontalDots()).then(drawVerticalDots());
-        ctx.moveTo(nx0, ny0);
-        ctx.quadraticCurveTo(nx1, ny1, nx2, ny2);
-        GameObject(imgTag, nx2 - imgxposition, ny2 - imgyposition, imgwidth, imgheight, 300, 2, ctx);
+        drawLine();
+        drawHorizontalDots();
+        drawVerticalDots();
+        
+        // Draw partial bezier curve
+        ctx.beginPath();
+        ctx.moveTo(x0, y0);
+        
+        // Draw curve segment by segment up to current position
+        var steps = Math.ceil(t * 50);
+        for (var i = 1; i <= steps; i++) {
+            var st = (i / 50) * t;
+            var st2 = st * st;
+            var smt = 1 - st;
+            var smt2 = smt * smt;
+            var twoSmtSt = 2 * smt * st;
+            var sx = smt2 * x0 + twoSmtSt * x1 + st2 * x2;
+            var sy = smt2 * y0 + twoSmtSt * y1 + st2 * y2;
+            ctx.lineTo(sx, sy);
+        }
+        
         ctx.lineWidth = 5;
         ctx.strokeStyle = '#F00B3E';
         ctx.stroke();
         ctx.closePath();
-        fillShape(nx2, ny2, nx0, ny0, nx1, ny1, 0);
         
-        // Continue the animation from this point
-        // Set the start timestamp to simulate we've been running for a while
-        var elapsedTime = t * 5000; // 5000ms is the animation duration
+        // Draw the plane sprite at current position
+        GameObject(imgTag, curveX - imgxposition, curveY - imgyposition, imgwidth, imgheight, 300, 2, ctx);
+        
+        // Fill the area under the curve
+        ctx.beginPath();
+        ctx.moveTo(x0, y0);
+        for (var i = 1; i <= steps; i++) {
+            var st = (i / 50) * t;
+            var st2 = st * st;
+            var smt = 1 - st;
+            var smt2 = smt * smt;
+            var twoSmtSt = 2 * smt * st;
+            var sx = smt2 * x0 + twoSmtSt * x1 + st2 * x2;
+            var sy = smt2 * y0 + twoSmtSt * y1 + st2 * y2;
+            ctx.lineTo(sx, sy);
+        }
+        ctx.lineTo(curveX, y0);
+        ctx.fillStyle = "rgba(104,1,14,0.8)";
+        ctx.fill();
+        ctx.closePath();
+        
+        // Set up to continue the animation from this point
+        // Simulate that the animation has been running
+        var elapsedTime = t * 5000;
         start = performance.now() - elapsedTime;
         
-        // Resume the animation
+        // Continue the animation
         animatePathDrawing(ctx, x0, y0, x1, y1, x2, y2, 5000, imgTag);
     }
     
-    console.log('✈️ Plane positioned at multiplier:', multiplier + 'x', 'progress:', progressFromMultiplier);
+    console.log('✈️ Plane positioned at multiplier:', multiplier.toFixed(2) + 'x', 'progress:', progressInCurve.toFixed(2));
 }
 
-// Expose function globally for socket integration
+/**
+ * Stop all plane animation intervals
+ * Used when tab becomes hidden to prevent animation state corruption
+ */
+function stopPlaneAnimations() {
+    // Set stop flag FIRST to prevent any new frames from being drawn
+    stopPlaneEvent = 1;
+    
+    // Stop fly-away animation if running
+    isStopPlaneAnimationRunning = false;
+    
+    // Clear all animation intervals
+    if (intervalID) {
+        window.clearInterval(intervalID);
+        intervalID = null;
+    }
+    if (intervalID1) {
+        window.clearInterval(intervalID1);
+        intervalID1 = null;
+    }
+    if (typeof StopPlaneIntervalID !== 'undefined' && StopPlaneIntervalID) {
+        window.clearInterval(StopPlaneIntervalID);
+        StopPlaneIntervalID = null;
+    }
+    if (StopPlaneIntervalID1) {
+        StopPlaneIntervalID1 = 0;
+    }
+    
+    // Reset animation state
+    countInterval = 0;
+    startupdown = 0;
+    start = null;
+    
+    // Clear canvas to prevent ghosting
+    if (ctx) {
+        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    }
+    
+    console.log('✈️ Plane animations stopped');
+}
+
+/**
+ * Resume plane animation at current multiplier
+ * Used when tab becomes visible to restart clean animation
+ */
+function resumePlaneAnimation(currentMultiplier) {
+    if (!currentMultiplier || currentMultiplier < 1.00) {
+        console.log('✈️ No active game - skipping plane animation resume');
+        return;
+    }
+    
+    // FIRST: Ensure all animations are completely stopped
+    stopPlaneAnimations();
+    
+    // Wait a brief moment for any pending callbacks to complete
+    // Then start fresh animation
+    setTimeout(function() {
+        // Reset the stop flag
+        stopPlaneEvent = 0;
+        
+        // Reset animation counters
+        countInterval = 0;
+        startupdown = 0;
+        HorizontalDotsCountRun = 1;
+        VerticalDotsCountRun = 1;
+        
+        // Use the existing function to position plane at current multiplier
+        startPlaneAtMultiplier(currentMultiplier);
+        
+        console.log('✈️ Plane animation resumed at', currentMultiplier + 'x');
+    }, 50); // 50ms delay to ensure clean state
+}
+
+// Expose functions globally for socket integration
 window.startPlaneAtMultiplier = startPlaneAtMultiplier;
+window.stopPlaneAnimations = stopPlaneAnimations;
+window.resumePlaneAnimation = resumePlaneAnimation;

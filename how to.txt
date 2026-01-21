@@ -1,0 +1,8 @@
+cd laravel                                                                                                          
+php artisan route:clear                                                                                             
+php artisan cache:clear 
+php artisan serve
+
+
+
+C:\xampp\htdocs\jet2usable\jet2\laravel>start-socket-server.bat

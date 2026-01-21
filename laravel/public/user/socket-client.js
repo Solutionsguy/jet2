@@ -310,6 +310,27 @@ class AviatorSocketClient {
     }
 
     /**
+     * Get raw socket instance (for custom emit)
+     */
+    getSocket() {
+        return this.socket;
+    }
+
+    /**
+     * Request a full game state resync from server
+     * Used when tab becomes visible after being hidden
+     */
+    requestSync() {
+        if (!this.isConnected || !this.socket) {
+            console.warn('Not connected to server - cannot request sync');
+            return;
+        }
+        
+        this.socket.emit('requestSync');
+        console.log('📡 Requested game state sync from server');
+    }
+
+    /**
      * Disconnect from server
      */
     disconnect() {

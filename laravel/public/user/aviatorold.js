@@ -329,11 +329,21 @@ function cash_out_now(element, section_no, increment = '') {
 
 function crash_plane(inc_no) {
     soundPlay();
-    window.clearInterval(StopPlaneIntervalID);
+    
+    // IMPORTANT: Stop all animations before starting crash sequence
+    // This prevents overlapping animations
+    if (typeof stopPlaneAnimations === 'function') {
+        stopPlaneAnimations();
+    }
+    
     $(".flew_away_section").show();
     $("#auto_increment_number").addClass('text-danger');
+    
+    // Now start the fly-away animation (stopPlane handles its own interval)
     stopPlane();
-    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    
+    // Don't clear canvas here - stopPlane will handle it
+    // ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     $("#running_type").text('rest time');
     update_round_history(inc_no);
     const number_of_bet = $(".round-history-list").find('.custom-badge').length;
