@@ -38,6 +38,30 @@ function currentid() {
 let gameLoopInitialized = false;
 
 /**
+ * Flag to track if legacy mode is running (for stopping it when socket connects)
+ */
+let legacyModeInterval = null;
+let legacyModeActive = false;
+
+/**
+ * Get the badge color class based on multiplier value (for legacy mode)
+ * Matches the glow animation color scheme:
+ * - bg3 (Cyan): ≤ 2x
+ * - bg1 (Purple): 2x - 10x  
+ * - bg2 (Pink/Magenta): ≥ 10x
+ */
+function getMultiplierBadgeClass(multiplier) {
+    const m = parseFloat(multiplier);
+    if (m <= 2) {
+        return 'bg3'; // Cyan - low multiplier
+    } else if (m < 10) {
+        return 'bg1'; // Purple - medium multiplier
+    } else {
+        return 'bg2'; // Pink/Magenta - high multiplier
+    }
+}
+
+/**
  * Check if socket is connected
  */
 function isSocketControlled() {
@@ -46,6 +70,18 @@ function isSocketControlled() {
         return socket && socket.isSocketConnected();
     }
     return false;
+}
+
+/**
+ * Stop legacy mode if it's running (called when socket connects)
+ */
+function stopLegacyMode() {
+    if (legacyModeInterval) {
+        clearInterval(legacyModeInterval);
+        legacyModeInterval = null;
+        console.log('🛑 Legacy mode interval stopped');
+    }
+    legacyModeActive = false;
 }
 
 /**
@@ -66,19 +102,21 @@ function gamegenerate() {
     // Hide preloader immediately - socket events will control game UI
     $(".load-txt").hide();
     
-    // Check socket connection with minimal delay (just enough for socket to initialize)
-    // Reduced from 2500ms to 500ms for faster loading
+    // Check socket connection with longer delay to ensure socket has time to connect
+    // Increased from 500ms to 1500ms to prevent race condition
     setTimeout(() => {
         if (isSocketControlled()) {
             console.log('✅ Socket connected - SERVER controls the game');
             console.log('👀 This client is a passive listener - NO local game loop');
+            stopLegacyMode(); // Make sure legacy mode is stopped
             initSocketListenerMode();
         } else {
             // Fallback to original AJAX-based game loop
             console.log('⚠️ Socket not connected - using AJAX fallback');
+            legacyModeActive = true;
             legacyGamegenerate();
         }
-    }, 500);
+    }, 1500);
 }
 
 /**
@@ -109,12 +147,34 @@ function initSocketListenerMode() {
 /**
  * Legacy AJAX-based game generator (fallback when socket not available)
  * NOTE: Delays reduced for faster loading - was 1500ms + 5000ms, now 300ms + 1500ms
+ * IMPORTANT: This mode is STOPPED when socket connects (see stopLegacyMode)
  */
 function legacyGamegenerate() {
+    // Check if socket connected while we were waiting - if so, abort legacy mode
+    if (isSocketControlled()) {
+        console.log('🔄 Socket connected during legacy startup - aborting legacy mode');
+        stopLegacyMode();
+        return;
+    }
+    
     setTimeout(() => {
+        // Double-check socket before continuing
+        if (isSocketControlled() || !legacyModeActive) {
+            console.log('🔄 Socket connected or legacy mode stopped - aborting');
+            stopLegacyMode();
+            return;
+        }
+        
         $("#auto_increment_number_div").hide();
         $('.loading-game').addClass('show');
         setTimeout(() => {
+            // Triple-check socket before the main game loop
+            if (isSocketControlled() || !legacyModeActive) {
+                console.log('🔄 Socket connected or legacy mode stopped - aborting');
+                stopLegacyMode();
+                return;
+            }
+            
             hide_loading_game();
 
             $.ajax({
@@ -127,7 +187,14 @@ function legacyGamegenerate() {
                 },
                 dataType: "json",
                 success: function (result) {
-                        stage_time_out = 1;
+                    // Check socket again before processing
+                    if (isSocketControlled() || !legacyModeActive) {
+                        console.log('🔄 Socket connected - stopping legacy game cycle');
+                        stopLegacyMode();
+                        return;
+                    }
+                    
+                    stage_time_out = 1;
                     if (bet_array.length > 0) {
                         place_bet_now();
                     }
@@ -170,7 +237,16 @@ function legacyGamegenerate() {
                             info_data(intialData);
                         }
                         });
-                    let increamtsappgame = setInterval(() => {
+                    
+                    // Store the interval so it can be stopped if socket connects
+                    legacyModeInterval = setInterval(() => {
+                        // Check if socket connected - if so, stop legacy mode
+                        if (isSocketControlled() || !legacyModeActive) {
+                            console.log('🔄 Socket connected mid-game - stopping legacy incrementor');
+                            stopLegacyMode();
+                            return;
+                        }
+                        
                         if ( a >= currentbet ) {
                             let res = parseFloat(a).toFixed(2);
                             let result = res;
@@ -202,7 +278,7 @@ function legacyGamegenerate() {
                                     </div>
                                     <div class="column-3">
 
-                                        <div class="bg3 custom-badge mx-auto">
+                                        <div class="${getMultiplierBadgeClass(data[$i].cashout_multiplier)} custom-badge mx-auto">
                                             `+data[$i].cashout_multiplier+`x</div>
                                     </div>
                                     <div class="column-4 fw-normal">
@@ -213,8 +289,13 @@ function legacyGamegenerate() {
                                     }
                                 }
                             });
-                            clearInterval(increamtsappgame);
-                            legacyGamegenerate();
+                            clearInterval(legacyModeInterval);
+                            legacyModeInterval = null;
+                            
+                            // Only continue legacy loop if socket still not connected
+                            if (!isSocketControlled() && legacyModeActive) {
+                                legacyGamegenerate();
+                            }
                         } else {
                             a = parseFloat(a) + 0.01;
                             incrementor(parseFloat(a).toFixed(2));
