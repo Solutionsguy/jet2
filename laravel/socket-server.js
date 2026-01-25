@@ -111,8 +111,8 @@ function generateCrashPoint(minMultiplier = 1.00) {
     // Higher multipliers make the game look exciting for spectators
     const RELAXED_CONFIG = {
         instantCrashChance: 0.02,    // 2% chance of crash at 1.00x - 1.50x (rare instant)
-        lowCrashChance: 0.13,        // 13% chance of crash at 1.50x - 3.00x (low)
-        mediumCrashChance: 0.35,     // 35% chance of crash at 3.00x - 7.00x (medium)
+        lowCrashChance: 0.0,        // 13% chance of crash at 1.50x - 3.00x (low)
+        mediumCrashChance: 0.98,     // 35% chance of crash at 3.00x - 7.00x (medium)
         // Remaining 50% chance of crash at 7.00x - 15.00x (high - exciting!)
         instantMax: 1.0,
         lowMax: 3.00,

@@ -12,6 +12,24 @@
 window.currentRoundBets = [];
 window.totalBetsCount = 0;
 
+/**
+ * Get the badge color class based on multiplier value
+ * Matches the glow animation color scheme:
+ * - bg3 (Cyan): ≤ 2x
+ * - bg1 (Purple): 2x - 10x  
+ * - bg2 (Pink/Magenta): ≥ 10x
+ */
+function getMultiplierBadgeClass(multiplier) {
+    const m = parseFloat(multiplier);
+    if (m <= 2) {
+        return 'bg3'; // Cyan - low multiplier
+    } else if (m < 10) {
+        return 'bg1'; // Purple - medium multiplier
+    } else {
+        return 'bg2'; // Pink/Magenta - high multiplier
+    }
+}
+
 // Track tab visibility state for resync
 window.tabWasHidden = false;
 window.lastKnownMultiplier = 1.00;
@@ -285,19 +303,29 @@ function displayBetInSidebar(bet) {
     const status = bet.status || 'active';
     const cashOutMultiplier = bet.cashOutMultiplier;
     
-    // Determine status display
-    let statusClass = 'bg1';
+    // Determine status display - use same color logic as glow effect
+    let statusClass = '';
     let statusText = '-';
     let winnings = '-';
     
     if (status === 'cashed_out' && cashOutMultiplier) {
-        statusClass = 'bg2';
+        // Color based on multiplier value - matching glow animation colors
+        if (parseFloat(cashOutMultiplier) <= 2) {
+            statusClass = 'bg3'; // Cyan - low multiplier
+        } else if (parseFloat(cashOutMultiplier) < 10) {
+            statusClass = 'bg1'; // Purple - medium multiplier
+        } else {
+            statusClass = 'bg2'; // Pink/Magenta - high multiplier
+        }
         statusText = cashOutMultiplier.toFixed(2) + 'x';
         winnings = (parseFloat(bet.amount) * cashOutMultiplier).toFixed(2) + 'KSh';
     }
     
+    // Add 'active' class if bet is already cashed out (green background)
+    const activeClass = (status === 'cashed_out' && cashOutMultiplier) ? 'active' : '';
+    
     const betHtml = `
-        <div class="list-items" id="bet-${bet.betId}" data-bet-id="${bet.betId}" data-user-id="${bet.odapuId || bet.userId}">
+        <div class="list-items ${activeClass}" id="bet-${bet.betId}" data-bet-id="${bet.betId}" data-user-id="${bet.odapuId || bet.userId}">
             <div class="column-1 users fw-normal">
                 <img src="${avatar}" class="user-avatar" style="width:20px;height:20px;border-radius:50%;margin-right:5px;">
                 ${username}
@@ -344,14 +372,32 @@ function displayAllBets(bets) {
 function updateBetCashOut(betId, multiplier, winAmount) {
     const betElement = $(`#bet-${betId}`);
     if (betElement.length > 0) {
+        // Remove any lost styling first
+        betElement.removeClass('bet-lost');
+        
+        // Determine color class based on multiplier - matching glow animation colors
+        let colorClass = 'bg3'; // Default: Cyan for low multiplier
+        if (parseFloat(multiplier) <= 2) {
+            colorClass = 'bg3'; // Cyan - low multiplier
+        } else if (parseFloat(multiplier) < 10) {
+            colorClass = 'bg1'; // Purple - medium multiplier
+        } else {
+            colorClass = 'bg2'; // Pink/Magenta - high multiplier
+        }
+        
+        console.log('💰 Socket cashout badge color:', multiplier.toFixed(2) + 'x', '→', colorClass);
+        
+        // Remove ALL color classes first, then add the correct one
         betElement.find('.bet-status')
-            .removeClass('bg1')
-            .addClass('bg2')
+            .removeClass('bg1 bg2 bg3 bg-lost')
+            .addClass(colorClass)
             .text(multiplier.toFixed(2) + 'x');
         betElement.find('.bet-winnings').text(winAmount.toFixed(2) + 'KSh');
         
-        // Add highlight animation
-        betElement.addClass('cashed-out-highlight');
+        // Add active state (green background) and highlight animation (green flash)
+        betElement.addClass('active cashed-out-highlight');
+        
+        // Remove highlight animation after it completes (keep active state)
         setTimeout(() => {
             betElement.removeClass('cashed-out-highlight');
         }, 2000);
@@ -970,8 +1016,8 @@ function markActiveBetsAsLost() {
             const betElement = $(`#bet-${bet.betId}`);
             if (betElement.length > 0) {
                 betElement.find('.bet-status')
-                    .removeClass('bg1 bg2')
-                    .addClass('bg3')
+                    .removeClass('bg1 bg2 bg3')
+                    .addClass('bg-lost')
                     .text('Lost');
                 betElement.find('.bet-winnings').text('-');
                 betElement.addClass('bet-lost');
@@ -1056,7 +1102,7 @@ function refreshBetHistory() {
                             </button>
                         </div>
                         <div class="column-3">
-                            <div class="bg3 custom-badge mx-auto">
+                            <div class="${getMultiplierBadgeClass(data[i].cashout_multiplier)} custom-badge mx-auto">
                                 ${data[i].cashout_multiplier}x
                             </div>
                         </div>

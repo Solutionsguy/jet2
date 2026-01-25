@@ -109,19 +109,29 @@ body {
     width: fit-content;
 }
 
-.bg1 {
-    background: #6b07d2;
-    color: #d7c3eb;
-}
-
-.bg2 {
-    background: #900087;
-    color: #e9c2e7;
-}
-
+/* Multiplier badge colors - EXACT match to plane glow effect colors */
+/* bg3: Low multiplier (≤2x) - Cyan/Blue (from glow: rgba(0, 200, 255)) */
 .bg3 {
-    background: #005d91;
-    color: #afd9ed;
+    background: #00c8ff;
+    color: #001820;
+}
+
+/* bg1: Medium multiplier (2x-10x) - Purple/Violet (from glow: rgba(120, 100, 255) to rgba(180, 80, 255)) */
+.bg1 {
+    background: #b450ff;
+    color: #1a0028;
+}
+
+/* bg2: High multiplier (≥10x) - Pink/Magenta (from glow: rgba(255, 50, 150)) */
+.bg2 {
+    background: #ff3296;
+    color: #280014;
+}
+
+/* bg-lost: Lost bet indicator - Red/Dark */
+.bg-lost {
+    background: #dc3545;
+    color: #fff;
 }
 
 a, a:hover {
@@ -846,6 +856,38 @@ element.style {
 .list-items.active {
     border: solid 1px #427F00;
     background: #123405;
+}
+
+/* Cashout highlight animation - green flash when player cashes out */
+.list-items.cashed-out-highlight {
+    animation: cashoutFlash 0.5s ease-out;
+    border: solid 1px #427F00 !important;
+    background: #123405 !important;
+}
+
+@keyframes cashoutFlash {
+    0% {
+        background: #2a5f0a;
+        border-color: #5cb82a;
+        box-shadow: 0 0 15px rgba(66, 127, 0, 0.8);
+    }
+    50% {
+        background: #1d4a06;
+        border-color: #4fa31f;
+        box-shadow: 0 0 10px rgba(66, 127, 0, 0.5);
+    }
+    100% {
+        background: #123405;
+        border-color: #427F00;
+        box-shadow: none;
+    }
+}
+
+/* Lost bet styling */
+.list-items.bet-lost {
+    opacity: 0.6;
+    border: solid 1px #4a1a1a;
+    background: linear-gradient(85deg, #1a0505, #2a0a0a);
 }
 
 .list-second {

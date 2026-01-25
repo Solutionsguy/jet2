@@ -410,6 +410,11 @@ function cash_out_now(element, section_no, increment = '') {
 function crash_plane(inc_no) {
     soundPlay();
     
+    // Reset plane glow effect on crash
+    if (typeof resetPlaneGlow === 'function') {
+        resetPlaneGlow();
+    }
+    
     // IMPORTANT: Stop all animations before starting crash sequence
     // This prevents overlapping animations
     if (typeof stopPlaneAnimations === 'function') {
@@ -605,6 +610,11 @@ function new_game_generated() {
     is_game_generated = 1;
     $('#my_bet_list .mCSB_container .list-items').removeAttr('id');
     $(".game-centeral-loading").show();
+    
+    // Reset plane glow effect for new round
+    if (typeof resetPlaneGlow === 'function') {
+        resetPlaneGlow();
+    }
 
     $("#main_bet_section").find("#cancle_button #waiting").hide();
     $("#extra_bet_section").find("#cancle_button #waiting").hide();
@@ -804,6 +814,11 @@ function incrementor(inc_no) {
     $("#auto_increment_number_div").show();
     $("#running_type").text('cash out time');
     document.getElementById('auto_increment_number').innerText = inc_no + '' + 'x';
+    
+    // Update plane glow effect based on current multiplier
+    if (typeof updatePlaneGlow === 'function') {
+        updatePlaneGlow(inc_no, true);
+    }
 
     if (bet_array.length > 0) {
 
@@ -855,11 +870,29 @@ function incrementor(inc_no) {
 }
 
 function cash_out_bet(cashOutData) {
-    $('#all_bets .mCSB_container .' + cashOutData.hash_id + '').addClass('active');
-    $('#all_bets .mCSB_container .' + cashOutData.hash_id + ' .column-3').html('<div class="' + get_multiplier_badge_class(cashOutData.incrementor) + ' custom-badge mx-auto">' + cashOutData.incrementor + 'x</div>');
+    var betRow = $('#all_bets .mCSB_container .' + cashOutData.hash_id);
+    
+    // Remove any lost styling first (in case game crashed before update)
+    betRow.removeClass('bet-lost');
+    
+    // Add active state and cashout highlight animation
+    betRow.addClass('active cashed-out-highlight');
+    
+    // Get the correct color class for this multiplier
+    var colorClass = get_multiplier_badge_class(cashOutData.incrementor);
+    console.log('💰 Cashout badge color:', cashOutData.incrementor + 'x', '→', colorClass);
+    
+    // Update multiplier badge - remove any existing color classes first, then add correct one
+    betRow.find('.column-3').html('<div class="custom-badge mx-auto ' + colorClass + '">' + cashOutData.incrementor + 'x</div>');
+    
     // Use the amount directly - no currency conversion needed
     var amt = cashOutData.amount || cashOutData.inr_amount || 0;
-    $('#all_bets .mCSB_container .' + cashOutData.hash_id + ' .column-4').html(amt + currency_symbol);
+    betRow.find('.column-4').html(amt + currency_symbol);
+    
+    // Remove highlight animation class after it completes (keep active state)
+    setTimeout(function() {
+        betRow.removeClass('cashed-out-highlight');
+    }, 2000);
 }
 
 function update_bet_list(bets, target, appendType = '') {

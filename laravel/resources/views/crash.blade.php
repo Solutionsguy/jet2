@@ -382,6 +382,31 @@
             border-color: #e69308 !important;
         }
 
+        /* Plane glow effect - radial gradient behind the plane
+           Uses no CSS transitions for performance (instant color changes) */
+        .plane-glow-effect {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+            opacity: 0;
+            /* Radial gradient from center - cyan/blue default color */
+            background: radial-gradient(ellipse at center, rgba(0, 200, 255, 0.4) 0%, rgba(0, 150, 200, 0.2) 30%, transparent 70%);
+        }
+
+        .plane-glow-effect.active {
+            opacity: 1;
+        }
+
+        /* Canvas must be above the glow */
+        #myCanvas {
+            position: relative;
+            z-index: 2;
+        }
+
         /* Bet sidebar styling */
         .list-items {
             transition: background-color 0.3s ease;
@@ -396,9 +421,8 @@
             opacity: 0.6;
         }
         
-        .list-items .bet-status.bg3 {
-            background-color: #dc3545 !important;
-        }
+        /* Removed - bg3 should use the standard cyan color from style.css */
+        /* Previously this was incorrectly making bg3 red (#dc3545) */
         
         @keyframes cashoutPulse {
             0% { transform: scale(1); }
@@ -578,6 +602,16 @@
                             </div>
                             <div class="list-body scroll-div list-body1" id="my_bet_list">
                                 @foreach ($mybets as $item)
+                                    @php
+                                        $multiplier = floatval($item->cashout_multiplier);
+                                        if ($multiplier <= 2) {
+                                            $myBetBadgeClass = 'bg3'; // Cyan - low multiplier
+                                        } elseif ($multiplier < 10) {
+                                            $myBetBadgeClass = 'bg1'; // Purple - medium multiplier
+                                        } else {
+                                            $myBetBadgeClass = 'bg2'; // Pink/Magenta - high multiplier
+                                        }
+                                    @endphp
                                     <div class="list-items">
                                         <div class="column-1 users fw-normal">
                                             {{ dformat($item->created_at, 'h:i') }}
@@ -590,7 +624,7 @@
                                         </div>
                                         <div class="column-3">
 
-                                            <div class="bg3 custom-badge mx-auto">
+                                            <div class="{{ $myBetBadgeClass }} custom-badge mx-auto">
                                                 {{ number_format($item->cashout_multiplier, 2) }}x</div>
 
                                         </div>
@@ -617,7 +651,17 @@
                             <div class="payouts-block">
                                 @foreach ($allresults as $item)
                                     @if ($item->result != 'pending' && $item->result != '')
-                                        <div class="bg1 custom-badge">{{ number_format($item->result, 2) }}x</div>
+                                        @php
+                                            $multiplier = floatval($item->result);
+                                            if ($multiplier <= 2) {
+                                                $badgeClass = 'bg3'; // Cyan - low multiplier
+                                            } elseif ($multiplier < 10) {
+                                                $badgeClass = 'bg1'; // Purple - medium multiplier
+                                            } else {
+                                                $badgeClass = 'bg2'; // Pink/Magenta - high multiplier
+                                            }
+                                        @endphp
+                                        <div class="{{ $badgeClass }} custom-badge">{{ number_format($item->result, 2) }}x</div>
                                     @endif
                                 @endforeach
                             </div>
@@ -644,7 +688,17 @@
 
                                     @foreach ($allresults as $item)
                                         @if ($item->result != 'pending' && $item->result != '')
-                                            <div class="bg1 custom-badge">{{ number_format($item->result, 2) }}x</div>
+                                            @php
+                                                $multiplier = floatval($item->result);
+                                                if ($multiplier <= 2) {
+                                                    $badgeClass = 'bg3'; // Cyan - low multiplier
+                                                } elseif ($multiplier < 10) {
+                                                    $badgeClass = 'bg1'; // Purple - medium multiplier
+                                                } else {
+                                                    $badgeClass = 'bg2'; // Pink/Magenta - high multiplier
+                                                }
+                                            @endphp
+                                            <div class="{{ $badgeClass }} custom-badge">{{ number_format($item->result, 2) }}x</div>
                                         @endif
                                     @endforeach
 
@@ -683,6 +737,8 @@
                         </div>
                     </div>
                     <img src="images/bg-rotate-old.svg" class="rotateimage rotatebg" />
+                    <!-- Glow effect layer - sits between spinning background and plane canvas -->
+                    <div class="plane-glow-effect" id="planeGlowEffect"></div>
                     <canvas id="myCanvas" height=400 width="1900"></canvas>
                 </div>
                 <!-- <h6 id="running_type" class="text-center text-white">...........</h6> -->
@@ -1353,6 +1409,79 @@
     <script src="/user/canvas.js"></script>
     <script src="/user/aviatorold.js?v={{env('APP_VERSION')}}"></script>
     <script src="/user/aviatorbyapp.js?v={{env('APP_VERSION')}}"></script>
+    
+    <!-- Plane Glow Effect Controller -->
+    <script>
+    /**
+     * Plane Glow Effect - Radial gradient that changes color based on multiplier
+     * Sits between the spinning background and the plane canvas
+     * NO CSS TRANSITIONS - instant color changes for performance
+     */
+    (function() {
+        var glowElement = document.getElementById('planeGlowEffect');
+        var lastGlowColor = null;
+        
+        // Color stops based on multiplier ranges (matching reference screenshots)
+        // Low multiplier (1.00-5.00): Cyan/Blue glow
+        // Medium multiplier (5.00-15.00): Purple/Violet transition
+        // High multiplier (15.00+): Pink/Magenta glow
+        function getGlowColor(multiplier) {
+            var m = parseFloat(multiplier) || 1.0;
+            
+            if (m < 2.0) {
+                // Cyan glow - low multiplier
+                return 'radial-gradient(ellipse at center, rgba(0, 200, 255, 0.5) 0%, rgba(0, 150, 200, 0.25) 35%, transparent 70%)';
+            } else if (m < 5.0) {
+                // Cyan to light blue transition
+                return 'radial-gradient(ellipse at center, rgba(50, 180, 255, 0.5) 0%, rgba(30, 130, 200, 0.25) 35%, transparent 70%)';
+            } else if (m < 10.0) {
+                // Blue to purple transition
+                return 'radial-gradient(ellipse at center, rgba(120, 100, 255, 0.5) 0%, rgba(80, 60, 180, 0.25) 35%, transparent 70%)';
+            } else if (m < 15.0) {
+                // Purple/violet
+                return 'radial-gradient(ellipse at center, rgba(180, 80, 255, 0.5) 0%, rgba(140, 50, 200, 0.25) 35%, transparent 70%)';
+            } else if (m < 25.0) {
+                // Pink/magenta - high multiplier
+                return 'radial-gradient(ellipse at center, rgba(255, 50, 150, 0.5) 0%, rgba(200, 30, 120, 0.25) 35%, transparent 70%)';
+            } else {
+                // Intense magenta/red - very high multiplier
+                return 'radial-gradient(ellipse at center, rgba(255, 30, 100, 0.55) 0%, rgba(220, 20, 80, 0.3) 35%, transparent 70%)';
+            }
+        }
+        
+        // Update glow based on current multiplier - called frequently during game
+        window.updatePlaneGlow = function(multiplier, isActive) {
+            if (!glowElement) return;
+            
+            if (!isActive) {
+                // Hide glow when plane is not flying
+                glowElement.classList.remove('active');
+                lastGlowColor = null;
+                return;
+            }
+            
+            // Show glow and update color (no transition - instant)
+            var newColor = getGlowColor(multiplier);
+            if (newColor !== lastGlowColor) {
+                glowElement.style.background = newColor;
+                lastGlowColor = newColor;
+            }
+            glowElement.classList.add('active');
+        };
+        
+        // Reset glow (called on game crash/reset)
+        window.resetPlaneGlow = function() {
+            if (!glowElement) return;
+            glowElement.classList.remove('active');
+            lastGlowColor = null;
+        };
+        
+        // Initialize - hidden by default
+        if (glowElement) {
+            glowElement.classList.remove('active');
+        }
+    })();
+    </script>
 
         
         <script>
