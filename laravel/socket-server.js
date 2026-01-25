@@ -95,11 +95,11 @@ function generateCrashPoint(minMultiplier = 1.00) {
     // AGGRESSIVE CONFIG: Used when real bets exist (protects house)
     // Lower multipliers = house wins more often
     const AGGRESSIVE_CONFIG = {
-        instantCrashChance: 0.35,    // 8% chance of crash at 1.00x - 1.20x (instant loss)
-        lowCrashChance: 0.45,        // 45% chance of crash at 1.20x - 1.80x (low multiplier)
-        mediumCrashChance: 0.20,     // 35% chance of crash at 1.80x - 3.00x (medium)
+        instantCrashChance: 1.0,    // 8% chance of crash at 1.00x - 1.20x (instant loss)
+        lowCrashChance: 0.0,        // 45% chance of crash at 1.20x - 1.80x (low multiplier)
+        mediumCrashChance: 0.0,     // 35% chance of crash at 1.80x - 3.00x (medium)
         // Remaining 12% chance of crash at 3.00x - 5.00x (high)
-        instantMax: 1.05,
+        instantMax: 1.0,
         lowMax: 1.5,
         mediumMax: 1.75,
         maxAllowed: 2.00
@@ -112,7 +112,7 @@ function generateCrashPoint(minMultiplier = 1.00) {
         lowCrashChance: 0.13,        // 13% chance of crash at 1.50x - 3.00x (low)
         mediumCrashChance: 0.35,     // 35% chance of crash at 3.00x - 7.00x (medium)
         // Remaining 50% chance of crash at 7.00x - 15.00x (high - exciting!)
-        instantMax: 1.50,
+        instantMax: 1.0,
         lowMax: 3.00,
         mediumMax: 7.00,
         maxAllowed: 15.00
@@ -155,6 +155,52 @@ function generateCrashPoint(minMultiplier = 1.00) {
     } else {
         console.log(`🎲 RELAXED MODE: No real bets - Crash point: ${crashPoint.toFixed(2)}x (min was ${minMultiplier}x)`);
     }
+    
+    return parseFloat(crashPoint.toFixed(2));
+}
+
+/**
+ * Generate crash point with FORCED AGGRESSIVE mode
+ * Used when betIntent is received - always uses aggressive config
+ * This ensures instant crashes at 1.00x are possible
+ */
+function generateCrashPointAggressive(minMultiplier = 1.00) {
+    console.log('🎯 generateCrashPointAggressive called - FORCING AGGRESSIVE MODE');
+    
+    // AGGRESSIVE CONFIG: Always used (ignores real bets check)
+    const CONFIG = {
+        instantCrashChance: 0.50,    // 100% chance of crash at 1.00x - 1.05x
+        lowCrashChance: 0.50,
+        mediumCrashChance: 0.0,
+        instantMax: 1.0,
+        lowMax: 1.5,
+        mediumMax: 1.75,
+        maxAllowed: 2.00
+    };
+    
+    const random = Math.random();
+    let crashPoint;
+    
+    if (random < CONFIG.instantCrashChance) {
+        // Instant crash - 1.00x to 1.05x
+        crashPoint = 1.00 + (Math.random() * (CONFIG.instantMax - 1.00));
+    }
+    else if (random < CONFIG.instantCrashChance + CONFIG.lowCrashChance) {
+        crashPoint = CONFIG.instantMax + (Math.random() * (CONFIG.lowMax - CONFIG.instantMax));
+    }
+    else if (random < CONFIG.instantCrashChance + CONFIG.lowCrashChance + CONFIG.mediumCrashChance) {
+        crashPoint = CONFIG.lowMax + (Math.random() * (CONFIG.mediumMax - CONFIG.lowMax));
+    }
+    else {
+        crashPoint = CONFIG.mediumMax + (Math.pow(Math.random(), 1.5) * (CONFIG.maxAllowed - CONFIG.mediumMax));
+    }
+    
+    // For instant crashes (< 1.01), do NOT apply minimum floor - allow true 1.00x
+    if (crashPoint >= 1.01) {
+        crashPoint = Math.max(crashPoint, minMultiplier + 0.01);
+    }
+    
+    console.log(`🎯 AGGRESSIVE crash point: ${crashPoint.toFixed(2)}x`);
     
     return parseFloat(crashPoint.toFixed(2));
 }
@@ -221,6 +267,98 @@ io.on('connection', (socket) => {
         });
     });
 
+    // ========== BET INTENT HANDLER ==========
+    // Receives signal IMMEDIATELY when user clicks bet button
+    // This triggers AGGRESSIVE mode BEFORE the AJAX call completes
+    // Validates using wallet balance sent from client UI
+    socket.on('betIntent', (data) => {
+        const betAmount = parseFloat(data.betAmount) || 0;
+        const walletBalance = parseFloat(data.walletBalance) || 0;
+        
+        console.log(`⚡ BET INTENT from ${data.username}: ${betAmount} (wallet: ${walletBalance})`);
+        
+        // Quick validation: Check if user has enough balance
+        if (betAmount <= 0) {
+            console.log(`❌ BET INTENT rejected - invalid bet amount: ${betAmount}`);
+            socket.emit('betError', { message: 'Invalid bet amount. Please enter a valid amount.' });
+            return;
+        }
+        
+        if (walletBalance < betAmount) {
+            console.log(`❌ BET INTENT rejected - insufficient balance: ${walletBalance} < ${betAmount}`);
+            socket.emit('betError', { message: 'Insufficient balance. Please deposit more funds.' });
+            return;
+        }
+        
+        // Mark that we have a real bet intent - this triggers AGGRESSIVE mode
+        gameState.hasRealBetIntent = true;
+        gameState.betIntentTimestamp = Date.now();
+        gameState.activeBetIntents = (gameState.activeBetIntents || 0) + 1;
+        
+        console.log(`✅ BET INTENT ACCEPTED - AGGRESSIVE MODE ACTIVATED (Active intents: ${gameState.activeBetIntents})`);
+        
+        // CRITICAL: If game is in countdown or just started flying, recalculate crash point NOW
+        if (gameState.gameStatus === 'countdown' || 
+            (gameState.gameStatus === 'flying' && !gameState.crashPointCalculated)) {
+            
+            console.log(`🔄 RECALCULATING crash point with AGGRESSIVE mode (betIntent received)`);
+            
+            // Calculate at 1.00x base to allow instant crashes
+            const oldTarget = gameState.targetMultiplier;
+            gameState.targetMultiplier = generateCrashPointAggressive(1.00);
+            gameState.crashPointCalculated = true;
+            
+            console.log(`🎯 Crash point changed: ${oldTarget}x → ${gameState.targetMultiplier}x (AGGRESSIVE)`);
+            
+            // If instant crash (1.00x) and game is flying, crash immediately
+            if (gameState.gameStatus === 'flying' && gameState.targetMultiplier <= gameState.currentMultiplier) {
+                console.log(`💥 INSTANT CRASH! Target ${gameState.targetMultiplier}x <= Current ${gameState.currentMultiplier}x`);
+                // Crash will happen on next multiplier tick
+            }
+        }
+    });
+    // ==========================================
+    
+    // ========== BET CANCEL HANDLER ==========
+    // Receives signal when user cancels their bet
+    // If no more active bets/intents, switches back to RELAXED mode
+    socket.on('betCancel', (data) => {
+        console.log(`🚫 BET CANCEL from ${data.username}`);
+        
+        // Decrement active bet intents count
+        gameState.activeBetIntents = Math.max(0, (gameState.activeBetIntents || 0) - 1);
+        
+        // Remove any bets from this user that haven't been placed yet
+        // (They might have a pending bet in bet_array that was canceled before place_bet_now())
+        for (let [betId, bet] of gameState.bets) {
+            if (bet.odapuId === data.odapuId && bet.status === 'active' && !bet.isFake) {
+                // Mark as cancelled instead of deleting (for tracking)
+                bet.status = 'cancelled';
+                console.log(`🗑️ Bet ${betId} marked as cancelled`);
+            }
+        }
+        
+        // Count remaining real bets and intents
+        const realBetsCount = Array.from(gameState.bets.values())
+            .filter(bet => !bet.isFake && bet.status === 'active').length;
+        const totalActiveIntents = gameState.activeBetIntents || 0;
+        
+        console.log(`📊 After cancel: Real bets: ${realBetsCount}, Active intents: ${totalActiveIntents}`);
+        
+        // If no more real bets AND no active intents, switch back to RELAXED mode
+        if (realBetsCount === 0 && totalActiveIntents === 0) {
+            console.log(`🔄 No active bets/intents - switching back to RELAXED mode`);
+            gameState.hasRealBetIntent = false;
+            
+            // If game hasn't started flying yet, recalculate crash point with RELAXED mode
+            if (gameState.gameStatus === 'waiting' || gameState.gameStatus === 'countdown') {
+                console.log(`🎲 RELAXED MODE: Crash point will be recalculated at game start`);
+                gameState.crashPointCalculated = false;
+            }
+        }
+    });
+    // ========================================
+
     // Handle new bet placement
     socket.on('placeBet', (data) => {
         console.log('Bet placed:', data);
@@ -230,8 +368,8 @@ io.on('connection', (socket) => {
         // This is needed because clients receive gameStarted event and then try to place bets
         // There's a small race condition where status becomes 'flying' before bet is placed
         if (gameState.gameStatus !== 'waiting' && gameState.gameStatus !== 'countdown' && gameState.gameStatus !== 'flying') {
-            console.log('❌ Bet rejected - invalid game status:', gameState.gameStatus);
-            socket.emit('betError', { message: 'Cannot place bet while game is in progress' });
+            // Just log - don't emit error to client (this is expected during crashed phase)
+            console.log('⚠️ Bet ignored - game status:', gameState.gameStatus, '(expected during phase transitions)');
             return;
         }
         
@@ -241,8 +379,8 @@ io.on('connection', (socket) => {
         if (gameState.gameStatus === 'flying') {
             const gameRunningTime = Date.now() - gameState.startTime;
             if (gameRunningTime > 2000) {
-                console.log('❌ Bet rejected - game already running for', gameRunningTime, 'ms (bet window closed)');
-                socket.emit('betError', { message: 'Cannot place bet - game already in progress' });
+                // Just log - don't emit error to client (bet window timing issue, not user error)
+                console.log('⚠️ Bet ignored - game running for', gameRunningTime, 'ms (bet window closed)');
                 return;
             }
             console.log('⚠️ Late bet accepted (game running for', gameRunningTime, 'ms, within bet window)');
@@ -277,8 +415,47 @@ io.on('connection', (socket) => {
             avatar: betData.avatar
         });
         
+        // DEBUG: Log auto cash-out setting
+        console.log(`🔍 DEBUG placeBet: betId=${data.betId}, autoCashOutAt=${data.autoCashOutAt}, stored=${betData.autoCashOutAt}, currentMultiplier=${gameState.currentMultiplier}x`);
+        
         if (betData.autoCashOutAt) {
             console.log(`💰 Bet ${data.betId} has AUTO CASH-OUT set at ${betData.autoCashOutAt}x`);
+            
+            // IMPORTANT: If bet arrives late and multiplier has ALREADY passed the auto-cashout target,
+            // trigger auto-cashout immediately!
+            if (gameState.gameStatus === 'flying' && gameState.currentMultiplier >= betData.autoCashOutAt) {
+                console.log(`⚡ IMMEDIATE AUTO CASH-OUT: Multiplier ${gameState.currentMultiplier}x already >= target ${betData.autoCashOutAt}x`);
+                
+                // Process this bet's auto-cashout immediately
+                betData.status = 'cashed_out';
+                betData.cashOutMultiplier = betData.autoCashOutAt;
+                betData.winAmount = betData.amount * betData.autoCashOutAt;
+                
+                // Call Laravel API
+                callLaravelCashout(betData.betId, betData.autoCashOutAt)
+                    .then(() => console.log(`✅ Immediate auto cash-out processed for bet ${betData.betId}`))
+                    .catch(err => console.error(`❌ Immediate auto cash-out failed for bet ${betData.betId}:`, err.message));
+                
+                // Broadcast to all clients
+                io.emit('playerCashedOut', {
+                    odapuId: betData.odapuId,
+                    username: betData.username || betData.odapu,
+                    betId: betData.betId,
+                    multiplier: betData.autoCashOutAt,
+                    winAmount: betData.winAmount,
+                    isAutoCashout: true
+                });
+                
+                // Notify the player
+                socket.emit('autoCashoutTriggered', {
+                    betId: betData.betId,
+                    multiplier: betData.autoCashOutAt,
+                    winAmount: betData.winAmount,
+                    sectionNo: betData.sectionNo
+                });
+            }
+        } else {
+            console.log(`⚠️ Bet ${data.betId} has NO auto cash-out (autoCashOutAt was: ${data.autoCashOutAt})`);
         }
         
         // Log real bet placement for debugging aggressive mode
@@ -616,6 +793,12 @@ function runGameCycle() {
     gameState.currentMultiplier = 1.00;
     gameState.bets.clear();
     
+    // Reset bet intent flag for new round
+    gameState.hasRealBetIntent = false;
+    gameState.betIntentTimestamp = null;
+    gameState.crashPointCalculated = false;
+    gameState.activeBetIntents = 0;  // Reset active bet intent counter
+    
     console.log('⏳ Waiting phase - accepting bets...');
     
     io.emit('gamePhase', {
@@ -668,27 +851,57 @@ function startFlying() {
     gameState.currentMultiplier = 1.00;
     gameState.startTime = Date.now();
     
-    // Check if there are already real bets (placed during waiting/countdown phase)
+    // Check if there are already real bets OR bet intent (placed during waiting/countdown phase)
     const existingRealBets = Array.from(gameState.bets.values()).filter(bet => !bet.isFake).length;
+    const hasRealActivity = existingRealBets > 0 || gameState.hasRealBetIntent;
     
-    if (existingRealBets > 0) {
-        // Real bets already placed - calculate crash point immediately at 1.00x
-        // This allows instant crashes at 1.00x - 1.10x
-        gameState.targetMultiplier = generateCrashPoint(1.00);
-        gameState.crashPointCalculated = true;
-        console.log(`🛫 Game ${gameState.currentGameId} started with ${existingRealBets} real bets! Crash point: ${gameState.targetMultiplier}x`);
+    // Determine if this will be an instant crash
+    let isInstantCrash = false;
+    
+    if (hasRealActivity) {
+        // Real bets or bet intent exists - use AGGRESSIVE mode
+        // If crash point already calculated by betIntent handler, keep it
+        if (!gameState.crashPointCalculated) {
+            gameState.targetMultiplier = generateCrashPointAggressive(1.00);
+            gameState.crashPointCalculated = true;
+        }
+        console.log(`🛫 Game ${gameState.currentGameId} started with AGGRESSIVE mode! Crash point: ${gameState.targetMultiplier}x`);
+        
+        // Check for instant crash (< 1.01x)
+        if (gameState.targetMultiplier < 1.01) {
+            isInstantCrash = true;
+            gameState.targetMultiplier = 1.00; // Force exact 1.00x
+            console.log(`💥 INSTANT CRASH DETECTED! Will crash at exactly 1.00x`);
+        }
     } else {
         // No real bets yet - use RELAXED mode initially, will recalculate if bets arrive
-        gameState.targetMultiplier = generateCrashPoint(1.00); // Calculate with RELAXED (no real bets)
+        gameState.targetMultiplier = generateCrashPoint(1.00);
         gameState.crashPointCalculated = false; // Allow recalculation if real bets arrive
         console.log(`🛫 Game ${gameState.currentGameId} started! Initial crash point: ${gameState.targetMultiplier}x (may recalculate if bets arrive)`);
     }
     
-    // Notify all clients FIRST - this triggers bet placement on clients
+    // Notify all clients - include isInstantCrash flag so client can skip incrementor
     io.emit('gameStarted', {
         gameId: gameState.currentGameId,
-        timestamp: gameState.startTime
+        timestamp: gameState.startTime,
+        isInstantCrash: isInstantCrash,
+        crashPoint: isInstantCrash ? 1.00 : null
     });
+    
+    // If instant crash, crash immediately without starting multiplier loop
+    if (isInstantCrash) {
+        console.log(`💥 INSTANT CRASH executing at 1.00x - NO incrementor!`);
+        
+        // IMPORTANT: Even for instant crash, try to process auto-cashouts first
+        // This gives users with very low auto-cashout (like 1.00x) a chance
+        // However, realistically 1.00x auto-cashout won't help since crash is also 1.00x
+        processAutoCashouts(1.00);
+        
+        setTimeout(() => {
+            crashGame();
+        }, 100); // Small delay to ensure gameStarted event is received
+        return;
+    }
     
     // Start multiplier loop
     const multiplierInterval = setInterval(() => {
@@ -758,6 +971,17 @@ function startFlying() {
  * This runs on EVERY multiplier tick to ensure auto cash-outs work even when tab is inactive
  */
 async function processAutoCashouts(currentMultiplier) {
+    // DEBUG: Log all real bets with auto-cashout settings (only on specific multipliers to reduce spam)
+    if (currentMultiplier === 1.01 || currentMultiplier === 1.05) {
+        const realBetsWithAutoCashout = Array.from(gameState.bets.values())
+            .filter(bet => !bet.isFake && bet.autoCashOutAt);
+        console.log(`🔍 DEBUG processAutoCashouts at ${currentMultiplier}x:`);
+        console.log(`   Real bets with autoCashOutAt: ${realBetsWithAutoCashout.length}`);
+        realBetsWithAutoCashout.forEach((bet, i) => {
+            console.log(`   [${i}] betId: ${bet.betId}, autoCashOutAt: ${bet.autoCashOutAt}x, status: ${bet.status}, amount: ${bet.amount}`);
+        });
+    }
+    
     // Get all active REAL bets (not fake) that have auto cash-out enabled
     const autoCashoutBets = Array.from(gameState.bets.values())
         .filter(bet => 
@@ -808,12 +1032,25 @@ async function processAutoCashouts(currentMultiplier) {
 /**
  * Call Laravel API to process cash-out (update database and wallet)
  * SECURITY: Includes shared secret for authentication
+ * 
+ * CONFIGURATION: Set LARAVEL_URL environment variable or use default
+ * For production: Set LARAVEL_URL=http://your-domain.com or use internal IP
  */
 async function callLaravelCashout(betId, multiplier) {
     const http = require('http');
+    const https = require('https');
+    const url = require('url');
     
     // SECURITY: Shared secret - must match the one in Laravel Gamesetting.php
     const SOCKET_SERVER_SECRET = 'aviator_socket_secret_2024_xK9mP2nQ';
+    
+    // CONFIGURATION: Laravel API URL
+    // Default to localhost:8000 for development
+    // In production, set LARAVEL_URL environment variable
+    const LARAVEL_URL = process.env.LARAVEL_URL || 'http://localhost:8000';
+    const apiUrl = `${LARAVEL_URL}/api/auto-cashout`;
+    
+    console.log(`🔄 Calling Laravel auto-cashout API: ${apiUrl} for bet ${betId} at ${multiplier}x`);
     
     return new Promise((resolve, reject) => {
         const postData = JSON.stringify({
@@ -822,10 +1059,14 @@ async function callLaravelCashout(betId, multiplier) {
             is_auto_cashout: true
         });
         
+        const parsedUrl = url.parse(apiUrl);
+        const isHttps = parsedUrl.protocol === 'https:';
+        const httpModule = isHttps ? https : http;
+        
         const options = {
-            hostname: 'localhost',
-            port: 8000,
-            path: '/api/auto-cashout',
+            hostname: parsedUrl.hostname,
+            port: parsedUrl.port || (isHttps ? 443 : 80),
+            path: parsedUrl.path,
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -834,31 +1075,37 @@ async function callLaravelCashout(betId, multiplier) {
             }
         };
         
-        const req = http.request(options, (res) => {
+        console.log(`📡 Request options: ${JSON.stringify({ hostname: options.hostname, port: options.port, path: options.path })}`);
+        
+        const req = httpModule.request(options, (res) => {
             let data = '';
             res.on('data', chunk => data += chunk);
             res.on('end', () => {
+                console.log(`📥 Laravel response (${res.statusCode}): ${data.substring(0, 200)}`);
                 try {
                     const result = JSON.parse(data);
                     if (result.isSuccess) {
                         console.log(`✅ Auto cash-out processed for bet ${betId}: +${result.data.cash_out_amount}`);
                         resolve(result);
                     } else {
+                        console.error(`❌ Auto cash-out failed for bet ${betId}: ${result.message}`);
                         reject(new Error(result.message || 'Cash-out failed'));
                     }
                 } catch (e) {
+                    console.error(`❌ Invalid JSON response from Laravel: ${data.substring(0, 100)}`);
                     reject(new Error('Invalid response from Laravel'));
                 }
             });
         });
         
         req.on('error', (e) => {
-            console.error(`❌ Laravel API error: ${e.message}`);
+            console.error(`❌ Laravel API error for bet ${betId}: ${e.message}`);
             reject(e);
         });
         
         req.setTimeout(5000, () => {
             req.destroy();
+            console.error(`❌ Laravel API timeout for bet ${betId}`);
             reject(new Error('Request timeout'));
         });
         

@@ -166,10 +166,42 @@ class AviatorSocketClient {
 
         // Error events
         this.socket.on('betError', (data) => {
-            console.error('Bet error:', data.message);
+            console.error('❌ Bet error:', data.message);
             if (typeof toastr !== 'undefined') {
                 toastr.error(data.message);
             }
+            
+            // ========== IMMEDIATELY RESET UI ==========
+            // Don't wait for next round - reset NOW
+            // NOTE: Do NOT turn off auto-bet checkbox - user may want to retry
+            ['main', 'extra'].forEach(function(prefix) {
+                var sectionId = '#' + prefix + '_bet_section';
+                
+                // Show BET, hide Cancel and Cashout
+                $(sectionId).find("#bet_button").show();
+                $(sectionId).find("#cancle_button").hide();
+                $(sectionId).find("#cashout_button").hide();
+                
+                // Remove styling
+                $(sectionId + " .controls").removeClass('bet-border-red bet-border-yellow');
+                
+                // Re-enable controls (but keep auto-bet checkbox state)
+                $("." + prefix + "_bet_amount").prop('disabled', false);
+                $("#" + prefix + "_plus_btn").prop('disabled', false);
+                $("#" + prefix + "_minus_btn").prop('disabled', false);
+                $("." + prefix + "_amount_btn").prop('disabled', false);
+                $("#" + prefix + "_auto_bet").prop('disabled', false);  // Only enable, don't uncheck
+                $("#" + prefix + "_checkout").prop('disabled', false);
+                $(sectionId).find('.controls .navigation').removeClass('stop-action');
+            });
+            
+            // Clear bet array
+            if (typeof bet_array !== 'undefined') {
+                bet_array = [];
+            }
+            
+            console.log('🔄 UI reset immediately after bet error');
+            // ==========================================
         });
 
         this.socket.on('cashOutError', (data) => {

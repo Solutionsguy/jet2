@@ -1,0 +1,2288 @@
+Socket.IO server running on port 3000
+Health check available at http://localhost:3000/health
+
+🎮 AUTO-STARTING GAME LOOP...
+Client connected: X7s_NVQIeSFT79_iAAAB
+Player joined: { userId: null, username: 'Guest' }
+🎮 Starting automatic game loop...
+⏳ Waiting phase - accepting bets...
+🤖 Generated 826 fake bets for display
+🕐 Countdown starting - Game mkpha7rdtlhfa
+🛫 Game mkpha7rdtlhfa starting... (crash point will be calculated in 500ms)
+Bet placed: {
+  betId: 2107,
+  odapuId: null,
+  odapu: 'Guest',
+  username: 'Guest',
+  amount: '1000.00',
+  avatar: '/images/avtar/av-1.png',
+  sectionNo: 0,
+  autoCashOutAt: null
+}
+🔍 DEBUG placeBet: gameStatus = flying , betId = 2107
+🕐 Bet timing: gameStatus=flying, startTime=1769087944329, now=1769087944791
+⚠️ Late bet accepted (game running for 462 ms, within bet window)
+✅ REAL BET placed: Guest - 1000.00 (Total real bets: 1, Total bets: 827)
+🔍 DEBUG: Total bets in gameState.bets: 827
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 826
+🔍 DEBUG: Real bets count: 1
+🔍 DEBUG: Real bets details:
+   [0] betId: 2107, username: Guest, amount: 1000.00, isFake: false
+🔍 TRUE INSTANT CHECK: random=0.5014858029939431, runningChance=1, random < runningChance = true
+💀 TRUE INSTANT CRASH selected - crashPoint set to exactly 1.00x
+🎯 AGGRESSIVE MODE: 1 real bets (₹01000.00) - Crash point: 1.00x
+🎯 Crash point calculated: 1x (AGGRESSIVE mode, 1 real bets)
+💀 TRUE INSTANT CRASH! Target 1x - forcing crash at 1.00x
+💥 Game mkpha7rdtlhfa crashed at 1x
+🚫 Crash at 1.00x - NO auto cash-outs processed (everyone loses)
+⏳ Waiting phase - accepting bets...
+🤖 Generated 805 fake bets for display
+🕐 Countdown starting - Game mkphag0l24m11
+🛫 Game mkphag0l24m11 starting... (crash point will be calculated in 500ms)
+Bet placed: {
+  betId: 2108,
+  odapuId: null,
+  odapu: 'Guest',
+  username: 'Guest',
+  amount: '1000.00',
+  avatar: '/images/avtar/av-1.png',
+  sectionNo: 0,
+  autoCashOutAt: null
+}
+🔍 DEBUG placeBet: gameStatus = flying , betId = 2108
+🕐 Bet timing: gameStatus=flying, startTime=1769087955029, now=1769087955434
+⚠️ Late bet accepted (game running for 405 ms, within bet window)
+✅ REAL BET placed: Guest - 1000.00 (Total real bets: 1, Total bets: 806)
+🔍 DEBUG: Total bets in gameState.bets: 806
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 805
+🔍 DEBUG: Real bets count: 1
+🔍 DEBUG: Real bets details:
+   [0] betId: 2108, username: Guest, amount: 1000.00, isFake: false
+🔍 TRUE INSTANT CHECK: random=0.2647697148387973, runningChance=1, random < runningChance = true
+💀 TRUE INSTANT CRASH selected - crashPoint set to exactly 1.00x
+🎯 AGGRESSIVE MODE: 1 real bets (₹01000.00) - Crash point: 1.00x
+🎯 Crash point calculated: 1x (AGGRESSIVE mode, 1 real bets)
+💀 TRUE INSTANT CRASH! Target 1x - forcing crash at 1.00x
+💥 Game mkphag0l24m11 crashed at 1x
+🚫 Crash at 1.00x - NO auto cash-outs processed (everyone loses)
+⏳ Waiting phase - accepting bets...
+🤖 Generated 545 fake bets for display
+🕐 Countdown starting - Game mkphaoa17ad4j
+🛫 Game mkphaoa17ad4j starting... (crash point will be calculated in 500ms)
+Bet placed: {
+  betId: 2109,
+  odapuId: null,
+  odapu: 'Guest',
+  username: 'Guest',
+  amount: '1000.00',
+  avatar: '/images/avtar/av-1.png',
+  sectionNo: 0,
+  autoCashOutAt: null
+}
+🔍 DEBUG placeBet: gameStatus = flying , betId = 2109
+🕐 Bet timing: gameStatus=flying, startTime=1769087965743, now=1769087966148
+⚠️ Late bet accepted (game running for 405 ms, within bet window)
+✅ REAL BET placed: Guest - 1000.00 (Total real bets: 1, Total bets: 546)
+🔍 DEBUG: Total bets in gameState.bets: 546
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 545
+🔍 DEBUG: Real bets count: 1
+🔍 DEBUG: Real bets details:
+   [0] betId: 2109, username: Guest, amount: 1000.00, isFake: false
+🔍 TRUE INSTANT CHECK: random=0.5102303170808378, runningChance=1, random < runningChance = true
+💀 TRUE INSTANT CRASH selected - crashPoint set to exactly 1.00x
+🎯 AGGRESSIVE MODE: 1 real bets (₹01000.00) - Crash point: 1.00x
+🎯 Crash point calculated: 1x (AGGRESSIVE mode, 1 real bets)
+💀 TRUE INSTANT CRASH! Target 1x - forcing crash at 1.00x
+💥 Game mkphaoa17ad4j crashed at 1x
+🚫 Crash at 1.00x - NO auto cash-outs processed (everyone loses)
+⏳ Waiting phase - accepting bets...
+🤖 Generated 795 fake bets for display
+🕐 Countdown starting - Game mkphawjs66ibp
+🛫 Game mkphawjs66ibp starting... (crash point will be calculated in 500ms)
+Bet placed: {
+  betId: 2110,
+  odapuId: null,
+  odapu: 'Guest',
+  username: 'Guest',
+  amount: '1000.00',
+  avatar: '/images/avtar/av-1.png',
+  sectionNo: 0,
+  autoCashOutAt: null
+}
+🔍 DEBUG placeBet: gameStatus = flying , betId = 2110
+🕐 Bet timing: gameStatus=flying, startTime=1769087976469, now=1769087976861
+⚠️ Late bet accepted (game running for 392 ms, within bet window)
+✅ REAL BET placed: Guest - 1000.00 (Total real bets: 1, Total bets: 796)
+🔍 DEBUG: Total bets in gameState.bets: 796
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 795
+🔍 DEBUG: Real bets count: 1
+🔍 DEBUG: Real bets details:
+   [0] betId: 2110, username: Guest, amount: 1000.00, isFake: false
+🔍 TRUE INSTANT CHECK: random=0.7589623892846271, runningChance=1, random < runningChance = true
+💀 TRUE INSTANT CRASH selected - crashPoint set to exactly 1.00x
+🎯 AGGRESSIVE MODE: 1 real bets (₹01000.00) - Crash point: 1.00x
+🎯 Crash point calculated: 1x (AGGRESSIVE mode, 1 real bets)
+💀 TRUE INSTANT CRASH! Target 1x - forcing crash at 1.00x
+💥 Game mkphawjs66ibp crashed at 1x
+🚫 Crash at 1.00x - NO auto cash-outs processed (everyone loses)
+⏳ Waiting phase - accepting bets...
+🤖 Generated 523 fake bets for display
+🕐 Countdown starting - Game mkphb4tvc4r38
+🛫 Game mkphb4tvc4r38 starting... (crash point will be calculated in 500ms)
+Bet placed: {
+  betId: 2111,
+  odapuId: null,
+  odapu: 'Guest',
+  username: 'Guest',
+  amount: '1000.00',
+  avatar: '/images/avtar/av-1.png',
+  sectionNo: 0,
+  autoCashOutAt: null
+}
+🔍 DEBUG placeBet: gameStatus = flying , betId = 2111
+🕐 Bet timing: gameStatus=flying, startTime=1769087987192, now=1769087987577
+⚠️ Late bet accepted (game running for 386 ms, within bet window)
+✅ REAL BET placed: Guest - 1000.00 (Total real bets: 1, Total bets: 524)
+🔍 DEBUG: Total bets in gameState.bets: 524
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 523
+🔍 DEBUG: Real bets count: 1
+🔍 DEBUG: Real bets details:
+   [0] betId: 2111, username: Guest, amount: 1000.00, isFake: false
+🔍 TRUE INSTANT CHECK: random=0.6713496417179179, runningChance=1, random < runningChance = true
+💀 TRUE INSTANT CRASH selected - crashPoint set to exactly 1.00x
+🎯 AGGRESSIVE MODE: 1 real bets (₹01000.00) - Crash point: 1.00x
+🎯 Crash point calculated: 1x (AGGRESSIVE mode, 1 real bets)
+💀 TRUE INSTANT CRASH! Target 1x - forcing crash at 1.00x
+💥 Game mkphb4tvc4r38 crashed at 1x
+🚫 Crash at 1.00x - NO auto cash-outs processed (everyone loses)
+⏳ Waiting phase - accepting bets...
+🤖 Generated 405 fake bets for display
+🕐 Countdown starting - Game mkphbd42gm5vm
+🛫 Game mkphbd42gm5vm starting... (crash point will be calculated in 500ms)
+Bet placed: {
+  betId: 2112,
+  odapuId: null,
+  odapu: 'Guest',
+  username: 'Guest',
+  amount: '1000.00',
+  avatar: '/images/avtar/av-1.png',
+  sectionNo: 0,
+  autoCashOutAt: null
+}
+🔍 DEBUG placeBet: gameStatus = flying , betId = 2112
+🕐 Bet timing: gameStatus=flying, startTime=1769087997931, now=1769087998302
+⚠️ Late bet accepted (game running for 372 ms, within bet window)
+✅ REAL BET placed: Guest - 1000.00 (Total real bets: 1, Total bets: 406)
+🔍 DEBUG: Total bets in gameState.bets: 406
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 405
+🔍 DEBUG: Real bets count: 1
+🔍 DEBUG: Real bets details:
+   [0] betId: 2112, username: Guest, amount: 1000.00, isFake: false
+🔍 TRUE INSTANT CHECK: random=0.3276838786406622, runningChance=1, random < runningChance = true
+💀 TRUE INSTANT CRASH selected - crashPoint set to exactly 1.00x
+🎯 AGGRESSIVE MODE: 1 real bets (₹01000.00) - Crash point: 1.00x
+🎯 Crash point calculated: 1x (AGGRESSIVE mode, 1 real bets)
+💀 TRUE INSTANT CRASH! Target 1x - forcing crash at 1.00x
+💥 Game mkphbd42gm5vm crashed at 1x
+🚫 Crash at 1.00x - NO auto cash-outs processed (everyone loses)
+⏳ Waiting phase - accepting bets...
+🤖 Generated 414 fake bets for display
+🕐 Countdown starting - Game mkphble56pxnq
+🛫 Game mkphble56pxnq starting... (crash point will be calculated in 500ms)
+Bet placed: {
+  betId: 2113,
+  odapuId: null,
+  odapu: 'Guest',
+  username: 'Guest',
+  amount: '1000.00',
+  avatar: '/images/avtar/av-1.png',
+  sectionNo: 0,
+  autoCashOutAt: null
+}
+🔍 DEBUG placeBet: gameStatus = flying , betId = 2113
+🕐 Bet timing: gameStatus=flying, startTime=1769088008660, now=1769088009038
+⚠️ Late bet accepted (game running for 378 ms, within bet window)
+✅ REAL BET placed: Guest - 1000.00 (Total real bets: 1, Total bets: 415)
+🔍 DEBUG: Total bets in gameState.bets: 415
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 414
+🔍 DEBUG: Real bets count: 1
+🔍 DEBUG: Real bets details:
+   [0] betId: 2113, username: Guest, amount: 1000.00, isFake: false
+🔍 TRUE INSTANT CHECK: random=0.9978075935384201, runningChance=1, random < runningChance = true
+💀 TRUE INSTANT CRASH selected - crashPoint set to exactly 1.00x
+🎯 AGGRESSIVE MODE: 1 real bets (₹01000.00) - Crash point: 1.00x
+🎯 Crash point calculated: 1x (AGGRESSIVE mode, 1 real bets)
+💀 TRUE INSTANT CRASH! Target 1x - forcing crash at 1.00x
+💥 Game mkphble56pxnq crashed at 1x
+🚫 Crash at 1.00x - NO auto cash-outs processed (everyone loses)
+⏳ Waiting phase - accepting bets...
+🤖 Generated 586 fake bets for display
+🕐 Countdown starting - Game mkphbto6jg1cb
+🛫 Game mkphbto6jg1cb starting... (crash point will be calculated in 500ms)
+Bet placed: {
+  betId: 2114,
+  odapuId: null,
+  odapu: 'Guest',
+  username: 'Guest',
+  amount: '1000.00',
+  avatar: '/images/avtar/av-1.png',
+  sectionNo: 0,
+  autoCashOutAt: null
+}
+🔍 DEBUG placeBet: gameStatus = flying , betId = 2114
+🕐 Bet timing: gameStatus=flying, startTime=1769088019381, now=1769088019800
+⚠️ Late bet accepted (game running for 419 ms, within bet window)
+✅ REAL BET placed: Guest - 1000.00 (Total real bets: 1, Total bets: 587)
+🔍 DEBUG: Total bets in gameState.bets: 587
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 586
+🔍 DEBUG: Real bets count: 1
+🔍 DEBUG: Real bets details:
+   [0] betId: 2114, username: Guest, amount: 1000.00, isFake: false
+🔍 TRUE INSTANT CHECK: random=0.5596337207578062, runningChance=1, random < runningChance = true
+💀 TRUE INSTANT CRASH selected - crashPoint set to exactly 1.00x
+🎯 AGGRESSIVE MODE: 1 real bets (₹01000.00) - Crash point: 1.00x
+🎯 Crash point calculated: 1x (AGGRESSIVE mode, 1 real bets)
+💀 TRUE INSTANT CRASH! Target 1x - forcing crash at 1.00x
+💥 Game mkphbto6jg1cb crashed at 1x
+🚫 Crash at 1.00x - NO auto cash-outs processed (everyone loses)
+⏳ Waiting phase - accepting bets...
+🤖 Generated 713 fake bets for display
+🕐 Countdown starting - Game mkphc1y69xyyo
+🛫 Game mkphc1y69xyyo starting... (crash point will be calculated in 500ms)
+Bet placed: {
+  betId: 2115,
+  odapuId: null,
+  odapu: 'Guest',
+  username: 'Guest',
+  amount: '1000.00',
+  avatar: '/images/avtar/av-1.png',
+  sectionNo: 0,
+  autoCashOutAt: null
+}
+🔍 DEBUG placeBet: gameStatus = flying , betId = 2115
+🕐 Bet timing: gameStatus=flying, startTime=1769088030127, now=1769088030515
+⚠️ Late bet accepted (game running for 388 ms, within bet window)
+✅ REAL BET placed: Guest - 1000.00 (Total real bets: 1, Total bets: 714)
+🔍 DEBUG: Total bets in gameState.bets: 714
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 713
+🔍 DEBUG: Real bets count: 1
+🔍 DEBUG: Real bets details:
+   [0] betId: 2115, username: Guest, amount: 1000.00, isFake: false
+🔍 TRUE INSTANT CHECK: random=0.21680935284072866, runningChance=1, random < runningChance = true
+💀 TRUE INSTANT CRASH selected - crashPoint set to exactly 1.00x
+🎯 AGGRESSIVE MODE: 1 real bets (₹01000.00) - Crash point: 1.00x
+🎯 Crash point calculated: 1x (AGGRESSIVE mode, 1 real bets)
+💀 TRUE INSTANT CRASH! Target 1x - forcing crash at 1.00x
+💥 Game mkphc1y69xyyo crashed at 1x
+🚫 Crash at 1.00x - NO auto cash-outs processed (everyone loses)
+⏳ Waiting phase - accepting bets...
+🤖 Generated 638 fake bets for display
+🕐 Countdown starting - Game mkphca8ggrdbs
+🛫 Game mkphca8ggrdbs starting... (crash point will be calculated in 500ms)
+Bet placed: {
+  betId: 2116,
+  odapuId: null,
+  odapu: 'Guest',
+  username: 'Guest',
+  amount: '1000.00',
+  avatar: '/images/avtar/av-1.png',
+  sectionNo: 0,
+  autoCashOutAt: null
+}
+🔍 DEBUG placeBet: gameStatus = flying , betId = 2116
+🕐 Bet timing: gameStatus=flying, startTime=1769088040854, now=1769088041257
+⚠️ Late bet accepted (game running for 403 ms, within bet window)
+✅ REAL BET placed: Guest - 1000.00 (Total real bets: 1, Total bets: 639)
+🔍 DEBUG: Total bets in gameState.bets: 639
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 638
+🔍 DEBUG: Real bets count: 1
+🔍 DEBUG: Real bets details:
+   [0] betId: 2116, username: Guest, amount: 1000.00, isFake: false
+🔍 TRUE INSTANT CHECK: random=0.11376054920720535, runningChance=1, random < runningChance = true
+💀 TRUE INSTANT CRASH selected - crashPoint set to exactly 1.00x
+🎯 AGGRESSIVE MODE: 1 real bets (₹01000.00) - Crash point: 1.00x
+🎯 Crash point calculated: 1x (AGGRESSIVE mode, 1 real bets)
+💀 TRUE INSTANT CRASH! Target 1x - forcing crash at 1.00x
+💥 Game mkphca8ggrdbs crashed at 1x
+🚫 Crash at 1.00x - NO auto cash-outs processed (everyone loses)
+⏳ Waiting phase - accepting bets...
+🤖 Generated 870 fake bets for display
+🕐 Countdown starting - Game mkphciibbrak0
+🛫 Game mkphciibbrak0 starting... (crash point will be calculated in 500ms)
+Bet placed: {
+  betId: 2117,
+  odapuId: null,
+  odapu: 'Guest',
+  username: 'Guest',
+  amount: '1000.00',
+  avatar: '/images/avtar/av-1.png',
+  sectionNo: 0,
+  autoCashOutAt: null
+}
+🔍 DEBUG placeBet: gameStatus = flying , betId = 2117
+🕐 Bet timing: gameStatus=flying, startTime=1769088051572, now=1769088052024
+⚠️ Late bet accepted (game running for 452 ms, within bet window)
+✅ REAL BET placed: Guest - 1000.00 (Total real bets: 1, Total bets: 871)
+🔍 DEBUG: Total bets in gameState.bets: 871
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 870
+🔍 DEBUG: Real bets count: 1
+🔍 DEBUG: Real bets details:
+   [0] betId: 2117, username: Guest, amount: 1000.00, isFake: false
+🔍 TRUE INSTANT CHECK: random=0.996264212097868, runningChance=1, random < runningChance = true
+💀 TRUE INSTANT CRASH selected - crashPoint set to exactly 1.00x
+🎯 AGGRESSIVE MODE: 1 real bets (₹01000.00) - Crash point: 1.00x
+🎯 Crash point calculated: 1x (AGGRESSIVE mode, 1 real bets)
+💀 TRUE INSTANT CRASH! Target 1x - forcing crash at 1.00x
+💥 Game mkphciibbrak0 crashed at 1x
+🚫 Crash at 1.00x - NO auto cash-outs processed (everyone loses)
+⏳ Waiting phase - accepting bets...
+🤖 Generated 592 fake bets for display
+🕐 Countdown starting - Game mkphcqsi8wexd
+🛫 Game mkphcqsi8wexd starting... (crash point will be calculated in 500ms)
+Bet placed: {
+  betId: 2118,
+  odapuId: null,
+  odapu: 'Guest',
+  username: 'Guest',
+  amount: '1000.00',
+  avatar: '/images/avtar/av-1.png',
+  sectionNo: 0,
+  autoCashOutAt: null
+}
+🔍 DEBUG placeBet: gameStatus = flying , betId = 2118
+🕐 Bet timing: gameStatus=flying, startTime=1769088062312, now=1769088062717
+⚠️ Late bet accepted (game running for 405 ms, within bet window)
+✅ REAL BET placed: Guest - 1000.00 (Total real bets: 1, Total bets: 593)
+🔍 DEBUG: Total bets in gameState.bets: 593
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 592
+🔍 DEBUG: Real bets count: 1
+🔍 DEBUG: Real bets details:
+   [0] betId: 2118, username: Guest, amount: 1000.00, isFake: false
+🔍 TRUE INSTANT CHECK: random=0.16811462981823078, runningChance=1, random < runningChance = true
+💀 TRUE INSTANT CRASH selected - crashPoint set to exactly 1.00x
+🎯 AGGRESSIVE MODE: 1 real bets (₹01000.00) - Crash point: 1.00x
+🎯 Crash point calculated: 1x (AGGRESSIVE mode, 1 real bets)
+💀 TRUE INSTANT CRASH! Target 1x - forcing crash at 1.00x
+💥 Game mkphcqsi8wexd crashed at 1x
+🚫 Crash at 1.00x - NO auto cash-outs processed (everyone loses)
+⏳ Waiting phase - accepting bets...
+🤖 Generated 871 fake bets for display
+🕐 Countdown starting - Game mkphcz20i4v62
+🛫 Game mkphcz20i4v62 starting... (crash point will be calculated in 500ms)
+Bet placed: {
+  betId: 2119,
+  odapuId: null,
+  odapu: 'Guest',
+  username: 'Guest',
+  amount: '1000.00',
+  avatar: '/images/avtar/av-1.png',
+  sectionNo: 0,
+  autoCashOutAt: null
+}
+🔍 DEBUG placeBet: gameStatus = flying , betId = 2119
+🕐 Bet timing: gameStatus=flying, startTime=1769088073009, now=1769088073498
+⚠️ Late bet accepted (game running for 490 ms, within bet window)
+✅ REAL BET placed: Guest - 1000.00 (Total real bets: 1, Total bets: 872)
+🔍 DEBUG: Total bets in gameState.bets: 872
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 871
+🔍 DEBUG: Real bets count: 1
+🔍 DEBUG: Real bets details:
+   [0] betId: 2119, username: Guest, amount: 1000.00, isFake: false
+🔍 TRUE INSTANT CHECK: random=0.38550465865780636, runningChance=1, random < runningChance = true
+💀 TRUE INSTANT CRASH selected - crashPoint set to exactly 1.00x
+🎯 AGGRESSIVE MODE: 1 real bets (₹01000.00) - Crash point: 1.00x
+🎯 Crash point calculated: 1x (AGGRESSIVE mode, 1 real bets)
+💀 TRUE INSTANT CRASH! Target 1x - forcing crash at 1.00x
+💥 Game mkphcz20i4v62 crashed at 1x
+🚫 Crash at 1.00x - NO auto cash-outs processed (everyone loses)
+⏳ Waiting phase - accepting bets...
+🤖 Generated 767 fake bets for display
+🕐 Countdown starting - Game mkphd7bggoi8i
+🛫 Game mkphd7bggoi8i starting... (crash point will be calculated in 500ms)
+Bet placed: {
+  betId: 2120,
+  odapuId: null,
+  odapu: 'Guest',
+  username: 'Guest',
+  amount: '1000.00',
+  avatar: '/images/avtar/av-1.png',
+  sectionNo: 0,
+  autoCashOutAt: null
+}
+🔍 DEBUG placeBet: gameStatus = flying , betId = 2120
+🕐 Bet timing: gameStatus=flying, startTime=1769088083724, now=1769088084150
+⚠️ Late bet accepted (game running for 429 ms, within bet window)
+✅ REAL BET placed: Guest - 1000.00 (Total real bets: 1, Total bets: 768)
+🔍 DEBUG: Total bets in gameState.bets: 768
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 767
+🔍 DEBUG: Real bets count: 1
+🔍 DEBUG: Real bets details:
+   [0] betId: 2120, username: Guest, amount: 1000.00, isFake: false
+🔍 TRUE INSTANT CHECK: random=0.20350264060622814, runningChance=1, random < runningChance = true
+💀 TRUE INSTANT CRASH selected - crashPoint set to exactly 1.00x
+🎯 AGGRESSIVE MODE: 1 real bets (₹01000.00) - Crash point: 1.00x
+🎯 Crash point calculated: 1x (AGGRESSIVE mode, 1 real bets)
+💀 TRUE INSTANT CRASH! Target 1x - forcing crash at 1.00x
+💥 Game mkphd7bggoi8i crashed at 1x
+🚫 Crash at 1.00x - NO auto cash-outs processed (everyone loses)
+⏳ Waiting phase - accepting bets...
+🤖 Generated 531 fake bets for display
+🕐 Countdown starting - Game mkphdfl2pz3ny
+🛫 Game mkphdfl2pz3ny starting... (crash point will be calculated in 500ms)
+🔍 DEBUG: Total bets in gameState.bets: 531
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 531
+🔍 DEBUG: Real bets count: 0
+🔍 DEBUG: Sample of first 3 bets:
+   [0] betId: fake_1769088086423_0, username: d***454, isFake: true, typeof isFake: boolean
+   [1] betId: fake_1769088086423_1, username: d***407, isFake: true, typeof isFake: boolean
+   [2] betId: fake_1769088086423_2, username: d***611, isFake: true, typeof isFake: boolean
+🔍 TRUE INSTANT CHECK: random=0.39999870372645385, runningChance=0, random < runningChance = false
+🎲 RELAXED MODE: No real bets - Crash point: 7.87x
+🎯 Crash point calculated: 7.87x (RELAXED mode, 0 real bets)
+Bet placed: {
+  betId: 2121,
+  odapuId: null,
+  odapu: 'Guest',
+  username: 'Guest',
+  amount: '1000.00',
+  avatar: '/images/avtar/av-1.png',
+  sectionNo: 0,
+  autoCashOutAt: null
+}
+🔍 DEBUG placeBet: gameStatus = flying , betId = 2121
+🕐 Bet timing: gameStatus=flying, startTime=1769088094444, now=1769088094979
+⚠️ Late bet accepted (game running for 535 ms, within bet window)
+✅ REAL BET placed: Guest - 1000.00 (Total real bets: 1, Total bets: 532)
+⚡ IMMEDIATE CRASH CHECK: Real bet placed during RELAXED mode flying phase
+🔍 DEBUG: Total bets in gameState.bets: 532
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 531
+🔍 DEBUG: Real bets count: 1
+🔍 DEBUG: Real bets details:
+   [0] betId: 2121, username: Guest, amount: 1000.00, isFake: false
+🔍 TRUE INSTANT CHECK: random=0.4245030868133062, runningChance=1, random < runningChance = true
+💀 TRUE INSTANT CRASH selected - crashPoint set to exactly 1.00x
+🎯 AGGRESSIVE MODE: 1 real bets (₹01000.00) - Crash point: 1.00x
+⚠️ IMMEDIATE RECALC! Crash point changed: 7.87x → 1x (AGGRESSIVE mode)
+💀 TRUE INSTANT CRASH! Forcing crash at exactly 1.00x
+💥 Game mkphdfl2pz3ny crashed at 1x
+🚫 Crash at 1.00x - NO auto cash-outs processed (everyone loses)
+⏳ Waiting phase - accepting bets...
+🤖 Generated 596 fake bets for display
+🕐 Countdown starting - Game mkphdnv6bldvs
+🛫 Game mkphdnv6bldvs starting... (crash point will be calculated in 500ms)
+Bet placed: {
+  betId: 2122,
+  odapuId: null,
+  odapu: 'Guest',
+  username: 'Guest',
+  amount: '1000.00',
+  avatar: '/images/avtar/av-1.png',
+  sectionNo: 0,
+  autoCashOutAt: null
+}
+🔍 DEBUG placeBet: gameStatus = flying , betId = 2122
+🕐 Bet timing: gameStatus=flying, startTime=1769088105173, now=1769088105555
+⚠️ Late bet accepted (game running for 382 ms, within bet window)
+✅ REAL BET placed: Guest - 1000.00 (Total real bets: 1, Total bets: 597)
+🔍 DEBUG: Total bets in gameState.bets: 597
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 596
+🔍 DEBUG: Real bets count: 1
+🔍 DEBUG: Real bets details:
+   [0] betId: 2122, username: Guest, amount: 1000.00, isFake: false
+🔍 TRUE INSTANT CHECK: random=0.8407229189038643, runningChance=1, random < runningChance = true
+💀 TRUE INSTANT CRASH selected - crashPoint set to exactly 1.00x
+🎯 AGGRESSIVE MODE: 1 real bets (₹01000.00) - Crash point: 1.00x
+🎯 Crash point calculated: 1x (AGGRESSIVE mode, 1 real bets)
+💀 TRUE INSTANT CRASH! Target 1x - forcing crash at 1.00x
+💥 Game mkphdnv6bldvs crashed at 1x
+🚫 Crash at 1.00x - NO auto cash-outs processed (everyone loses)
+⏳ Waiting phase - accepting bets...
+🤖 Generated 771 fake bets for display
+🕐 Countdown starting - Game mkphdw5hlg38f
+🛫 Game mkphdw5hlg38f starting... (crash point will be calculated in 500ms)
+Bet placed: {
+  betId: 2123,
+  odapuId: null,
+  odapu: 'Guest',
+  username: 'Guest',
+  amount: '1000.00',
+  avatar: '/images/avtar/av-1.png',
+  sectionNo: 0,
+  autoCashOutAt: null
+}
+🔍 DEBUG placeBet: gameStatus = flying , betId = 2123
+🕐 Bet timing: gameStatus=flying, startTime=1769088115910, now=1769088116307
+⚠️ Late bet accepted (game running for 397 ms, within bet window)
+✅ REAL BET placed: Guest - 1000.00 (Total real bets: 1, Total bets: 772)
+🔍 DEBUG: Total bets in gameState.bets: 772
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 771
+🔍 DEBUG: Real bets count: 1
+🔍 DEBUG: Real bets details:
+   [0] betId: 2123, username: Guest, amount: 1000.00, isFake: false
+🔍 TRUE INSTANT CHECK: random=0.31509030372795044, runningChance=1, random < runningChance = true
+💀 TRUE INSTANT CRASH selected - crashPoint set to exactly 1.00x
+🎯 AGGRESSIVE MODE: 1 real bets (₹01000.00) - Crash point: 1.00x
+🎯 Crash point calculated: 1x (AGGRESSIVE mode, 1 real bets)
+💀 TRUE INSTANT CRASH! Target 1x - forcing crash at 1.00x
+💥 Game mkphdw5hlg38f crashed at 1x
+🚫 Crash at 1.00x - NO auto cash-outs processed (everyone loses)
+⏳ Waiting phase - accepting bets...
+🤖 Generated 470 fake bets for display
+🕐 Countdown starting - Game mkphe4f6h1n0z
+🛫 Game mkphe4f6h1n0z starting... (crash point will be calculated in 500ms)
+Bet placed: {
+  betId: 2124,
+  odapuId: null,
+  odapu: 'Guest',
+  username: 'Guest',
+  amount: '1000.00',
+  avatar: '/images/avtar/av-1.png',
+  sectionNo: 0,
+  autoCashOutAt: null
+}
+🔍 DEBUG placeBet: gameStatus = flying , betId = 2124
+🕐 Bet timing: gameStatus=flying, startTime=1769088126632, now=1769088127047
+⚠️ Late bet accepted (game running for 415 ms, within bet window)
+✅ REAL BET placed: Guest - 1000.00 (Total real bets: 1, Total bets: 471)
+🔍 DEBUG: Total bets in gameState.bets: 471
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 470
+🔍 DEBUG: Real bets count: 1
+🔍 DEBUG: Real bets details:
+   [0] betId: 2124, username: Guest, amount: 1000.00, isFake: false
+🔍 TRUE INSTANT CHECK: random=0.7976852243633386, runningChance=1, random < runningChance = true
+💀 TRUE INSTANT CRASH selected - crashPoint set to exactly 1.00x
+🎯 AGGRESSIVE MODE: 1 real bets (₹01000.00) - Crash point: 1.00x
+🎯 Crash point calculated: 1x (AGGRESSIVE mode, 1 real bets)
+💀 TRUE INSTANT CRASH! Target 1x - forcing crash at 1.00x
+💥 Game mkphe4f6h1n0z crashed at 1x
+🚫 Crash at 1.00x - NO auto cash-outs processed (everyone loses)
+⏳ Waiting phase - accepting bets...
+🤖 Generated 570 fake bets for display
+🕐 Countdown starting - Game mkphecokqbzdl
+🛫 Game mkphecokqbzdl starting... (crash point will be calculated in 500ms)
+Bet placed: {
+  betId: 2125,
+  odapuId: null,
+  odapu: 'Guest',
+  username: 'Guest',
+  amount: '1000.00',
+  avatar: '/images/avtar/av-1.png',
+  sectionNo: 0,
+  autoCashOutAt: null
+}
+🔍 DEBUG placeBet: gameStatus = flying , betId = 2125
+🕐 Bet timing: gameStatus=flying, startTime=1769088137327, now=1769088137701
+⚠️ Late bet accepted (game running for 375 ms, within bet window)
+✅ REAL BET placed: Guest - 1000.00 (Total real bets: 1, Total bets: 571)
+🔍 DEBUG: Total bets in gameState.bets: 571
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 570
+🔍 DEBUG: Real bets count: 1
+🔍 DEBUG: Real bets details:
+   [0] betId: 2125, username: Guest, amount: 1000.00, isFake: false
+🔍 TRUE INSTANT CHECK: random=0.8432519981997866, runningChance=1, random < runningChance = true
+💀 TRUE INSTANT CRASH selected - crashPoint set to exactly 1.00x
+🎯 AGGRESSIVE MODE: 1 real bets (₹01000.00) - Crash point: 1.00x
+🎯 Crash point calculated: 1x (AGGRESSIVE mode, 1 real bets)
+💀 TRUE INSTANT CRASH! Target 1x - forcing crash at 1.00x
+💥 Game mkphecokqbzdl crashed at 1x
+🚫 Crash at 1.00x - NO auto cash-outs processed (everyone loses)
+⏳ Waiting phase - accepting bets...
+🤖 Generated 653 fake bets for display
+🕐 Countdown starting - Game mkphekxurmza5
+🛫 Game mkphekxurmza5 starting... (crash point will be calculated in 500ms)
+Bet placed: {
+  betId: 2126,
+  odapuId: null,
+  odapu: 'Guest',
+  username: 'Guest',
+  amount: '1000.00',
+  avatar: '/images/avtar/av-1.png',
+  sectionNo: 0,
+  autoCashOutAt: null
+}
+🔍 DEBUG placeBet: gameStatus = flying , betId = 2126
+🕐 Bet timing: gameStatus=flying, startTime=1769088148036, now=1769088148442
+⚠️ Late bet accepted (game running for 406 ms, within bet window)
+✅ REAL BET placed: Guest - 1000.00 (Total real bets: 1, Total bets: 654)
+🔍 DEBUG: Total bets in gameState.bets: 654
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 653
+🔍 DEBUG: Real bets count: 1
+🔍 DEBUG: Real bets details:
+   [0] betId: 2126, username: Guest, amount: 1000.00, isFake: false
+🔍 TRUE INSTANT CHECK: random=0.8416948586254869, runningChance=1, random < runningChance = true
+💀 TRUE INSTANT CRASH selected - crashPoint set to exactly 1.00x
+🎯 AGGRESSIVE MODE: 1 real bets (₹01000.00) - Crash point: 1.00x
+🎯 Crash point calculated: 1x (AGGRESSIVE mode, 1 real bets)
+💀 TRUE INSTANT CRASH! Target 1x - forcing crash at 1.00x
+💥 Game mkphekxurmza5 crashed at 1x
+🚫 Crash at 1.00x - NO auto cash-outs processed (everyone loses)
+⏳ Waiting phase - accepting bets...
+🤖 Generated 434 fake bets for display
+🕐 Countdown starting - Game mkphet7izgqvn
+🛫 Game mkphet7izgqvn starting... (crash point will be calculated in 500ms)
+Bet placed: {
+  betId: 2127,
+  odapuId: null,
+  odapu: 'Guest',
+  username: 'Guest',
+  amount: '1000.00',
+  avatar: '/images/avtar/av-1.png',
+  sectionNo: 0,
+  autoCashOutAt: null
+}
+🔍 DEBUG placeBet: gameStatus = flying , betId = 2127
+🕐 Bet timing: gameStatus=flying, startTime=1769088158767, now=1769088159135
+⚠️ Late bet accepted (game running for 368 ms, within bet window)
+✅ REAL BET placed: Guest - 1000.00 (Total real bets: 1, Total bets: 435)
+🔍 DEBUG: Total bets in gameState.bets: 435
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 434
+🔍 DEBUG: Real bets count: 1
+🔍 DEBUG: Real bets details:
+   [0] betId: 2127, username: Guest, amount: 1000.00, isFake: false
+🔍 TRUE INSTANT CHECK: random=0.937605470035408, runningChance=1, random < runningChance = true
+💀 TRUE INSTANT CRASH selected - crashPoint set to exactly 1.00x
+🎯 AGGRESSIVE MODE: 1 real bets (₹01000.00) - Crash point: 1.00x
+🎯 Crash point calculated: 1x (AGGRESSIVE mode, 1 real bets)
+💀 TRUE INSTANT CRASH! Target 1x - forcing crash at 1.00x
+💥 Game mkphet7izgqvn crashed at 1x
+🚫 Crash at 1.00x - NO auto cash-outs processed (everyone loses)
+⏳ Waiting phase - accepting bets...
+🤖 Generated 448 fake bets for display
+🕐 Countdown starting - Game mkphf1hlcmjlj
+🛫 Game mkphf1hlcmjlj starting... (crash point will be calculated in 500ms)
+Bet placed: {
+  betId: 2128,
+  odapuId: null,
+  odapu: 'Guest',
+  username: 'Guest',
+  amount: '1000.00',
+  avatar: '/images/avtar/av-1.png',
+  sectionNo: 0,
+  autoCashOutAt: null
+}
+🔍 DEBUG placeBet: gameStatus = flying , betId = 2128
+🕐 Bet timing: gameStatus=flying, startTime=1769088169490, now=1769088169886
+⚠️ Late bet accepted (game running for 396 ms, within bet window)
+✅ REAL BET placed: Guest - 1000.00 (Total real bets: 1, Total bets: 449)
+🔍 DEBUG: Total bets in gameState.bets: 449
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 448
+🔍 DEBUG: Real bets count: 1
+🔍 DEBUG: Real bets details:
+   [0] betId: 2128, username: Guest, amount: 1000.00, isFake: false
+🔍 TRUE INSTANT CHECK: random=0.040055052833501525, runningChance=1, random < runningChance = true
+💀 TRUE INSTANT CRASH selected - crashPoint set to exactly 1.00x
+🎯 AGGRESSIVE MODE: 1 real bets (₹01000.00) - Crash point: 1.00x
+🎯 Crash point calculated: 1x (AGGRESSIVE mode, 1 real bets)
+💀 TRUE INSTANT CRASH! Target 1x - forcing crash at 1.00x
+💥 Game mkphf1hlcmjlj crashed at 1x
+🚫 Crash at 1.00x - NO auto cash-outs processed (everyone loses)
+⏳ Waiting phase - accepting bets...
+🤖 Generated 577 fake bets for display
+🕐 Countdown starting - Game mkphf9rmn57r8
+🛫 Game mkphf9rmn57r8 starting... (crash point will be calculated in 500ms)
+Bet placed: {
+  betId: 2129,
+  odapuId: null,
+  odapu: 'Guest',
+  username: 'Guest',
+  amount: '1000.00',
+  avatar: '/images/avtar/av-1.png',
+  sectionNo: 0,
+  autoCashOutAt: null
+}
+🔍 DEBUG placeBet: gameStatus = flying , betId = 2129
+🕐 Bet timing: gameStatus=flying, startTime=1769088180220, now=1769088180610
+⚠️ Late bet accepted (game running for 390 ms, within bet window)
+✅ REAL BET placed: Guest - 1000.00 (Total real bets: 1, Total bets: 578)
+🔍 DEBUG: Total bets in gameState.bets: 578
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 577
+🔍 DEBUG: Real bets count: 1
+🔍 DEBUG: Real bets details:
+   [0] betId: 2129, username: Guest, amount: 1000.00, isFake: false
+🔍 TRUE INSTANT CHECK: random=0.9874105749145448, runningChance=1, random < runningChance = true
+💀 TRUE INSTANT CRASH selected - crashPoint set to exactly 1.00x
+🎯 AGGRESSIVE MODE: 1 real bets (₹01000.00) - Crash point: 1.00x
+🎯 Crash point calculated: 1x (AGGRESSIVE mode, 1 real bets)
+💀 TRUE INSTANT CRASH! Target 1x - forcing crash at 1.00x
+💥 Game mkphf9rmn57r8 crashed at 1x
+🚫 Crash at 1.00x - NO auto cash-outs processed (everyone loses)
+⏳ Waiting phase - accepting bets...
+🤖 Generated 714 fake bets for display
+🕐 Countdown starting - Game mkphfi14fdjre
+🛫 Game mkphfi14fdjre starting... (crash point will be calculated in 500ms)
+Bet placed: {
+  betId: 2130,
+  odapuId: null,
+  odapu: 'Guest',
+  username: 'Guest',
+  amount: '1000.00',
+  avatar: '/images/avtar/av-1.png',
+  sectionNo: 0,
+  autoCashOutAt: null
+}
+🔍 DEBUG placeBet: gameStatus = flying , betId = 2130
+🕐 Bet timing: gameStatus=flying, startTime=1769088190930, now=1769088191317
+⚠️ Late bet accepted (game running for 388 ms, within bet window)
+✅ REAL BET placed: Guest - 1000.00 (Total real bets: 1, Total bets: 715)
+🔍 DEBUG: Total bets in gameState.bets: 715
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 714
+🔍 DEBUG: Real bets count: 1
+🔍 DEBUG: Real bets details:
+   [0] betId: 2130, username: Guest, amount: 1000.00, isFake: false
+🔍 TRUE INSTANT CHECK: random=0.9220050023960416, runningChance=1, random < runningChance = true
+💀 TRUE INSTANT CRASH selected - crashPoint set to exactly 1.00x
+🎯 AGGRESSIVE MODE: 1 real bets (₹01000.00) - Crash point: 1.00x
+🎯 Crash point calculated: 1x (AGGRESSIVE mode, 1 real bets)
+💀 TRUE INSTANT CRASH! Target 1x - forcing crash at 1.00x
+💥 Game mkphfi14fdjre crashed at 1x
+🚫 Crash at 1.00x - NO auto cash-outs processed (everyone loses)
+⏳ Waiting phase - accepting bets...
+🤖 Generated 686 fake bets for display
+🕐 Countdown starting - Game mkphfqb5fs862
+🛫 Game mkphfqb5fs862 starting... (crash point will be calculated in 500ms)
+Bet placed: {
+  betId: 2131,
+  odapuId: null,
+  odapu: 'Guest',
+  username: 'Guest',
+  amount: '1000.00',
+  avatar: '/images/avtar/av-1.png',
+  sectionNo: 0,
+  autoCashOutAt: null
+}
+🔍 DEBUG placeBet: gameStatus = flying , betId = 2131
+🕐 Bet timing: gameStatus=flying, startTime=1769088201657, now=1769088202130
+⚠️ Late bet accepted (game running for 473 ms, within bet window)
+✅ REAL BET placed: Guest - 1000.00 (Total real bets: 1, Total bets: 687)
+🔍 DEBUG: Total bets in gameState.bets: 687
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 686
+🔍 DEBUG: Real bets count: 1
+🔍 DEBUG: Real bets details:
+   [0] betId: 2131, username: Guest, amount: 1000.00, isFake: false
+🔍 TRUE INSTANT CHECK: random=0.31242075626108345, runningChance=1, random < runningChance = true
+💀 TRUE INSTANT CRASH selected - crashPoint set to exactly 1.00x
+🎯 AGGRESSIVE MODE: 1 real bets (₹01000.00) - Crash point: 1.00x
+🎯 Crash point calculated: 1x (AGGRESSIVE mode, 1 real bets)
+💀 TRUE INSTANT CRASH! Target 1x - forcing crash at 1.00x
+💥 Game mkphfqb5fs862 crashed at 1x
+🚫 Crash at 1.00x - NO auto cash-outs processed (everyone loses)
+⏳ Waiting phase - accepting bets...
+🤖 Generated 856 fake bets for display
+🕐 Countdown starting - Game mkphfykdj7bns
+🛫 Game mkphfykdj7bns starting... (crash point will be calculated in 500ms)
+Bet placed: {
+  betId: 2132,
+  odapuId: null,
+  odapu: 'Guest',
+  username: 'Guest',
+  amount: '1000.00',
+  avatar: '/images/avtar/av-1.png',
+  sectionNo: 0,
+  autoCashOutAt: null
+}
+🔍 DEBUG placeBet: gameStatus = flying , betId = 2132
+🕐 Bet timing: gameStatus=flying, startTime=1769088212349, now=1769088212794
+⚠️ Late bet accepted (game running for 445 ms, within bet window)
+✅ REAL BET placed: Guest - 1000.00 (Total real bets: 1, Total bets: 857)
+🔍 DEBUG: Total bets in gameState.bets: 857
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 856
+🔍 DEBUG: Real bets count: 1
+🔍 DEBUG: Real bets details:
+   [0] betId: 2132, username: Guest, amount: 1000.00, isFake: false
+🔍 TRUE INSTANT CHECK: random=0.8604242319456745, runningChance=1, random < runningChance = true
+💀 TRUE INSTANT CRASH selected - crashPoint set to exactly 1.00x
+🎯 AGGRESSIVE MODE: 1 real bets (₹01000.00) - Crash point: 1.00x
+🎯 Crash point calculated: 1x (AGGRESSIVE mode, 1 real bets)
+💀 TRUE INSTANT CRASH! Target 1x - forcing crash at 1.00x
+💥 Game mkphfykdj7bns crashed at 1x
+🚫 Crash at 1.00x - NO auto cash-outs processed (everyone loses)
+⏳ Waiting phase - accepting bets...
+🤖 Generated 459 fake bets for display
+🕐 Countdown starting - Game mkphg6thuxzfk
+🛫 Game mkphg6thuxzfk starting... (crash point will be calculated in 500ms)
+Bet placed: {
+  betId: 2133,
+  odapuId: null,
+  odapu: 'Guest',
+  username: 'Guest',
+  amount: '1000.00',
+  avatar: '/images/avtar/av-1.png',
+  sectionNo: 0,
+  autoCashOutAt: null
+}
+🔍 DEBUG placeBet: gameStatus = flying , betId = 2133
+🕐 Bet timing: gameStatus=flying, startTime=1769088223057, now=1769088223468
+⚠️ Late bet accepted (game running for 411 ms, within bet window)
+✅ REAL BET placed: Guest - 1000.00 (Total real bets: 1, Total bets: 460)
+🔍 DEBUG: Total bets in gameState.bets: 460
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 459
+🔍 DEBUG: Real bets count: 1
+🔍 DEBUG: Real bets details:
+   [0] betId: 2133, username: Guest, amount: 1000.00, isFake: false
+🔍 TRUE INSTANT CHECK: random=0.9837991831625563, runningChance=1, random < runningChance = true
+💀 TRUE INSTANT CRASH selected - crashPoint set to exactly 1.00x
+🎯 AGGRESSIVE MODE: 1 real bets (₹01000.00) - Crash point: 1.00x
+🎯 Crash point calculated: 1x (AGGRESSIVE mode, 1 real bets)
+💀 TRUE INSTANT CRASH! Target 1x - forcing crash at 1.00x
+💥 Game mkphg6thuxzfk crashed at 1x
+🚫 Crash at 1.00x - NO auto cash-outs processed (everyone loses)
+⏳ Waiting phase - accepting bets...
+🤖 Generated 664 fake bets for display
+🕐 Countdown starting - Game mkphgf3fwl2tb
+🛫 Game mkphgf3fwl2tb starting... (crash point will be calculated in 500ms)
+Bet placed: {
+  betId: 2134,
+  odapuId: null,
+  odapu: 'Guest',
+  username: 'Guest',
+  amount: '1000.00',
+  avatar: '/images/avtar/av-1.png',
+  sectionNo: 0,
+  autoCashOutAt: null
+}
+🔍 DEBUG placeBet: gameStatus = flying , betId = 2134
+🕐 Bet timing: gameStatus=flying, startTime=1769088233786, now=1769088234196
+⚠️ Late bet accepted (game running for 410 ms, within bet window)
+✅ REAL BET placed: Guest - 1000.00 (Total real bets: 1, Total bets: 665)
+🔍 DEBUG: Total bets in gameState.bets: 665
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 664
+🔍 DEBUG: Real bets count: 1
+🔍 DEBUG: Real bets details:
+   [0] betId: 2134, username: Guest, amount: 1000.00, isFake: false
+🔍 TRUE INSTANT CHECK: random=0.8708308082442806, runningChance=1, random < runningChance = true
+💀 TRUE INSTANT CRASH selected - crashPoint set to exactly 1.00x
+🎯 AGGRESSIVE MODE: 1 real bets (₹01000.00) - Crash point: 1.00x
+🎯 Crash point calculated: 1x (AGGRESSIVE mode, 1 real bets)
+💀 TRUE INSTANT CRASH! Target 1x - forcing crash at 1.00x
+💥 Game mkphgf3fwl2tb crashed at 1x
+🚫 Crash at 1.00x - NO auto cash-outs processed (everyone loses)
+⏳ Waiting phase - accepting bets...
+🤖 Generated 734 fake bets for display
+🕐 Countdown starting - Game mkphgnd5eraxe
+🛫 Game mkphgnd5eraxe starting... (crash point will be calculated in 500ms)
+Bet placed: {
+  betId: 2135,
+  odapuId: null,
+  odapu: 'Guest',
+  username: 'Guest',
+  amount: '1000.00',
+  avatar: '/images/avtar/av-1.png',
+  sectionNo: 0,
+  autoCashOutAt: null
+}
+🔍 DEBUG placeBet: gameStatus = flying , betId = 2135
+🕐 Bet timing: gameStatus=flying, startTime=1769088244495, now=1769088244909
+⚠️ Late bet accepted (game running for 414 ms, within bet window)
+✅ REAL BET placed: Guest - 1000.00 (Total real bets: 1, Total bets: 735)
+🔍 DEBUG: Total bets in gameState.bets: 735
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 734
+🔍 DEBUG: Real bets count: 1
+🔍 DEBUG: Real bets details:
+   [0] betId: 2135, username: Guest, amount: 1000.00, isFake: false
+🔍 TRUE INSTANT CHECK: random=0.6217465668735689, runningChance=1, random < runningChance = true
+💀 TRUE INSTANT CRASH selected - crashPoint set to exactly 1.00x
+🎯 AGGRESSIVE MODE: 1 real bets (₹01000.00) - Crash point: 1.00x
+🎯 Crash point calculated: 1x (AGGRESSIVE mode, 1 real bets)
+💀 TRUE INSTANT CRASH! Target 1x - forcing crash at 1.00x
+💥 Game mkphgnd5eraxe crashed at 1x
+🚫 Crash at 1.00x - NO auto cash-outs processed (everyone loses)
+⏳ Waiting phase - accepting bets...
+🤖 Generated 498 fake bets for display
+🕐 Countdown starting - Game mkphgvme4p17x
+🛫 Game mkphgvme4p17x starting... (crash point will be calculated in 500ms)
+Bet placed: {
+  betId: 2136,
+  odapuId: null,
+  odapu: 'Guest',
+  username: 'Guest',
+  amount: '1000.00',
+  avatar: '/images/avtar/av-1.png',
+  sectionNo: 0,
+  autoCashOutAt: null
+}
+🔍 DEBUG placeBet: gameStatus = flying , betId = 2136
+🕐 Bet timing: gameStatus=flying, startTime=1769088255197, now=1769088255588
+⚠️ Late bet accepted (game running for 391 ms, within bet window)
+✅ REAL BET placed: Guest - 1000.00 (Total real bets: 1, Total bets: 499)
+🔍 DEBUG: Total bets in gameState.bets: 499
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 498
+🔍 DEBUG: Real bets count: 1
+🔍 DEBUG: Real bets details:
+   [0] betId: 2136, username: Guest, amount: 1000.00, isFake: false
+🔍 TRUE INSTANT CHECK: random=0.6534557903122633, runningChance=1, random < runningChance = true
+💀 TRUE INSTANT CRASH selected - crashPoint set to exactly 1.00x
+🎯 AGGRESSIVE MODE: 1 real bets (₹01000.00) - Crash point: 1.00x
+🎯 Crash point calculated: 1x (AGGRESSIVE mode, 1 real bets)
+💀 TRUE INSTANT CRASH! Target 1x - forcing crash at 1.00x
+💥 Game mkphgvme4p17x crashed at 1x
+🚫 Crash at 1.00x - NO auto cash-outs processed (everyone loses)
+⏳ Waiting phase - accepting bets...
+🤖 Generated 644 fake bets for display
+🕐 Countdown starting - Game mkphh3vsre574
+🛫 Game mkphh3vsre574 starting... (crash point will be calculated in 500ms)
+Bet placed: {
+  betId: 2137,
+  odapuId: null,
+  odapu: 'Guest',
+  username: 'Guest',
+  amount: '1000.00',
+  avatar: '/images/avtar/av-1.png',
+  sectionNo: 0,
+  autoCashOutAt: null
+}
+🔍 DEBUG placeBet: gameStatus = flying , betId = 2137
+🕐 Bet timing: gameStatus=flying, startTime=1769088265908, now=1769088266337
+⚠️ Late bet accepted (game running for 430 ms, within bet window)
+✅ REAL BET placed: Guest - 1000.00 (Total real bets: 1, Total bets: 645)
+🔍 DEBUG: Total bets in gameState.bets: 645
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 644
+🔍 DEBUG: Real bets count: 1
+🔍 DEBUG: Real bets details:
+   [0] betId: 2137, username: Guest, amount: 1000.00, isFake: false
+🔍 TRUE INSTANT CHECK: random=0.6086343272480796, runningChance=1, random < runningChance = true
+💀 TRUE INSTANT CRASH selected - crashPoint set to exactly 1.00x
+🎯 AGGRESSIVE MODE: 1 real bets (₹01000.00) - Crash point: 1.00x
+🎯 Crash point calculated: 1x (AGGRESSIVE mode, 1 real bets)
+💀 TRUE INSTANT CRASH! Target 1x - forcing crash at 1.00x
+💥 Game mkphh3vsre574 crashed at 1x
+🚫 Crash at 1.00x - NO auto cash-outs processed (everyone loses)
+⏳ Waiting phase - accepting bets...
+🤖 Generated 882 fake bets for display
+🕐 Countdown starting - Game mkphhc5fgfgxa
+🛫 Game mkphhc5fgfgxa starting... (crash point will be calculated in 500ms)
+Bet placed: {
+  betId: 2138,
+  odapuId: null,
+  odapu: 'Guest',
+  username: 'Guest',
+  amount: '1000.00',
+  avatar: '/images/avtar/av-1.png',
+  sectionNo: 0,
+  autoCashOutAt: null
+}
+🔍 DEBUG placeBet: gameStatus = flying , betId = 2138
+🕐 Bet timing: gameStatus=flying, startTime=1769088276615, now=1769088277023
+⚠️ Late bet accepted (game running for 408 ms, within bet window)
+✅ REAL BET placed: Guest - 1000.00 (Total real bets: 1, Total bets: 883)
+🔍 DEBUG: Total bets in gameState.bets: 883
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 882
+🔍 DEBUG: Real bets count: 1
+🔍 DEBUG: Real bets details:
+   [0] betId: 2138, username: Guest, amount: 1000.00, isFake: false
+🔍 TRUE INSTANT CHECK: random=0.3022147771958088, runningChance=1, random < runningChance = true
+💀 TRUE INSTANT CRASH selected - crashPoint set to exactly 1.00x
+🎯 AGGRESSIVE MODE: 1 real bets (₹01000.00) - Crash point: 1.00x
+🎯 Crash point calculated: 1x (AGGRESSIVE mode, 1 real bets)
+💀 TRUE INSTANT CRASH! Target 1x - forcing crash at 1.00x
+💥 Game mkphhc5fgfgxa crashed at 1x
+🚫 Crash at 1.00x - NO auto cash-outs processed (everyone loses)
+⏳ Waiting phase - accepting bets...
+🤖 Generated 468 fake bets for display
+🕐 Countdown starting - Game mkphhkff9ihh6
+🛫 Game mkphhkff9ihh6 starting... (crash point will be calculated in 500ms)
+🔍 DEBUG: Total bets in gameState.bets: 468
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 468
+🔍 DEBUG: Real bets count: 0
+🔍 DEBUG: Sample of first 3 bets:
+   [0] betId: fake_1769088279315_0, username: d***455, isFake: true, typeof isFake: boolean
+   [1] betId: fake_1769088279315_1, username: d***921, isFake: true, typeof isFake: boolean
+   [2] betId: fake_1769088279315_2, username: d***858, isFake: true, typeof isFake: boolean
+🔍 TRUE INSTANT CHECK: random=0.10426801719898338, runningChance=0, random < runningChance = false
+🎲 RELAXED MODE: No real bets - Crash point: 2.79x
+🎯 Crash point calculated: 2.79x (RELAXED mode, 0 real bets)
+💥 Game mkphhkff9ihh6 crashed at 2.79x
+⏳ Waiting phase - accepting bets...
+🤖 Generated 581 fake bets for display
+🕐 Countdown starting - Game mkphi6iawgp4k
+🛫 Game mkphi6iawgp4k starting... (crash point will be calculated in 500ms)
+🔍 DEBUG: Total bets in gameState.bets: 581
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 581
+🔍 DEBUG: Real bets count: 0
+🔍 DEBUG: Sample of first 3 bets:
+   [0] betId: fake_1769088307943_0, username: d***802, isFake: true, typeof isFake: boolean
+   [1] betId: fake_1769088307943_1, username: d***490, isFake: true, typeof isFake: boolean
+   [2] betId: fake_1769088307943_2, username: d***937, isFake: true, typeof isFake: boolean
+🔍 TRUE INSTANT CHECK: random=0.8382761197514936, runningChance=0, random < runningChance = false
+🎲 RELAXED MODE: No real bets - Crash point: 8.53x
+🎯 Crash point calculated: 8.53x (RELAXED mode, 0 real bets)
+💥 Game mkphi6iawgp4k crashed at 8.53x
+⏳ Waiting phase - accepting bets...
+🤖 Generated 541 fake bets for display
+🕐 Countdown starting - Game mkphk3jyncxbc
+🛫 Game mkphk3jyncxbc starting... (crash point will be calculated in 500ms)
+🔍 DEBUG: Total bets in gameState.bets: 541
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 541
+🔍 DEBUG: Real bets count: 0
+🔍 DEBUG: Sample of first 3 bets:
+   [0] betId: fake_1769088397420_0, username: d***563, isFake: true, typeof isFake: boolean
+   [1] betId: fake_1769088397420_1, username: d***916, isFake: true, typeof isFake: boolean
+   [2] betId: fake_1769088397420_2, username: d***662, isFake: true, typeof isFake: boolean
+🔍 TRUE INSTANT CHECK: random=0.149156090829202, runningChance=0, random < runningChance = false
+🎲 RELAXED MODE: No real bets - Crash point: 3.06x
+🎯 Crash point calculated: 3.06x (RELAXED mode, 0 real bets)
+💥 Game mkphk3jyncxbc crashed at 3.06x
+⏳ Waiting phase - accepting bets...
+🤖 Generated 592 fake bets for display
+🕐 Countdown starting - Game mkphks2bzpbpt
+🛫 Game mkphks2bzpbpt starting... (crash point will be calculated in 500ms)
+🔍 DEBUG: Total bets in gameState.bets: 592
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 592
+🔍 DEBUG: Real bets count: 0
+🔍 DEBUG: Sample of first 3 bets:
+   [0] betId: fake_1769088429187_0, username: d***223, isFake: true, typeof isFake: boolean
+   [1] betId: fake_1769088429187_1, username: d***537, isFake: true, typeof isFake: boolean
+   [2] betId: fake_1769088429187_2, username: d***376, isFake: true, typeof isFake: boolean
+🔍 TRUE INSTANT CHECK: random=0.09133733025656854, runningChance=0, random < runningChance = false
+🎲 RELAXED MODE: No real bets - Crash point: 3.46x
+🎯 Crash point calculated: 3.46x (RELAXED mode, 0 real bets)
+💥 Game mkphks2bzpbpt crashed at 3.46x
+⏳ Waiting phase - accepting bets...
+🤖 Generated 813 fake bets for display
+🕐 Countdown starting - Game mkphlj9eb7fxq
+🛫 Game mkphlj9eb7fxq starting... (crash point will be calculated in 500ms)
+Bet placed: {
+  betId: 2139,
+  odapuId: null,
+  odapu: 'Guest',
+  username: 'Guest',
+  amount: '100.00',
+  avatar: '/images/avtar/av-1.png',
+  sectionNo: 1,
+  autoCashOutAt: null
+}
+🔍 DEBUG placeBet: gameStatus = flying , betId = 2139
+🕐 Bet timing: gameStatus=flying, startTime=1769088472451, now=1769088472865
+⚠️ Late bet accepted (game running for 414 ms, within bet window)
+✅ REAL BET placed: Guest - 100.00 (Total real bets: 1, Total bets: 814)
+🔍 DEBUG: Total bets in gameState.bets: 814
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 813
+🔍 DEBUG: Real bets count: 1
+🔍 DEBUG: Real bets details:
+   [0] betId: 2139, username: Guest, amount: 100.00, isFake: false
+🔍 TRUE INSTANT CHECK: random=0.6403510568792514, runningChance=1, random < runningChance = true
+💀 TRUE INSTANT CRASH selected - crashPoint set to exactly 1.00x
+🎯 AGGRESSIVE MODE: 1 real bets (₹0100.00) - Crash point: 1.00x
+🎯 Crash point calculated: 1x (AGGRESSIVE mode, 1 real bets)
+💀 TRUE INSTANT CRASH! Target 1x - forcing crash at 1.00x
+💥 Game mkphlj9eb7fxq crashed at 1x
+🚫 Crash at 1.00x - NO auto cash-outs processed (everyone loses)
+⏳ Waiting phase - accepting bets...
+🤖 Generated 545 fake bets for display
+🕐 Countdown starting - Game mkphlri9thyxw
+🛫 Game mkphlri9thyxw starting... (crash point will be calculated in 500ms)
+Bet placed: {
+  betId: 2140,
+  odapuId: null,
+  odapu: 'Guest',
+  username: 'Guest',
+  amount: '100.00',
+  avatar: '/images/avtar/av-1.png',
+  sectionNo: 1,
+  autoCashOutAt: null
+}
+🔍 DEBUG placeBet: gameStatus = flying , betId = 2140
+🕐 Bet timing: gameStatus=flying, startTime=1769088483140, now=1769088483526
+⚠️ Late bet accepted (game running for 386 ms, within bet window)
+✅ REAL BET placed: Guest - 100.00 (Total real bets: 1, Total bets: 546)
+🔍 DEBUG: Total bets in gameState.bets: 546
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 545
+🔍 DEBUG: Real bets count: 1
+🔍 DEBUG: Real bets details:
+   [0] betId: 2140, username: Guest, amount: 100.00, isFake: false
+🔍 TRUE INSTANT CHECK: random=0.6281572086694209, runningChance=1, random < runningChance = true
+💀 TRUE INSTANT CRASH selected - crashPoint set to exactly 1.00x
+🎯 AGGRESSIVE MODE: 1 real bets (₹0100.00) - Crash point: 1.00x
+🎯 Crash point calculated: 1x (AGGRESSIVE mode, 1 real bets)
+💀 TRUE INSTANT CRASH! Target 1x - forcing crash at 1.00x
+💥 Game mkphlri9thyxw crashed at 1x
+🚫 Crash at 1.00x - NO auto cash-outs processed (everyone loses)
+⏳ Waiting phase - accepting bets...
+🤖 Generated 756 fake bets for display
+🕐 Countdown starting - Game mkphlzr50vzkd
+🛫 Game mkphlzr50vzkd starting... (crash point will be calculated in 500ms)
+Bet placed: {
+  betId: 2141,
+  odapuId: null,
+  odapu: 'Guest',
+  username: 'Guest',
+  amount: '100.00',
+  avatar: '/images/avtar/av-1.png',
+  sectionNo: 1,
+  autoCashOutAt: null
+}
+🔍 DEBUG placeBet: gameStatus = flying , betId = 2141
+🕐 Bet timing: gameStatus=flying, startTime=1769088493833, now=1769088494240
+⚠️ Late bet accepted (game running for 408 ms, within bet window)
+✅ REAL BET placed: Guest - 100.00 (Total real bets: 1, Total bets: 757)
+🔍 DEBUG: Total bets in gameState.bets: 757
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 756
+🔍 DEBUG: Real bets count: 1
+🔍 DEBUG: Real bets details:
+   [0] betId: 2141, username: Guest, amount: 100.00, isFake: false
+🔍 TRUE INSTANT CHECK: random=0.8076080134286165, runningChance=1, random < runningChance = true
+💀 TRUE INSTANT CRASH selected - crashPoint set to exactly 1.00x
+🎯 AGGRESSIVE MODE: 1 real bets (₹0100.00) - Crash point: 1.00x
+🎯 Crash point calculated: 1x (AGGRESSIVE mode, 1 real bets)
+💀 TRUE INSTANT CRASH! Target 1x - forcing crash at 1.00x
+💥 Game mkphlzr50vzkd crashed at 1x
+🚫 Crash at 1.00x - NO auto cash-outs processed (everyone loses)
+⏳ Waiting phase - accepting bets...
+🤖 Generated 711 fake bets for display
+🕐 Countdown starting - Game mkphm8121qqd4
+🛫 Game mkphm8121qqd4 starting... (crash point will be calculated in 500ms)
+Bet placed: {
+  betId: 2142,
+  odapuId: null,
+  odapu: 'Guest',
+  username: 'Guest',
+  amount: '100.00',
+  avatar: '/images/avtar/av-1.png',
+  sectionNo: 1,
+  autoCashOutAt: null
+}
+🔍 DEBUG placeBet: gameStatus = flying , betId = 2142
+🕐 Bet timing: gameStatus=flying, startTime=1769088504563, now=1769088504970
+⚠️ Late bet accepted (game running for 407 ms, within bet window)
+✅ REAL BET placed: Guest - 100.00 (Total real bets: 1, Total bets: 712)
+🔍 DEBUG: Total bets in gameState.bets: 712
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 711
+🔍 DEBUG: Real bets count: 1
+🔍 DEBUG: Real bets details:
+   [0] betId: 2142, username: Guest, amount: 100.00, isFake: false
+🔍 TRUE INSTANT CHECK: random=0.0357753446243112, runningChance=1, random < runningChance = true
+💀 TRUE INSTANT CRASH selected - crashPoint set to exactly 1.00x
+🎯 AGGRESSIVE MODE: 1 real bets (₹0100.00) - Crash point: 1.00x
+🎯 Crash point calculated: 1x (AGGRESSIVE mode, 1 real bets)
+💀 TRUE INSTANT CRASH! Target 1x - forcing crash at 1.00x
+💥 Game mkphm8121qqd4 crashed at 1x
+🚫 Crash at 1.00x - NO auto cash-outs processed (everyone loses)
+⏳ Waiting phase - accepting bets...
+🤖 Generated 844 fake bets for display
+🕐 Countdown starting - Game mkphmgbamuem2
+🛫 Game mkphmgbamuem2 starting... (crash point will be calculated in 500ms)
+🔍 DEBUG: Total bets in gameState.bets: 844
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 844
+🔍 DEBUG: Real bets count: 0
+🔍 DEBUG: Sample of first 3 bets:
+   [0] betId: fake_1769088507261_0, username: d***317, isFake: true, typeof isFake: boolean
+   [1] betId: fake_1769088507261_1, username: d***677, isFake: true, typeof isFake: boolean
+   [2] betId: fake_1769088507261_2, username: d***914, isFake: true, typeof isFake: boolean
+🔍 TRUE INSTANT CHECK: random=0.1454118273574836, runningChance=0, random < runningChance = false
+🎲 RELAXED MODE: No real bets - Crash point: 3.12x
+🎯 Crash point calculated: 3.12x (RELAXED mode, 0 real bets)
+Bet placed: {
+  betId: 2143,
+  odapuId: null,
+  odapu: 'Guest',
+  username: 'Guest',
+  amount: '100.00',
+  avatar: '/images/avtar/av-1.png',
+  sectionNo: 1,
+  autoCashOutAt: null
+}
+🔍 DEBUG placeBet: gameStatus = flying , betId = 2143
+🕐 Bet timing: gameStatus=flying, startTime=1769088515291, now=1769088516000
+⚠️ Late bet accepted (game running for 709 ms, within bet window)
+✅ REAL BET placed: Guest - 100.00 (Total real bets: 1, Total bets: 845)
+⚡ IMMEDIATE CRASH CHECK: Real bet placed during RELAXED mode flying phase
+🔍 DEBUG: Total bets in gameState.bets: 845
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 844
+🔍 DEBUG: Real bets count: 1
+🔍 DEBUG: Real bets details:
+   [0] betId: 2143, username: Guest, amount: 100.00, isFake: false
+🔍 TRUE INSTANT CHECK: random=0.3544716395994105, runningChance=1, random < runningChance = true
+💀 TRUE INSTANT CRASH selected - crashPoint set to exactly 1.00x
+🎯 AGGRESSIVE MODE: 1 real bets (₹0100.00) - Crash point: 1.00x
+⚠️ IMMEDIATE RECALC! Crash point changed: 3.12x → 1x (AGGRESSIVE mode)
+💀 TRUE INSTANT CRASH! Forcing crash at exactly 1.00x
+💥 Game mkphmgbamuem2 crashed at 1x
+🚫 Crash at 1.00x - NO auto cash-outs processed (everyone loses)
+⏳ Waiting phase - accepting bets...
+🤖 Generated 813 fake bets for display
+🕐 Countdown starting - Game mkphmoqbp1lzb
+🛫 Game mkphmoqbp1lzb starting... (crash point will be calculated in 500ms)
+Bet placed: {
+  betId: 2144,
+  odapuId: null,
+  odapu: 'Guest',
+  username: 'Guest',
+  amount: '100.00',
+  avatar: '/images/avtar/av-1.png',
+  sectionNo: 1,
+  autoCashOutAt: null
+}
+🔍 DEBUG placeBet: gameStatus = flying , betId = 2144
+🕐 Bet timing: gameStatus=flying, startTime=1769088526211, now=1769088526614
+⚠️ Late bet accepted (game running for 403 ms, within bet window)
+✅ REAL BET placed: Guest - 100.00 (Total real bets: 1, Total bets: 814)
+🔍 DEBUG: Total bets in gameState.bets: 814
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 813
+🔍 DEBUG: Real bets count: 1
+🔍 DEBUG: Real bets details:
+   [0] betId: 2144, username: Guest, amount: 100.00, isFake: false
+🔍 TRUE INSTANT CHECK: random=0.30503192590426265, runningChance=1, random < runningChance = true
+💀 TRUE INSTANT CRASH selected - crashPoint set to exactly 1.00x
+🎯 AGGRESSIVE MODE: 1 real bets (₹0100.00) - Crash point: 1.00x
+🎯 Crash point calculated: 1x (AGGRESSIVE mode, 1 real bets)
+💀 TRUE INSTANT CRASH! Target 1x - forcing crash at 1.00x
+💥 Game mkphmoqbp1lzb crashed at 1x
+🚫 Crash at 1.00x - NO auto cash-outs processed (everyone loses)
+⏳ Waiting phase - accepting bets...
+🤖 Generated 610 fake bets for display
+🕐 Countdown starting - Game mkphmx0n7qk5w
+🔄 Resync requested by X7s_NVQIeSFT79_iAAAB
+✅ Resync sent to X7s_NVQIeSFT79_iAAAB - Status: countdown, Multiplier: 1x
+🛫 Game mkphmx0n7qk5w starting... (crash point will be calculated in 500ms)
+🔍 DEBUG: Total bets in gameState.bets: 610
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 610
+🔍 DEBUG: Real bets count: 0
+🔍 DEBUG: Sample of first 3 bets:
+   [0] betId: fake_1769088528925_0, username: d***622, isFake: true, typeof isFake: boolean
+   [1] betId: fake_1769088528925_1, username: d***726, isFake: true, typeof isFake: boolean
+   [2] betId: fake_1769088528925_2, username: d***449, isFake: true, typeof isFake: boolean
+🔍 TRUE INSTANT CHECK: random=0.521226196489377, runningChance=0, random < runningChance = false
+🎲 RELAXED MODE: No real bets - Crash point: 19.91x
+🎯 Crash point calculated: 19.91x (RELAXED mode, 0 real bets)
+Bet placed: {
+  betId: 2145,
+  odapuId: null,
+  odapu: 'Guest',
+  username: 'Guest',
+  amount: '100.00',
+  avatar: '/images/avtar/av-1.png',
+  sectionNo: 1,
+  autoCashOutAt: null
+}
+🔍 DEBUG placeBet: gameStatus = flying , betId = 2145
+🕐 Bet timing: gameStatus=flying, startTime=1769088536928, now=1769088538141
+❌ Bet rejected - game already running for 1213 ms (bet window closed)
+💥 Game mkphmx0n7qk5w crashed at 19.91x
+⏳ Waiting phase - accepting bets...
+🤖 Generated 445 fake bets for display
+🕐 Countdown starting - Game mkphrdbgo2ly6
+🛫 Game mkphrdbgo2ly6 starting... (crash point will be calculated in 500ms)
+🔍 DEBUG: Total bets in gameState.bets: 445
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 445
+🔍 DEBUG: Real bets count: 0
+🔍 DEBUG: Sample of first 3 bets:
+   [0] betId: fake_1769088736672_0, username: d***844, isFake: true, typeof isFake: boolean
+   [1] betId: fake_1769088736672_1, username: d***896, isFake: true, typeof isFake: boolean
+   [2] betId: fake_1769088736672_2, username: d***417, isFake: true, typeof isFake: boolean
+🔍 TRUE INSTANT CHECK: random=0.24664853554239663, runningChance=0, random < runningChance = false
+🎲 RELAXED MODE: No real bets - Crash point: 6.84x
+🎯 Crash point calculated: 6.84x (RELAXED mode, 0 real bets)
+Bet placed: {
+  betId: 2146,
+  odapuId: null,
+  odapu: 'Guest',
+  username: 'Guest',
+  amount: '100.00',
+  avatar: '/images/avtar/av-1.png',
+  sectionNo: 1,
+  autoCashOutAt: null
+}
+🔍 DEBUG placeBet: gameStatus = flying , betId = 2146
+🕐 Bet timing: gameStatus=flying, startTime=1769088744712, now=1769088745265
+⚠️ Late bet accepted (game running for 553 ms, within bet window)
+✅ REAL BET placed: Guest - 100.00 (Total real bets: 1, Total bets: 446)
+⚡ IMMEDIATE CRASH CHECK: Real bet placed during RELAXED mode flying phase
+🔍 DEBUG: Total bets in gameState.bets: 446
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 445
+🔍 DEBUG: Real bets count: 1
+🔍 DEBUG: Real bets details:
+   [0] betId: 2146, username: Guest, amount: 100.00, isFake: false
+🔍 TRUE INSTANT CHECK: random=0.4071328711276203, runningChance=1, random < runningChance = true
+💀 TRUE INSTANT CRASH selected - crashPoint set to exactly 1.00x
+🎯 AGGRESSIVE MODE: 1 real bets (₹0100.00) - Crash point: 1.00x
+⚠️ IMMEDIATE RECALC! Crash point changed: 6.84x → 1x (AGGRESSIVE mode)
+💀 TRUE INSTANT CRASH! Forcing crash at exactly 1.00x
+💥 Game mkphrdbgo2ly6 crashed at 1x
+🚫 Crash at 1.00x - NO auto cash-outs processed (everyone loses)
+⏳ Waiting phase - accepting bets...
+🤖 Generated 717 fake bets for display
+🕐 Countdown starting - Game mkphrln0h1l3y
+🛫 Game mkphrln0h1l3y starting... (crash point will be calculated in 500ms)
+Bet placed: {
+  betId: 2147,
+  odapuId: null,
+  odapu: 'Guest',
+  username: 'Guest',
+  amount: '100.00',
+  avatar: '/images/avtar/av-1.png',
+  sectionNo: 1,
+  autoCashOutAt: null
+}
+🔍 DEBUG placeBet: gameStatus = flying , betId = 2147
+🕐 Bet timing: gameStatus=flying, startTime=1769088755472, now=1769088755806
+⚠️ Late bet accepted (game running for 335 ms, within bet window)
+✅ REAL BET placed: Guest - 100.00 (Total real bets: 1, Total bets: 718)
+🔍 DEBUG: Total bets in gameState.bets: 718
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 717
+🔍 DEBUG: Real bets count: 1
+🔍 DEBUG: Real bets details:
+   [0] betId: 2147, username: Guest, amount: 100.00, isFake: false
+🔍 TRUE INSTANT CHECK: random=0.7463532671137636, runningChance=1, random < runningChance = true
+💀 TRUE INSTANT CRASH selected - crashPoint set to exactly 1.00x
+🎯 AGGRESSIVE MODE: 1 real bets (₹0100.00) - Crash point: 1.00x
+🎯 Crash point calculated: 1x (AGGRESSIVE mode, 1 real bets)
+💀 TRUE INSTANT CRASH! Target 1x - forcing crash at 1.00x
+💥 Game mkphrln0h1l3y crashed at 1x
+🚫 Crash at 1.00x - NO auto cash-outs processed (everyone loses)
+⏳ Waiting phase - accepting bets...
+🤖 Generated 533 fake bets for display
+🕐 Countdown starting - Game mkphrtwhw5h8x
+🛫 Game mkphrtwhw5h8x starting... (crash point will be calculated in 500ms)
+Bet placed: {
+  betId: 2148,
+  odapuId: null,
+  odapu: 'Guest',
+  username: 'Guest',
+  amount: '100.00',
+  avatar: '/images/avtar/av-1.png',
+  sectionNo: 1,
+  autoCashOutAt: null
+}
+🔍 DEBUG placeBet: gameStatus = flying , betId = 2148
+🕐 Bet timing: gameStatus=flying, startTime=1769088766169, now=1769088766466
+⚠️ Late bet accepted (game running for 297 ms, within bet window)
+✅ REAL BET placed: Guest - 100.00 (Total real bets: 1, Total bets: 534)
+🔍 DEBUG: Total bets in gameState.bets: 534
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 533
+🔍 DEBUG: Real bets count: 1
+🔍 DEBUG: Real bets details:
+   [0] betId: 2148, username: Guest, amount: 100.00, isFake: false
+🔍 TRUE INSTANT CHECK: random=0.8262893846572692, runningChance=1, random < runningChance = true
+💀 TRUE INSTANT CRASH selected - crashPoint set to exactly 1.00x
+🎯 AGGRESSIVE MODE: 1 real bets (₹0100.00) - Crash point: 1.00x
+🎯 Crash point calculated: 1x (AGGRESSIVE mode, 1 real bets)
+💀 TRUE INSTANT CRASH! Target 1x - forcing crash at 1.00x
+💥 Game mkphrtwhw5h8x crashed at 1x
+🚫 Crash at 1.00x - NO auto cash-outs processed (everyone loses)
+⏳ Waiting phase - accepting bets...
+🤖 Generated 529 fake bets for display
+🕐 Countdown starting - Game mkphs2626375t
+🛫 Game mkphs2626375t starting... (crash point will be calculated in 500ms)
+Bet placed: {
+  betId: 2149,
+  odapuId: null,
+  odapu: 'Guest',
+  username: 'Guest',
+  amount: '100.00',
+  avatar: '/images/avtar/av-1.png',
+  sectionNo: 1,
+  autoCashOutAt: null
+}
+🔍 DEBUG placeBet: gameStatus = flying , betId = 2149
+🕐 Bet timing: gameStatus=flying, startTime=1769088776884, now=1769088777198
+⚠️ Late bet accepted (game running for 315 ms, within bet window)
+✅ REAL BET placed: Guest - 100.00 (Total real bets: 1, Total bets: 530)
+🔍 DEBUG: Total bets in gameState.bets: 530
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 529
+🔍 DEBUG: Real bets count: 1
+🔍 DEBUG: Real bets details:
+   [0] betId: 2149, username: Guest, amount: 100.00, isFake: false
+🔍 TRUE INSTANT CHECK: random=0.3822973434425774, runningChance=1, random < runningChance = true
+💀 TRUE INSTANT CRASH selected - crashPoint set to exactly 1.00x
+🎯 AGGRESSIVE MODE: 1 real bets (₹0100.00) - Crash point: 1.00x
+🎯 Crash point calculated: 1x (AGGRESSIVE mode, 1 real bets)
+💀 TRUE INSTANT CRASH! Target 1x - forcing crash at 1.00x
+💥 Game mkphs2626375t crashed at 1x
+🚫 Crash at 1.00x - NO auto cash-outs processed (everyone loses)
+⏳ Waiting phase - accepting bets...
+🤖 Generated 758 fake bets for display
+🕐 Countdown starting - Game mkphsafl2tb19
+🛫 Game mkphsafl2tb19 starting... (crash point will be calculated in 500ms)
+Bet placed: {
+  betId: 2150,
+  odapuId: null,
+  odapu: 'Guest',
+  username: 'Guest',
+  amount: '100.00',
+  avatar: '/images/avtar/av-1.png',
+  sectionNo: 1,
+  autoCashOutAt: null
+}
+🔍 DEBUG placeBet: gameStatus = flying , betId = 2150
+🕐 Bet timing: gameStatus=flying, startTime=1769088787596, now=1769088787901
+⚠️ Late bet accepted (game running for 305 ms, within bet window)
+✅ REAL BET placed: Guest - 100.00 (Total real bets: 1, Total bets: 759)
+🔍 DEBUG: Total bets in gameState.bets: 759
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 758
+🔍 DEBUG: Real bets count: 1
+🔍 DEBUG: Real bets details:
+   [0] betId: 2150, username: Guest, amount: 100.00, isFake: false
+🔍 TRUE INSTANT CHECK: random=0.816506103147453, runningChance=1, random < runningChance = true
+💀 TRUE INSTANT CRASH selected - crashPoint set to exactly 1.00x
+🎯 AGGRESSIVE MODE: 1 real bets (₹0100.00) - Crash point: 1.00x
+🎯 Crash point calculated: 1x (AGGRESSIVE mode, 1 real bets)
+💀 TRUE INSTANT CRASH! Target 1x - forcing crash at 1.00x
+💥 Game mkphsafl2tb19 crashed at 1x
+🚫 Crash at 1.00x - NO auto cash-outs processed (everyone loses)
+⏳ Waiting phase - accepting bets...
+🤖 Generated 681 fake bets for display
+🕐 Countdown starting - Game mkphsip87z23z
+🛫 Game mkphsip87z23z starting... (crash point will be calculated in 500ms)
+Bet placed: {
+  betId: 2151,
+  odapuId: null,
+  odapu: 'Guest',
+  username: 'Guest',
+  amount: '100.00',
+  avatar: '/images/avtar/av-1.png',
+  sectionNo: 1,
+  autoCashOutAt: null
+}
+🔍 DEBUG placeBet: gameStatus = flying , betId = 2151
+🕐 Bet timing: gameStatus=flying, startTime=1769088798310, now=1769088798684
+⚠️ Late bet accepted (game running for 375 ms, within bet window)
+✅ REAL BET placed: Guest - 100.00 (Total real bets: 1, Total bets: 682)
+🔍 DEBUG: Total bets in gameState.bets: 682
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 681
+🔍 DEBUG: Real bets count: 1
+🔍 DEBUG: Real bets details:
+   [0] betId: 2151, username: Guest, amount: 100.00, isFake: false
+🔍 TRUE INSTANT CHECK: random=0.5017071668042363, runningChance=1, random < runningChance = true
+💀 TRUE INSTANT CRASH selected - crashPoint set to exactly 1.00x
+🎯 AGGRESSIVE MODE: 1 real bets (₹0100.00) - Crash point: 1.00x
+🎯 Crash point calculated: 1x (AGGRESSIVE mode, 1 real bets)
+💀 TRUE INSTANT CRASH! Target 1x - forcing crash at 1.00x
+💥 Game mkphsip87z23z crashed at 1x
+🚫 Crash at 1.00x - NO auto cash-outs processed (everyone loses)
+⏳ Waiting phase - accepting bets...
+🤖 Generated 885 fake bets for display
+🕐 Countdown starting - Game mkphsqyuoam0q
+🛫 Game mkphsqyuoam0q starting... (crash point will be calculated in 500ms)
+Bet placed: {
+  betId: 2152,
+  odapuId: null,
+  odapu: 'Guest',
+  username: 'Guest',
+  amount: '100.00',
+  avatar: '/images/avtar/av-1.png',
+  sectionNo: 1,
+  autoCashOutAt: null
+}
+🔍 DEBUG placeBet: gameStatus = flying , betId = 2152
+🕐 Bet timing: gameStatus=flying, startTime=1769088809024, now=1769088809414
+⚠️ Late bet accepted (game running for 390 ms, within bet window)
+✅ REAL BET placed: Guest - 100.00 (Total real bets: 1, Total bets: 886)
+🔍 DEBUG: Total bets in gameState.bets: 886
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 885
+🔍 DEBUG: Real bets count: 1
+🔍 DEBUG: Real bets details:
+   [0] betId: 2152, username: Guest, amount: 100.00, isFake: false
+🔍 TRUE INSTANT CHECK: random=0.4819161256405562, runningChance=1, random < runningChance = true
+💀 TRUE INSTANT CRASH selected - crashPoint set to exactly 1.00x
+🎯 AGGRESSIVE MODE: 1 real bets (₹0100.00) - Crash point: 1.00x
+🎯 Crash point calculated: 1x (AGGRESSIVE mode, 1 real bets)
+💀 TRUE INSTANT CRASH! Target 1x - forcing crash at 1.00x
+💥 Game mkphsqyuoam0q crashed at 1x
+🚫 Crash at 1.00x - NO auto cash-outs processed (everyone loses)
+⏳ Waiting phase - accepting bets...
+🤖 Generated 839 fake bets for display
+🕐 Countdown starting - Game mkphsz8f732fb
+🛫 Game mkphsz8f732fb starting... (crash point will be calculated in 500ms)
+Bet placed: {
+  betId: 2153,
+  odapuId: null,
+  odapu: 'Guest',
+  username: 'Guest',
+  amount: '100.00',
+  avatar: '/images/avtar/av-1.png',
+  sectionNo: 1,
+  autoCashOutAt: null
+}
+🔍 DEBUG placeBet: gameStatus = flying , betId = 2153
+🕐 Bet timing: gameStatus=flying, startTime=1769088819751, now=1769088820148
+⚠️ Late bet accepted (game running for 397 ms, within bet window)
+✅ REAL BET placed: Guest - 100.00 (Total real bets: 1, Total bets: 840)
+🔍 DEBUG: Total bets in gameState.bets: 840
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 839
+🔍 DEBUG: Real bets count: 1
+🔍 DEBUG: Real bets details:
+   [0] betId: 2153, username: Guest, amount: 100.00, isFake: false
+🔍 TRUE INSTANT CHECK: random=0.599824571330041, runningChance=1, random < runningChance = true
+💀 TRUE INSTANT CRASH selected - crashPoint set to exactly 1.00x
+🎯 AGGRESSIVE MODE: 1 real bets (₹0100.00) - Crash point: 1.00x
+🎯 Crash point calculated: 1x (AGGRESSIVE mode, 1 real bets)
+💀 TRUE INSTANT CRASH! Target 1x - forcing crash at 1.00x
+💥 Game mkphsz8f732fb crashed at 1x
+🚫 Crash at 1.00x - NO auto cash-outs processed (everyone loses)
+⏳ Waiting phase - accepting bets...
+🤖 Generated 471 fake bets for display
+🕐 Countdown starting - Game mkpht7hh3x5f6
+🛫 Game mkpht7hh3x5f6 starting... (crash point will be calculated in 500ms)
+Bet placed: {
+  betId: 2154,
+  odapuId: null,
+  odapu: 'Guest',
+  username: 'Guest',
+  amount: '100.00',
+  avatar: '/images/avtar/av-1.png',
+  sectionNo: 1,
+  autoCashOutAt: null
+}
+🔍 DEBUG placeBet: gameStatus = flying , betId = 2154
+🕐 Bet timing: gameStatus=flying, startTime=1769088830448, now=1769088830757
+⚠️ Late bet accepted (game running for 309 ms, within bet window)
+✅ REAL BET placed: Guest - 100.00 (Total real bets: 1, Total bets: 472)
+🔍 DEBUG: Total bets in gameState.bets: 472
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 471
+🔍 DEBUG: Real bets count: 1
+🔍 DEBUG: Real bets details:
+   [0] betId: 2154, username: Guest, amount: 100.00, isFake: false
+🔍 TRUE INSTANT CHECK: random=0.006615900598514246, runningChance=1, random < runningChance = true
+💀 TRUE INSTANT CRASH selected - crashPoint set to exactly 1.00x
+🎯 AGGRESSIVE MODE: 1 real bets (₹0100.00) - Crash point: 1.00x
+🎯 Crash point calculated: 1x (AGGRESSIVE mode, 1 real bets)
+💀 TRUE INSTANT CRASH! Target 1x - forcing crash at 1.00x
+💥 Game mkpht7hh3x5f6 crashed at 1x
+🚫 Crash at 1.00x - NO auto cash-outs processed (everyone loses)
+⏳ Waiting phase - accepting bets...
+🤖 Generated 418 fake bets for display
+🕐 Countdown starting - Game mkphtfr5pyj69
+🛫 Game mkphtfr5pyj69 starting... (crash point will be calculated in 500ms)
+Bet placed: {
+  betId: 2155,
+  odapuId: null,
+  odapu: 'Guest',
+  username: 'Guest',
+  amount: '100.00',
+  avatar: '/images/avtar/av-1.png',
+  sectionNo: 1,
+  autoCashOutAt: null
+}
+🔍 DEBUG placeBet: gameStatus = flying , betId = 2155
+🕐 Bet timing: gameStatus=flying, startTime=1769088841153, now=1769088841512
+⚠️ Late bet accepted (game running for 359 ms, within bet window)
+✅ REAL BET placed: Guest - 100.00 (Total real bets: 1, Total bets: 419)
+🔍 DEBUG: Total bets in gameState.bets: 419
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 418
+🔍 DEBUG: Real bets count: 1
+🔍 DEBUG: Real bets details:
+   [0] betId: 2155, username: Guest, amount: 100.00, isFake: false
+🔍 TRUE INSTANT CHECK: random=0.4016293943601308, runningChance=1, random < runningChance = true
+💀 TRUE INSTANT CRASH selected - crashPoint set to exactly 1.00x
+🎯 AGGRESSIVE MODE: 1 real bets (₹0100.00) - Crash point: 1.00x
+🎯 Crash point calculated: 1x (AGGRESSIVE mode, 1 real bets)
+💀 TRUE INSTANT CRASH! Target 1x - forcing crash at 1.00x
+💥 Game mkphtfr5pyj69 crashed at 1x
+🚫 Crash at 1.00x - NO auto cash-outs processed (everyone loses)
+⏳ Waiting phase - accepting bets...
+🤖 Generated 565 fake bets for display
+🕐 Countdown starting - Game mkphto0hbotpr
+🛫 Game mkphto0hbotpr starting... (crash point will be calculated in 500ms)
+Bet placed: {
+  betId: 2156,
+  odapuId: null,
+  odapu: 'Guest',
+  username: 'Guest',
+  amount: '100.00',
+  avatar: '/images/avtar/av-1.png',
+  sectionNo: 1,
+  autoCashOutAt: null
+}
+🔍 DEBUG placeBet: gameStatus = flying , betId = 2156
+🕐 Bet timing: gameStatus=flying, startTime=1769088851855, now=1769088852182
+⚠️ Late bet accepted (game running for 327 ms, within bet window)
+✅ REAL BET placed: Guest - 100.00 (Total real bets: 1, Total bets: 566)
+🔍 DEBUG: Total bets in gameState.bets: 566
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 565
+🔍 DEBUG: Real bets count: 1
+🔍 DEBUG: Real bets details:
+   [0] betId: 2156, username: Guest, amount: 100.00, isFake: false
+🔍 TRUE INSTANT CHECK: random=0.430743618355381, runningChance=1, random < runningChance = true
+💀 TRUE INSTANT CRASH selected - crashPoint set to exactly 1.00x
+🎯 AGGRESSIVE MODE: 1 real bets (₹0100.00) - Crash point: 1.00x
+🎯 Crash point calculated: 1x (AGGRESSIVE mode, 1 real bets)
+💀 TRUE INSTANT CRASH! Target 1x - forcing crash at 1.00x
+💥 Game mkphto0hbotpr crashed at 1x
+🚫 Crash at 1.00x - NO auto cash-outs processed (everyone loses)
+⏳ Waiting phase - accepting bets...
+🤖 Generated 711 fake bets for display
+🕐 Countdown starting - Game mkphtw9u3ehq8
+🛫 Game mkphtw9u3ehq8 starting... (crash point will be calculated in 500ms)
+Bet placed: {
+  betId: 2157,
+  odapuId: null,
+  odapu: 'Guest',
+  username: 'Guest',
+  amount: '100.00',
+  avatar: '/images/avtar/av-1.png',
+  sectionNo: 1,
+  autoCashOutAt: null
+}
+🔍 DEBUG placeBet: gameStatus = flying , betId = 2157
+🕐 Bet timing: gameStatus=flying, startTime=1769088862563, now=1769088862974
+⚠️ Late bet accepted (game running for 411 ms, within bet window)
+✅ REAL BET placed: Guest - 100.00 (Total real bets: 1, Total bets: 712)
+🔍 DEBUG: Total bets in gameState.bets: 712
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 711
+🔍 DEBUG: Real bets count: 1
+🔍 DEBUG: Real bets details:
+   [0] betId: 2157, username: Guest, amount: 100.00, isFake: false
+🔍 TRUE INSTANT CHECK: random=0.15434050538646882, runningChance=1, random < runningChance = true
+💀 TRUE INSTANT CRASH selected - crashPoint set to exactly 1.00x
+🎯 AGGRESSIVE MODE: 1 real bets (₹0100.00) - Crash point: 1.00x
+🎯 Crash point calculated: 1x (AGGRESSIVE mode, 1 real bets)
+💀 TRUE INSTANT CRASH! Target 1x - forcing crash at 1.00x
+💥 Game mkphtw9u3ehq8 crashed at 1x
+🚫 Crash at 1.00x - NO auto cash-outs processed (everyone loses)
+⏳ Waiting phase - accepting bets...
+🤖 Generated 805 fake bets for display
+🕐 Countdown starting - Game mkphu4izyxnkd
+🛫 Game mkphu4izyxnkd starting... (crash point will be calculated in 500ms)
+Bet placed: {
+  betId: 2158,
+  odapuId: null,
+  odapu: 'Guest',
+  username: 'Guest',
+  amount: '100.00',
+  avatar: '/images/avtar/av-1.png',
+  sectionNo: 1,
+  autoCashOutAt: null
+}
+🔍 DEBUG placeBet: gameStatus = flying , betId = 2158
+🕐 Bet timing: gameStatus=flying, startTime=1769088873265, now=1769088873729
+⚠️ Late bet accepted (game running for 464 ms, within bet window)
+✅ REAL BET placed: Guest - 100.00 (Total real bets: 1, Total bets: 806)
+🔍 DEBUG: Total bets in gameState.bets: 806
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 805
+🔍 DEBUG: Real bets count: 1
+🔍 DEBUG: Real bets details:
+   [0] betId: 2158, username: Guest, amount: 100.00, isFake: false
+🔍 TRUE INSTANT CHECK: random=0.6683517592546875, runningChance=1, random < runningChance = true
+💀 TRUE INSTANT CRASH selected - crashPoint set to exactly 1.00x
+🎯 AGGRESSIVE MODE: 1 real bets (₹0100.00) - Crash point: 1.00x
+🎯 Crash point calculated: 1x (AGGRESSIVE mode, 1 real bets)
+💀 TRUE INSTANT CRASH! Target 1x - forcing crash at 1.00x
+💥 Game mkphu4izyxnkd crashed at 1x
+🚫 Crash at 1.00x - NO auto cash-outs processed (everyone loses)
+⏳ Waiting phase - accepting bets...
+🤖 Generated 542 fake bets for display
+🕐 Countdown starting - Game mkphucsj6fkpn
+🛫 Game mkphucsj6fkpn starting... (crash point will be calculated in 500ms)
+Bet placed: {
+  betId: 2159,
+  odapuId: null,
+  odapu: 'Guest',
+  username: 'Guest',
+  amount: '100.00',
+  avatar: '/images/avtar/av-1.png',
+  sectionNo: 1,
+  autoCashOutAt: null
+}
+🔍 DEBUG placeBet: gameStatus = flying , betId = 2159
+🕐 Bet timing: gameStatus=flying, startTime=1769088883970, now=1769088884266
+⚠️ Late bet accepted (game running for 296 ms, within bet window)
+✅ REAL BET placed: Guest - 100.00 (Total real bets: 1, Total bets: 543)
+🔍 DEBUG: Total bets in gameState.bets: 543
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 542
+🔍 DEBUG: Real bets count: 1
+🔍 DEBUG: Real bets details:
+   [0] betId: 2159, username: Guest, amount: 100.00, isFake: false
+🔍 TRUE INSTANT CHECK: random=0.515485183869226, runningChance=1, random < runningChance = true
+💀 TRUE INSTANT CRASH selected - crashPoint set to exactly 1.00x
+🎯 AGGRESSIVE MODE: 1 real bets (₹0100.00) - Crash point: 1.00x
+🎯 Crash point calculated: 1x (AGGRESSIVE mode, 1 real bets)
+💀 TRUE INSTANT CRASH! Target 1x - forcing crash at 1.00x
+💥 Game mkphucsj6fkpn crashed at 1x
+🚫 Crash at 1.00x - NO auto cash-outs processed (everyone loses)
+⏳ Waiting phase - accepting bets...
+🤖 Generated 481 fake bets for display
+🕐 Countdown starting - Game mkphul16wafj9
+🛫 Game mkphul16wafj9 starting... (crash point will be calculated in 500ms)
+Bet placed: {
+  betId: 2160,
+  odapuId: null,
+  odapu: 'Guest',
+  username: 'Guest',
+  amount: '100.00',
+  avatar: '/images/avtar/av-1.png',
+  sectionNo: 1,
+  autoCashOutAt: null
+}
+🔍 DEBUG placeBet: gameStatus = flying , betId = 2160
+🕐 Bet timing: gameStatus=flying, startTime=1769088894658, now=1769088894986
+⚠️ Late bet accepted (game running for 328 ms, within bet window)
+✅ REAL BET placed: Guest - 100.00 (Total real bets: 1, Total bets: 482)
+🔍 DEBUG: Total bets in gameState.bets: 482
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 481
+🔍 DEBUG: Real bets count: 1
+🔍 DEBUG: Real bets details:
+   [0] betId: 2160, username: Guest, amount: 100.00, isFake: false
+🔍 TRUE INSTANT CHECK: random=0.39601712665610145, runningChance=1, random < runningChance = true
+💀 TRUE INSTANT CRASH selected - crashPoint set to exactly 1.00x
+🎯 AGGRESSIVE MODE: 1 real bets (₹0100.00) - Crash point: 1.00x
+🎯 Crash point calculated: 1x (AGGRESSIVE mode, 1 real bets)
+💀 TRUE INSTANT CRASH! Target 1x - forcing crash at 1.00x
+💥 Game mkphul16wafj9 crashed at 1x
+🚫 Crash at 1.00x - NO auto cash-outs processed (everyone loses)
+⏳ Waiting phase - accepting bets...
+🤖 Generated 547 fake bets for display
+🕐 Countdown starting - Game mkphutappb0kv
+🛫 Game mkphutappb0kv starting... (crash point will be calculated in 500ms)
+Bet placed: {
+  betId: 2161,
+  odapuId: null,
+  odapu: 'Guest',
+  username: 'Guest',
+  amount: '100.00',
+  avatar: '/images/avtar/av-1.png',
+  sectionNo: 1,
+  autoCashOutAt: null
+}
+🔍 DEBUG placeBet: gameStatus = flying , betId = 2161
+🕐 Bet timing: gameStatus=flying, startTime=1769088905353, now=1769088905785
+⚠️ Late bet accepted (game running for 433 ms, within bet window)
+✅ REAL BET placed: Guest - 100.00 (Total real bets: 1, Total bets: 548)
+🔍 DEBUG: Total bets in gameState.bets: 548
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 547
+🔍 DEBUG: Real bets count: 1
+🔍 DEBUG: Real bets details:
+   [0] betId: 2161, username: Guest, amount: 100.00, isFake: false
+🔍 TRUE INSTANT CHECK: random=0.5610853040438624, runningChance=1, random < runningChance = true
+💀 TRUE INSTANT CRASH selected - crashPoint set to exactly 1.00x
+🎯 AGGRESSIVE MODE: 1 real bets (₹0100.00) - Crash point: 1.00x
+🎯 Crash point calculated: 1x (AGGRESSIVE mode, 1 real bets)
+💀 TRUE INSTANT CRASH! Target 1x - forcing crash at 1.00x
+💥 Game mkphutappb0kv crashed at 1x
+🚫 Crash at 1.00x - NO auto cash-outs processed (everyone loses)
+⏳ Waiting phase - accepting bets...
+🤖 Generated 553 fake bets for display
+🕐 Countdown starting - Game mkphv1jxxdyab
+🛫 Game mkphv1jxxdyab starting... (crash point will be calculated in 500ms)
+Bet placed: {
+  betId: 2162,
+  odapuId: null,
+  odapu: 'Guest',
+  username: 'Guest',
+  amount: '100.00',
+  avatar: '/images/avtar/av-1.png',
+  sectionNo: 1,
+  autoCashOutAt: null
+}
+🔍 DEBUG placeBet: gameStatus = flying , betId = 2162
+🕐 Bet timing: gameStatus=flying, startTime=1769088916053, now=1769088916368
+⚠️ Late bet accepted (game running for 315 ms, within bet window)
+✅ REAL BET placed: Guest - 100.00 (Total real bets: 1, Total bets: 554)
+🔍 DEBUG: Total bets in gameState.bets: 554
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 553
+🔍 DEBUG: Real bets count: 1
+🔍 DEBUG: Real bets details:
+   [0] betId: 2162, username: Guest, amount: 100.00, isFake: false
+🔍 TRUE INSTANT CHECK: random=0.30248195009733614, runningChance=1, random < runningChance = true
+💀 TRUE INSTANT CRASH selected - crashPoint set to exactly 1.00x
+🎯 AGGRESSIVE MODE: 1 real bets (₹0100.00) - Crash point: 1.00x
+🎯 Crash point calculated: 1x (AGGRESSIVE mode, 1 real bets)
+💀 TRUE INSTANT CRASH! Target 1x - forcing crash at 1.00x
+💥 Game mkphv1jxxdyab crashed at 1x
+🚫 Crash at 1.00x - NO auto cash-outs processed (everyone loses)
+⏳ Waiting phase - accepting bets...
+🤖 Generated 461 fake bets for display
+🕐 Countdown starting - Game mkphv9t24vttg
+🛫 Game mkphv9t24vttg starting... (crash point will be calculated in 500ms)
+Bet placed: {
+  betId: 2163,
+  odapuId: null,
+  odapu: 'Guest',
+  username: 'Guest',
+  amount: '100.00',
+  avatar: '/images/avtar/av-1.png',
+  sectionNo: 1,
+  autoCashOutAt: null
+}
+🔍 DEBUG placeBet: gameStatus = flying , betId = 2163
+🕐 Bet timing: gameStatus=flying, startTime=1769088926765, now=1769088927102
+⚠️ Late bet accepted (game running for 337 ms, within bet window)
+✅ REAL BET placed: Guest - 100.00 (Total real bets: 1, Total bets: 462)
+🔍 DEBUG: Total bets in gameState.bets: 462
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 461
+🔍 DEBUG: Real bets count: 1
+🔍 DEBUG: Real bets details:
+   [0] betId: 2163, username: Guest, amount: 100.00, isFake: false
+🔍 TRUE INSTANT CHECK: random=0.018742193001699103, runningChance=1, random < runningChance = true
+💀 TRUE INSTANT CRASH selected - crashPoint set to exactly 1.00x
+🎯 AGGRESSIVE MODE: 1 real bets (₹0100.00) - Crash point: 1.00x
+🎯 Crash point calculated: 1x (AGGRESSIVE mode, 1 real bets)
+💀 TRUE INSTANT CRASH! Target 1x - forcing crash at 1.00x
+💥 Game mkphv9t24vttg crashed at 1x
+🚫 Crash at 1.00x - NO auto cash-outs processed (everyone loses)
+⏳ Waiting phase - accepting bets...
+🤖 Generated 610 fake bets for display
+🕐 Countdown starting - Game mkphvi332mwu0
+🛫 Game mkphvi332mwu0 starting... (crash point will be calculated in 500ms)
+Bet placed: {
+  betId: 2164,
+  odapuId: null,
+  odapu: 'Guest',
+  username: 'Guest',
+  amount: '100.00',
+  avatar: '/images/avtar/av-1.png',
+  sectionNo: 1,
+  autoCashOutAt: null
+}
+🔍 DEBUG placeBet: gameStatus = flying , betId = 2164
+🕐 Bet timing: gameStatus=flying, startTime=1769088937494, now=1769088937853
+⚠️ Late bet accepted (game running for 359 ms, within bet window)
+✅ REAL BET placed: Guest - 100.00 (Total real bets: 1, Total bets: 611)
+🔍 DEBUG: Total bets in gameState.bets: 611
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 610
+🔍 DEBUG: Real bets count: 1
+🔍 DEBUG: Real bets details:
+   [0] betId: 2164, username: Guest, amount: 100.00, isFake: false
+🔍 TRUE INSTANT CHECK: random=0.2864514894081758, runningChance=1, random < runningChance = true
+💀 TRUE INSTANT CRASH selected - crashPoint set to exactly 1.00x
+🎯 AGGRESSIVE MODE: 1 real bets (₹0100.00) - Crash point: 1.00x
+🎯 Crash point calculated: 1x (AGGRESSIVE mode, 1 real bets)
+💀 TRUE INSTANT CRASH! Target 1x - forcing crash at 1.00x
+💥 Game mkphvi332mwu0 crashed at 1x
+🚫 Crash at 1.00x - NO auto cash-outs processed (everyone loses)
+⏳ Waiting phase - accepting bets...
+🤖 Generated 416 fake bets for display
+🕐 Countdown starting - Game mkphvqcproj4r
+🛫 Game mkphvqcproj4r starting... (crash point will be calculated in 500ms)
+Bet placed: {
+  betId: 2165,
+  odapuId: null,
+  odapu: 'Guest',
+  username: 'Guest',
+  amount: '100.00',
+  avatar: '/images/avtar/av-1.png',
+  sectionNo: 1,
+  autoCashOutAt: null
+}
+🔍 DEBUG placeBet: gameStatus = flying , betId = 2165
+🕐 Bet timing: gameStatus=flying, startTime=1769088948207, now=1769088948490
+⚠️ Late bet accepted (game running for 283 ms, within bet window)
+✅ REAL BET placed: Guest - 100.00 (Total real bets: 1, Total bets: 417)
+🔍 DEBUG: Total bets in gameState.bets: 417
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 416
+🔍 DEBUG: Real bets count: 1
+🔍 DEBUG: Real bets details:
+   [0] betId: 2165, username: Guest, amount: 100.00, isFake: false
+🔍 TRUE INSTANT CHECK: random=0.5416327717142644, runningChance=1, random < runningChance = true
+💀 TRUE INSTANT CRASH selected - crashPoint set to exactly 1.00x
+🎯 AGGRESSIVE MODE: 1 real bets (₹0100.00) - Crash point: 1.00x
+🎯 Crash point calculated: 1x (AGGRESSIVE mode, 1 real bets)
+💀 TRUE INSTANT CRASH! Target 1x - forcing crash at 1.00x
+💥 Game mkphvqcproj4r crashed at 1x
+🚫 Crash at 1.00x - NO auto cash-outs processed (everyone loses)
+⏳ Waiting phase - accepting bets...
+🤖 Generated 882 fake bets for display
+🕐 Countdown starting - Game mkphvymq2phai
+🛫 Game mkphvymq2phai starting... (crash point will be calculated in 500ms)
+Bet placed: {
+  betId: 2166,
+  odapuId: null,
+  odapu: 'Guest',
+  username: 'Guest',
+  amount: '100.00',
+  avatar: '/images/avtar/av-1.png',
+  sectionNo: 1,
+  autoCashOutAt: null
+}
+🔍 DEBUG placeBet: gameStatus = flying , betId = 2166
+🕐 Bet timing: gameStatus=flying, startTime=1769088958936, now=1769088959285
+⚠️ Late bet accepted (game running for 349 ms, within bet window)
+✅ REAL BET placed: Guest - 100.00 (Total real bets: 1, Total bets: 883)
+🔍 DEBUG: Total bets in gameState.bets: 883
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 882
+🔍 DEBUG: Real bets count: 1
+🔍 DEBUG: Real bets details:
+   [0] betId: 2166, username: Guest, amount: 100.00, isFake: false
+🔍 TRUE INSTANT CHECK: random=0.7798187531287355, runningChance=1, random < runningChance = true
+💀 TRUE INSTANT CRASH selected - crashPoint set to exactly 1.00x
+🎯 AGGRESSIVE MODE: 1 real bets (₹0100.00) - Crash point: 1.00x
+🎯 Crash point calculated: 1x (AGGRESSIVE mode, 1 real bets)
+💀 TRUE INSTANT CRASH! Target 1x - forcing crash at 1.00x
+💥 Game mkphvymq2phai crashed at 1x
+🚫 Crash at 1.00x - NO auto cash-outs processed (everyone loses)
+⏳ Waiting phase - accepting bets...
+🤖 Generated 623 fake bets for display
+🕐 Countdown starting - Game mkphw6wqmzlo6
+🛫 Game mkphw6wqmzlo6 starting... (crash point will be calculated in 500ms)
+Bet placed: {
+  betId: 2167,
+  odapuId: null,
+  odapu: 'Guest',
+  username: 'Guest',
+  amount: '100.00',
+  avatar: '/images/avtar/av-1.png',
+  sectionNo: 1,
+  autoCashOutAt: null
+}
+🔍 DEBUG placeBet: gameStatus = flying , betId = 2167
+🕐 Bet timing: gameStatus=flying, startTime=1769088969665, now=1769088970042
+⚠️ Late bet accepted (game running for 377 ms, within bet window)
+✅ REAL BET placed: Guest - 100.00 (Total real bets: 1, Total bets: 624)
+🔍 DEBUG: Total bets in gameState.bets: 624
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 623
+🔍 DEBUG: Real bets count: 1
+🔍 DEBUG: Real bets details:
+   [0] betId: 2167, username: Guest, amount: 100.00, isFake: false
+🔍 TRUE INSTANT CHECK: random=0.46721099829392165, runningChance=1, random < runningChance = true
+💀 TRUE INSTANT CRASH selected - crashPoint set to exactly 1.00x
+🎯 AGGRESSIVE MODE: 1 real bets (₹0100.00) - Crash point: 1.00x
+🎯 Crash point calculated: 1x (AGGRESSIVE mode, 1 real bets)
+💀 TRUE INSTANT CRASH! Target 1x - forcing crash at 1.00x
+💥 Game mkphw6wqmzlo6 crashed at 1x
+🚫 Crash at 1.00x - NO auto cash-outs processed (everyone loses)
+⏳ Waiting phase - accepting bets...
+🤖 Generated 417 fake bets for display
+🕐 Countdown starting - Game mkphwf6dqdda7
+🛫 Game mkphwf6dqdda7 starting... (crash point will be calculated in 500ms)
+🔍 DEBUG: Total bets in gameState.bets: 417
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 417
+🔍 DEBUG: Real bets count: 0
+🔍 DEBUG: Sample of first 3 bets:
+   [0] betId: fake_1769088972351_0, username: d***336, isFake: true, typeof isFake: boolean
+   [1] betId: fake_1769088972351_1, username: d***239, isFake: true, typeof isFake: boolean
+   [2] betId: fake_1769088972351_2, username: d***950, isFake: true, typeof isFake: boolean
+🔍 TRUE INSTANT CHECK: random=0.06661265792103332, runningChance=0, random < runningChance = false
+🎲 RELAXED MODE: No real bets - Crash point: 3.71x
+🎯 Crash point calculated: 3.71x (RELAXED mode, 0 real bets)
+Bet placed: {
+  betId: 2168,
+  odapuId: null,
+  odapu: 'Guest',
+  username: 'Guest',
+  amount: '100.00',
+  avatar: '/images/avtar/av-1.png',
+  sectionNo: 1,
+  autoCashOutAt: null
+}
+🔍 DEBUG placeBet: gameStatus = flying , betId = 2168
+🕐 Bet timing: gameStatus=flying, startTime=1769088980378, now=1769088980977
+⚠️ Late bet accepted (game running for 599 ms, within bet window)
+✅ REAL BET placed: Guest - 100.00 (Total real bets: 1, Total bets: 418)
+⚡ IMMEDIATE CRASH CHECK: Real bet placed during RELAXED mode flying phase
+🔍 DEBUG: Total bets in gameState.bets: 418
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 417
+🔍 DEBUG: Real bets count: 1
+🔍 DEBUG: Real bets details:
+   [0] betId: 2168, username: Guest, amount: 100.00, isFake: false
+🔍 TRUE INSTANT CHECK: random=0.6910398412311805, runningChance=1, random < runningChance = true
+💀 TRUE INSTANT CRASH selected - crashPoint set to exactly 1.00x
+🎯 AGGRESSIVE MODE: 1 real bets (₹0100.00) - Crash point: 1.00x
+⚠️ IMMEDIATE RECALC! Crash point changed: 3.71x → 1x (AGGRESSIVE mode)
+💀 TRUE INSTANT CRASH! Forcing crash at exactly 1.00x
+💥 Game mkphwf6dqdda7 crashed at 1x
+🚫 Crash at 1.00x - NO auto cash-outs processed (everyone loses)
+⏳ Waiting phase - accepting bets...
+🤖 Generated 752 fake bets for display
+🕐 Countdown starting - Game mkphwniaoagu3
+🛫 Game mkphwniaoagu3 starting... (crash point will be calculated in 500ms)
+Bet placed: {
+  betId: 2169,
+  odapuId: null,
+  odapu: 'Guest',
+  username: 'Guest',
+  amount: '100.00',
+  avatar: '/images/avtar/av-1.png',
+  sectionNo: 1,
+  autoCashOutAt: null
+}
+🔍 DEBUG placeBet: gameStatus = flying , betId = 2169
+🕐 Bet timing: gameStatus=flying, startTime=1769088991177, now=1769088991635
+⚠️ Late bet accepted (game running for 458 ms, within bet window)
+✅ REAL BET placed: Guest - 100.00 (Total real bets: 1, Total bets: 753)
+🔍 DEBUG: Total bets in gameState.bets: 753
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 752
+🔍 DEBUG: Real bets count: 1
+🔍 DEBUG: Real bets details:
+   [0] betId: 2169, username: Guest, amount: 100.00, isFake: false
+🔍 TRUE INSTANT CHECK: random=0.6534038585767727, runningChance=1, random < runningChance = true
+💀 TRUE INSTANT CRASH selected - crashPoint set to exactly 1.00x
+🎯 AGGRESSIVE MODE: 1 real bets (₹0100.00) - Crash point: 1.00x
+🎯 Crash point calculated: 1x (AGGRESSIVE mode, 1 real bets)
+💀 TRUE INSTANT CRASH! Target 1x - forcing crash at 1.00x
+💥 Game mkphwniaoagu3 crashed at 1x
+🚫 Crash at 1.00x - NO auto cash-outs processed (everyone loses)
+⏳ Waiting phase - accepting bets...
+🤖 Generated 553 fake bets for display
+🕐 Countdown starting - Game mkphwvtom8zwv
+🛫 Game mkphwvtom8zwv starting... (crash point will be calculated in 500ms)
+Bet placed: {
+  betId: 2170,
+  odapuId: null,
+  odapu: 'Guest',
+  username: 'Guest',
+  amount: '100.00',
+  avatar: '/images/avtar/av-1.png',
+  sectionNo: 1,
+  autoCashOutAt: null
+}
+🔍 DEBUG placeBet: gameStatus = flying , betId = 2170
+🕐 Bet timing: gameStatus=flying, startTime=1769089001953, now=1769089002447
+⚠️ Late bet accepted (game running for 494 ms, within bet window)
+✅ REAL BET placed: Guest - 100.00 (Total real bets: 1, Total bets: 554)
+🔍 DEBUG: Total bets in gameState.bets: 554
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 553
+🔍 DEBUG: Real bets count: 1
+🔍 DEBUG: Real bets details:
+   [0] betId: 2170, username: Guest, amount: 100.00, isFake: false
+🔍 TRUE INSTANT CHECK: random=0.09179997104996351, runningChance=1, random < runningChance = true
+💀 TRUE INSTANT CRASH selected - crashPoint set to exactly 1.00x
+🎯 AGGRESSIVE MODE: 1 real bets (₹0100.00) - Crash point: 1.00x
+🎯 Crash point calculated: 1x (AGGRESSIVE mode, 1 real bets)
+💀 TRUE INSTANT CRASH! Target 1x - forcing crash at 1.00x
+💥 Game mkphwvtom8zwv crashed at 1x
+🚫 Crash at 1.00x - NO auto cash-outs processed (everyone loses)
+⏳ Waiting phase - accepting bets...
+🤖 Generated 784 fake bets for display
+🕐 Countdown starting - Game mkphx438nxccv
+🛫 Game mkphx438nxccv starting... (crash point will be calculated in 500ms)
+Bet placed: {
+  betId: 2171,
+  odapuId: null,
+  odapu: 'Guest',
+  username: 'Guest',
+  amount: '100.00',
+  avatar: '/images/avtar/av-1.png',
+  sectionNo: 1,
+  autoCashOutAt: null
+}
+🔍 DEBUG placeBet: gameStatus = flying , betId = 2171
+🕐 Bet timing: gameStatus=flying, startTime=1769089012667, now=1769089013022
+⚠️ Late bet accepted (game running for 355 ms, within bet window)
+✅ REAL BET placed: Guest - 100.00 (Total real bets: 1, Total bets: 785)
+🔍 DEBUG: Total bets in gameState.bets: 785
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 784
+🔍 DEBUG: Real bets count: 1
+🔍 DEBUG: Real bets details:
+   [0] betId: 2171, username: Guest, amount: 100.00, isFake: false
+🔍 TRUE INSTANT CHECK: random=0.9293668049386239, runningChance=1, random < runningChance = true
+💀 TRUE INSTANT CRASH selected - crashPoint set to exactly 1.00x
+🎯 AGGRESSIVE MODE: 1 real bets (₹0100.00) - Crash point: 1.00x
+🎯 Crash point calculated: 1x (AGGRESSIVE mode, 1 real bets)
+💀 TRUE INSTANT CRASH! Target 1x - forcing crash at 1.00x
+💥 Game mkphx438nxccv crashed at 1x
+🚫 Crash at 1.00x - NO auto cash-outs processed (everyone loses)
+⏳ Waiting phase - accepting bets...
+🤖 Generated 868 fake bets for display
+🕐 Countdown starting - Game mkphxcdbnq73i
+🛫 Game mkphxcdbnq73i starting... (crash point will be calculated in 500ms)
+Bet placed: {
+  betId: 2172,
+  odapuId: null,
+  odapu: 'Guest',
+  username: 'Guest',
+  amount: '100.00',
+  avatar: '/images/avtar/av-1.png',
+  sectionNo: 1,
+  autoCashOutAt: null
+}
+🔍 DEBUG placeBet: gameStatus = flying , betId = 2172
+🕐 Bet timing: gameStatus=flying, startTime=1769089023396, now=1769089023763
+⚠️ Late bet accepted (game running for 367 ms, within bet window)
+✅ REAL BET placed: Guest - 100.00 (Total real bets: 1, Total bets: 869)
+🔍 DEBUG: Total bets in gameState.bets: 869
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 868
+🔍 DEBUG: Real bets count: 1
+🔍 DEBUG: Real bets details:
+   [0] betId: 2172, username: Guest, amount: 100.00, isFake: false
+🔍 TRUE INSTANT CHECK: random=0.2479190249094283, runningChance=1, random < runningChance = true
+💀 TRUE INSTANT CRASH selected - crashPoint set to exactly 1.00x
+🎯 AGGRESSIVE MODE: 1 real bets (₹0100.00) - Crash point: 1.00x
+🎯 Crash point calculated: 1x (AGGRESSIVE mode, 1 real bets)
+💀 TRUE INSTANT CRASH! Target 1x - forcing crash at 1.00x
+💥 Game mkphxcdbnq73i crashed at 1x
+🚫 Crash at 1.00x - NO auto cash-outs processed (everyone loses)
+⏳ Waiting phase - accepting bets...
+🤖 Generated 638 fake bets for display
+🕐 Countdown starting - Game mkphxkmw1904w
+🛫 Game mkphxkmw1904w starting... (crash point will be calculated in 500ms)
+Bet placed: {
+  betId: 2173,
+  odapuId: null,
+  odapu: 'Guest',
+  username: 'Guest',
+  amount: '100.00',
+  avatar: '/images/avtar/av-1.png',
+  sectionNo: 1,
+  autoCashOutAt: null
+}
+🔍 DEBUG placeBet: gameStatus = flying , betId = 2173
+🕐 Bet timing: gameStatus=flying, startTime=1769089034111, now=1769089034472
+⚠️ Late bet accepted (game running for 361 ms, within bet window)
+✅ REAL BET placed: Guest - 100.00 (Total real bets: 1, Total bets: 639)
+🔍 DEBUG: Total bets in gameState.bets: 639
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 638
+🔍 DEBUG: Real bets count: 1
+🔍 DEBUG: Real bets details:
+   [0] betId: 2173, username: Guest, amount: 100.00, isFake: false
+🔍 TRUE INSTANT CHECK: random=0.2267971784449665, runningChance=1, random < runningChance = true
+💀 TRUE INSTANT CRASH selected - crashPoint set to exactly 1.00x
+🎯 AGGRESSIVE MODE: 1 real bets (₹0100.00) - Crash point: 1.00x
+🎯 Crash point calculated: 1x (AGGRESSIVE mode, 1 real bets)
+💀 TRUE INSTANT CRASH! Target 1x - forcing crash at 1.00x
+💥 Game mkphxkmw1904w crashed at 1x
+🚫 Crash at 1.00x - NO auto cash-outs processed (everyone loses)
+⏳ Waiting phase - accepting bets...
+🤖 Generated 875 fake bets for display
+🕐 Countdown starting - Game mkphxswo604to
+🛫 Game mkphxswo604to starting... (crash point will be calculated in 500ms)
+Bet placed: {
+  betId: 2174,
+  odapuId: null,
+  odapu: 'Guest',
+  username: 'Guest',
+  amount: '100.00',
+  avatar: '/images/avtar/av-1.png',
+  sectionNo: 1,
+  autoCashOutAt: null
+}
+🔍 DEBUG placeBet: gameStatus = flying , betId = 2174
+🕐 Bet timing: gameStatus=flying, startTime=1769089044824, now=1769089045183
+⚠️ Late bet accepted (game running for 359 ms, within bet window)
+✅ REAL BET placed: Guest - 100.00 (Total real bets: 1, Total bets: 876)
+🔍 DEBUG: Total bets in gameState.bets: 876
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 875
+🔍 DEBUG: Real bets count: 1
+🔍 DEBUG: Real bets details:
+   [0] betId: 2174, username: Guest, amount: 100.00, isFake: false
+🔍 TRUE INSTANT CHECK: random=0.8183664676643221, runningChance=1, random < runningChance = true
+💀 TRUE INSTANT CRASH selected - crashPoint set to exactly 1.00x
+🎯 AGGRESSIVE MODE: 1 real bets (₹0100.00) - Crash point: 1.00x
+🎯 Crash point calculated: 1x (AGGRESSIVE mode, 1 real bets)
+💀 TRUE INSTANT CRASH! Target 1x - forcing crash at 1.00x
+💥 Game mkphxswo604to crashed at 1x
+🚫 Crash at 1.00x - NO auto cash-outs processed (everyone loses)
+⏳ Waiting phase - accepting bets...
+🤖 Generated 555 fake bets for display
+🕐 Countdown starting - Game mkphy16jvo7c8
+🛫 Game mkphy16jvo7c8 starting... (crash point will be calculated in 500ms)
+Bet placed: {
+  betId: 2175,
+  odapuId: null,
+  odapu: 'Guest',
+  username: 'Guest',
+  amount: '100.00',
+  avatar: '/images/avtar/av-1.png',
+  sectionNo: 1,
+  autoCashOutAt: null
+}
+🔍 DEBUG placeBet: gameStatus = flying , betId = 2175
+🕐 Bet timing: gameStatus=flying, startTime=1769089055553, now=1769089055951
+⚠️ Late bet accepted (game running for 398 ms, within bet window)
+✅ REAL BET placed: Guest - 100.00 (Total real bets: 1, Total bets: 556)
+🔍 DEBUG: Total bets in gameState.bets: 556
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 555
+🔍 DEBUG: Real bets count: 1
+🔍 DEBUG: Real bets details:
+   [0] betId: 2175, username: Guest, amount: 100.00, isFake: false
+🔍 TRUE INSTANT CHECK: random=0.5415809400460676, runningChance=1, random < runningChance = true
+💀 TRUE INSTANT CRASH selected - crashPoint set to exactly 1.00x
+🎯 AGGRESSIVE MODE: 1 real bets (₹0100.00) - Crash point: 1.00x
+🎯 Crash point calculated: 1x (AGGRESSIVE mode, 1 real bets)
+💀 TRUE INSTANT CRASH! Target 1x - forcing crash at 1.00x
+💥 Game mkphy16jvo7c8 crashed at 1x
+🚫 Crash at 1.00x - NO auto cash-outs processed (everyone loses)
+⏳ Waiting phase - accepting bets...
+🤖 Generated 602 fake bets for display
+🕐 Countdown starting - Game mkphy9glxelse
+🔄 Resync requested by X7s_NVQIeSFT79_iAAAB
+✅ Resync sent to X7s_NVQIeSFT79_iAAAB - Status: countdown, Multiplier: 1x
+🛫 Game mkphy9glxelse starting... (crash point will be calculated in 500ms)
+🔍 DEBUG: Total bets in gameState.bets: 602
+🔍 DEBUG: Minimum multiplier (current game position): 1
+🔍 DEBUG: Fake bets count: 602
+🔍 DEBUG: Real bets count: 0
+🔍 DEBUG: Sample of first 3 bets:
+   [0] betId: fake_1769089058262_0, username: d***931, isFake: true, typeof isFake: boolean
+   [1] betId: fake_1769089058262_1, username: d***221, isFake: true, typeof isFake: boolean
+   [2] betId: fake_1769089058262_2, username: d***728, isFake: true, typeof isFake: boolean
+🔍 TRUE INSTANT CHECK: random=0.6153352788448851, runningChance=0, random < runningChance = false
+🎲 RELAXED MODE: No real bets - Crash point: 14.71x
+🎯 Crash point calculated: 14.71x (RELAXED mode, 0 real bets)
+Bet placed: {
+  betId: 2176,
+  odapuId: null,
+  odapu: 'Guest',
+  username: 'Guest',
+  amount: '100.00',
+  avatar: '/images/avtar/av-1.png',
+  sectionNo: 1,
+  autoCashOutAt: null
+}
+🔍 DEBUG placeBet: gameStatus = flying , betId = 2176
+🕐 Bet timing: gameStatus=flying, startTime=1769089066270, now=1769089067346
+❌ Bet rejected - game already running for 1076 ms (bet window closed)

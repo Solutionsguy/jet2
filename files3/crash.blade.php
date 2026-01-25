@@ -1257,75 +1257,8 @@
                 // Only save bets that haven't been placed yet (no is_bet flag)
                 var pendingOnly = bet_array.filter(function(bet) { return !bet.is_bet; });
                 localStorage.setItem('aviator_pending_bets_' + user_id, JSON.stringify(pendingOnly));
-                
-                // Also save auto-bet checkbox states
-                saveAutoBetState();
             } catch (e) {
                 console.log('Could not save pending bets:', e);
-            }
-        }
-        
-        // Function to save auto-bet checkbox states
-        function saveAutoBetState() {
-            try {
-                var autoBetState = {
-                    main_auto_bet: $("#main_auto_bet").prop('checked') || false,
-                    extra_auto_bet: $("#extra_auto_bet").prop('checked') || false,
-                    // Also save bet amounts so they're preserved
-                    main_bet_amount: $("#main_bet_section #bet_amount").val() || '',
-                    extra_bet_amount: $("#extra_bet_section #bet_amount").val() || '',
-                    timestamp: Date.now()
-                };
-                localStorage.setItem('aviator_autobet_state_' + user_id, JSON.stringify(autoBetState));
-            } catch (e) {
-                console.log('Could not save auto-bet state:', e);
-            }
-        }
-        
-        // Function to restore auto-bet state from localStorage
-        function restoreAutoBetState() {
-            try {
-                var savedState = localStorage.getItem('aviator_autobet_state_' + user_id);
-                if (savedState) {
-                    var state = JSON.parse(savedState);
-                    
-                    // Check if state is not too old (24 hours max)
-                    var maxAge = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
-                    if (state.timestamp && (Date.now() - state.timestamp) > maxAge) {
-                        console.log('🔄 Auto-bet state expired, clearing...');
-                        clearAutoBetStorage();
-                        return;
-                    }
-                    
-                    // Restore bet amounts first
-                    if (state.main_bet_amount) {
-                        $("#main_bet_section #bet_amount").val(state.main_bet_amount);
-                    }
-                    if (state.extra_bet_amount) {
-                        $("#extra_bet_section #bet_amount").val(state.extra_bet_amount);
-                    }
-                    
-                    // Restore auto-bet checkbox states (trigger change to update UI)
-                    if (state.main_auto_bet) {
-                        $("#main_auto_bet").prop('checked', true).trigger('change');
-                        console.log('✅ Restored main auto-bet state');
-                    }
-                    if (state.extra_auto_bet) {
-                        $("#extra_auto_bet").prop('checked', true).trigger('change');
-                        console.log('✅ Restored extra auto-bet state');
-                    }
-                }
-            } catch (e) {
-                console.log('Could not restore auto-bet state:', e);
-            }
-        }
-        
-        // Function to clear auto-bet state from localStorage
-        function clearAutoBetStorage() {
-            try {
-                localStorage.removeItem('aviator_autobet_state_' + user_id);
-            } catch (e) {
-                console.log('Could not clear auto-bet state:', e);
             }
         }
         
@@ -1333,9 +1266,6 @@
         function clearPendingBetsStorage() {
             try {
                 localStorage.removeItem('aviator_pending_bets_' + user_id);
-                // NOTE: Do NOT clear auto-bet state here!
-                // Auto-bet state should persist until user manually unchecks it
-                // This ensures auto-bet continues working across rounds after refresh
             } catch (e) {
                 console.log('Could not clear pending bets:', e);
             }
@@ -1376,12 +1306,6 @@
                 console.log('✅ Restored pending bet UI - Section:', bet.section_no, 'Amount:', bet.bet_amount);
             });
         }
-        
-        // Restore auto-bet checkbox states from localStorage
-        // Small delay to ensure all UI elements are ready
-        setTimeout(function() {
-            restoreAutoBetState();
-        }, 100);
         
         if (successMessage != undefined && successMessage != '') {
             swal('Success', successMessage, "success");

@@ -504,103 +504,11 @@ function setupSocketEventHandlers(socket) {
             window.isAnimationInProgress = false;
             window.currentAnimationGameId = null;
             window.lastKnownMultiplier = 1.00;
-            window.isInstantCrash = false;
             
             // Stop any running plane animations
             if (typeof window.stopPlaneAnimations === 'function') {
                 window.stopPlaneAnimations();
             }
-            
-            // Reset buttons for new round - check auto-bet status
-            let is_main_auto_bet = $("#main_auto_bet").prop('checked');
-            let is_extra_auto_bet = $("#extra_auto_bet").prop('checked');
-            
-            // ========== RE-ENABLE ALL CONTROLS FOR NEW ROUND ==========
-            // This is critical - controls get disabled during flight and must be re-enabled
-            
-            // Main section controls - always re-enable for new round
-            $(".main_bet_amount").prop('disabled', false);
-            $("#main_plus_btn").prop('disabled', false);
-            $("#main_minus_btn").prop('disabled', false);
-            $(".main_amount_btn").prop('disabled', false);
-            $("#main_auto_bet").prop('disabled', false);
-            $("#main_checkout").prop('disabled', false);
-            if ($("#main_checkout").prop('checked')) {
-                $("#main_incrementor").prop('disabled', false);
-            }
-            
-            // Extra section controls - always re-enable for new round
-            $(".extra_bet_amount").prop('disabled', false);
-            $("#extra_plus_btn").prop('disabled', false);
-            $("#extra_minus_btn").prop('disabled', false);
-            $(".extra_amount_btn").prop('disabled', false);
-            $("#extra_auto_bet").prop('disabled', false);
-            $("#extra_checkout").prop('disabled', false);
-            if ($("#extra_checkout").prop('checked')) {
-                $("#extra_incrementor").prop('disabled', false);
-            }
-            // ===========================================================
-            
-            // Main section button reset
-            if (is_main_auto_bet) {
-                // Auto-bet is ON - show cancel button (bet will be queued)
-                $("#main_bet_section").find("#bet_button").hide();
-                $("#main_bet_section").find("#cancle_button").show();
-                $("#main_bet_section").find("#cancle_button #waiting").show();
-                $("#main_bet_section").find("#cashout_button").hide();
-                $("#main_bet_section .controls").removeClass('bet-border-yellow');
-                $("#main_bet_section .controls").addClass('bet-border-red');
-            } else {
-                // Auto-bet is OFF - show bet button
-                $("#main_bet_section").find("#bet_button").show();
-                $("#main_bet_section").find("#cancle_button").hide();
-                $("#main_bet_section").find("#cashout_button").hide();
-                $("#main_bet_section .controls").removeClass('bet-border-yellow');
-                $("#main_bet_section .controls").removeClass('bet-border-red');
-            }
-            
-            // Extra section button reset
-            if (is_extra_auto_bet) {
-                // Auto-bet is ON - show cancel button (bet will be queued)
-                $("#extra_bet_section").find("#bet_button").hide();
-                $("#extra_bet_section").find("#cancle_button").show();
-                $("#extra_bet_section").find("#cancle_button #waiting").show();
-                $("#extra_bet_section").find("#cashout_button").hide();
-                $("#extra_bet_section .controls").removeClass('bet-border-yellow');
-                $("#extra_bet_section .controls").addClass('bet-border-red');
-            } else {
-                // Auto-bet is OFF - show bet button
-                $("#extra_bet_section").find("#bet_button").show();
-                $("#extra_bet_section").find("#cancle_button").hide();
-                $("#extra_bet_section").find("#cashout_button").hide();
-                $("#extra_bet_section .controls").removeClass('bet-border-yellow');
-                $("#extra_bet_section .controls").removeClass('bet-border-red');
-            }
-            
-            // ========== SEND BET INTENT FOR AUTO-BET DURING WAITING PHASE ==========
-            // This is the correct time to send betIntent - game is in waiting phase
-            // Auto-bet users are "first bet placers" since they committed before round starts
-            if (is_main_auto_bet || is_extra_auto_bet) {
-                try {
-                    if (typeof sendBetIntent === 'function') {
-                        if (is_main_auto_bet) {
-                            let main_bet_amount = $("#main_bet_section #bet_amount").val() || min_bet_amount;
-                            if (sendBetIntent(main_bet_amount, true)) {
-                                console.log('⚡ AUTO-BET INTENT (FIRST PLACER) sent for main section during waiting phase');
-                            }
-                        }
-                        if (is_extra_auto_bet) {
-                            let extra_bet_amount = $("#extra_bet_section #bet_amount").val() || min_bet_amount;
-                            if (sendBetIntent(extra_bet_amount, true)) {
-                                console.log('⚡ AUTO-BET INTENT (FIRST PLACER) sent for extra section during waiting phase');
-                            }
-                        }
-                    }
-                } catch (e) {
-                    console.log('⚠️ betIntent error:', e.message);
-                }
-            }
-            // =========================================================================
             
             console.log('⏳ Waiting for next round... (' + (data.duration/1000) + 's)');
             
@@ -625,57 +533,7 @@ function setupSocketEventHandlers(socket) {
         console.log('🎮 [SOCKET EVENT] Game started with ID:', data.gameId);
         console.log('📡 All tabs should now show the same game!');
         
-        // ========== RESET CRASH PROTECTION ==========
-        // Re-enable cashout buttons for new game
-        window.gameCrashed = false;
-        window.crashedAtMultiplier = null;
-        $("#main_bet_section").find("#cashout_button").prop('disabled', false);
-        $("#extra_bet_section").find("#cashout_button").prop('disabled', false);
-        // ============================================
-        
-        // Check if this is an INSTANT CRASH
-        if (data.isInstantCrash) {
-            console.log('💥 [INSTANT CRASH] Game will crash immediately at 1.00x - NO incrementor!');
-            
-            // Store instant crash flag
-            window.isInstantCrash = true;
-            window.instantCrashPoint = data.crashPoint || 1.00;
-            
-            // Update game ID
-            if (typeof current_game_data !== 'undefined') {
-                current_game_data = { id: data.gameId };
-            }
-            window.currentGameId = data.gameId;
-            
-            // IMPORTANT: Call new_game_generated to properly reset UI state
-            // This handles auto-bet queuing and button state reset
-            if (typeof new_game_generated === 'function') {
-                new_game_generated();
-            }
-            
-            // Hide loading, show multiplier display
-            $('.loading-game').removeClass('show');
-            $("#auto_increment_number_div").show();
-            
-            // DON'T start plane animation or incrementor
-            // Just show 1.00x in red immediately
-            document.getElementById('auto_increment_number').innerText = '1.00x';
-            $('#auto_increment_number').addClass('text-danger');
-            
-            // Place any pending bets (they will lose immediately)
-            if (typeof bet_array !== 'undefined' && bet_array.length > 0) {
-                console.log('💰 Placing pending bets (instant crash - will lose):', bet_array.length, 'bet(s)');
-                if (typeof place_bet_now === 'function') {
-                    place_bet_now();
-                }
-            }
-            
-            // The crash event will arrive immediately after
-            return;
-        }
-        
-        // Normal game - plane starts from beginning
-        window.isInstantCrash = false;
+        // New game starting - plane starts from beginning
         showFlyingPlane(data.gameId, 1.00, false);
     });
     
@@ -708,65 +566,6 @@ function setupSocketEventHandlers(socket) {
         updateBetCashOut(data.betId, data.multiplier, data.winAmount);
     });
     
-    // ========== BET ERROR HANDLER ==========
-    // Handle bet rejection from server (insufficient balance, invalid amount, etc.)
-    // This immediately resets the UI to allow user to try again
-    socket.on('betError', (data) => {
-        console.error('❌ [SERVER] Bet rejected:', data.message);
-        
-        // Show error message to user
-        if (typeof toastr !== 'undefined') {
-            toastr.error(data.message || 'Bet failed. Please try again.');
-        }
-        
-        // Reset UI for both sections - revert to BET button
-        ['main', 'extra'].forEach(function(prefix) {
-            var sectionId = '#' + prefix + '_bet_section';
-            
-            // Show BET button, hide cancel and cashout
-            $(sectionId).find("#bet_button").show();
-            $(sectionId).find("#cancle_button").hide();
-            $(sectionId).find("#cancle_button #waiting").hide();
-            $(sectionId).find("#cashout_button").hide();
-            
-            // Remove border styling
-            $(sectionId + " .controls").removeClass('bet-border-red');
-            $(sectionId + " .controls").removeClass('bet-border-yellow');
-            
-            // Re-enable controls (but keep auto-bet checkbox state - user may want to retry)
-            $("." + prefix + "_bet_amount").prop('disabled', false);
-            $("#" + prefix + "_plus_btn").prop('disabled', false);
-            $("#" + prefix + "_minus_btn").prop('disabled', false);
-            $("." + prefix + "_amount_btn").prop('disabled', false);
-            
-            // Only re-enable auto-bet, do NOT turn it off - user may want to retry
-            $("#" + prefix + "_auto_bet").prop('disabled', false);
-            $("#" + prefix + "_checkout").prop('disabled', false);
-            
-            // Re-enable navigation
-            $(sectionId).find('.controls .navigation').removeClass('stop-action');
-            $(sectionId).parent().parent().find('.cashout-spinner-wrapper input').prop('disabled', false);
-        });
-        
-        // Clear the bet array since bet was rejected
-        if (typeof bet_array !== 'undefined') {
-            bet_array = [];
-        }
-        
-        // Clear pending bets from localStorage
-        if (typeof clearPendingBetsStorage === 'function') {
-            clearPendingBetsStorage();
-        }
-        
-        // Clear auto-bet state from localStorage
-        if (typeof clearAutoBetStorage === 'function') {
-            clearAutoBetStorage();
-        }
-        
-        console.log('🔄 UI reset after bet rejection');
-    });
-    // ==========================================
-
     // Auto cash-out triggered by server - update UI for this specific player
     socket.on('onAutoCashoutTriggered', (data) => {
         console.log('🤖 [AUTO CASH-OUT] Server triggered auto cash-out for bet', data.betId, 'at', data.multiplier + 'x');
@@ -789,48 +588,22 @@ function setupSocketEventHandlers(socket) {
             $(".cashout-toaster1").addClass('show');
             if (typeof firstToastr === 'function') firstToastr();
             
-            // Reset main section UI based on auto-bet status
-            let is_main_auto_bet = $("#main_auto_bet").prop('checked');
-            if (is_main_auto_bet) {
-                // Auto-bet is ON - show cancel button (bet queued for next round)
-                $("#main_bet_section").find("#bet_button").hide();
-                $("#main_bet_section").find("#cancle_button").show();
-                $("#main_bet_section").find("#cancle_button #waiting").show();
-                $("#main_bet_section").find("#cashout_button").hide();
-                $("#main_bet_section .controls").removeClass('bet-border-yellow');
-                $("#main_bet_section .controls").addClass('bet-border-red');
-            } else {
-                // Auto-bet is OFF - show bet button
-                $("#main_bet_section").find("#bet_button").show();
-                $("#main_bet_section").find("#cancle_button").hide();
-                $("#main_bet_section").find("#cashout_button").hide();
-                $("#main_bet_section .controls").removeClass('bet-border-yellow');
-                $("#main_bet_section .controls").removeClass('bet-border-red');
-            }
+            // Reset main section UI
+            $("#main_bet_section").find("#bet_button").show();
+            $("#main_bet_section").find("#cancle_button").hide();
+            $("#main_bet_section").find("#cashout_button").hide();
+            $("#main_bet_section .controls").removeClass('bet-border-yellow');
         } else if (data.sectionNo == 1) {
             $(".cashout-toaster2 .stop-number").html(data.multiplier + 'x');
             $(".cashout-toaster2 .out-amount").html(amt + currency_symbol);
             $(".cashout-toaster2").addClass('show');
             if (typeof secondToastr === 'function') secondToastr();
             
-            // Reset extra section UI based on auto-bet status
-            let is_extra_auto_bet = $("#extra_auto_bet").prop('checked');
-            if (is_extra_auto_bet) {
-                // Auto-bet is ON - show cancel button (bet queued for next round)
-                $("#extra_bet_section").find("#bet_button").hide();
-                $("#extra_bet_section").find("#cancle_button").show();
-                $("#extra_bet_section").find("#cancle_button #waiting").show();
-                $("#extra_bet_section").find("#cashout_button").hide();
-                $("#extra_bet_section .controls").removeClass('bet-border-yellow');
-                $("#extra_bet_section .controls").addClass('bet-border-red');
-            } else {
-                // Auto-bet is OFF - show bet button
-                $("#extra_bet_section").find("#bet_button").show();
-                $("#extra_bet_section").find("#cancle_button").hide();
-                $("#extra_bet_section").find("#cashout_button").hide();
-                $("#extra_bet_section .controls").removeClass('bet-border-yellow');
-                $("#extra_bet_section .controls").removeClass('bet-border-red');
-            }
+            // Reset extra section UI
+            $("#extra_bet_section").find("#bet_button").show();
+            $("#extra_bet_section").find("#cancle_button").hide();
+            $("#extra_bet_section").find("#cashout_button").hide();
+            $("#extra_bet_section .controls").removeClass('bet-border-yellow');
         }
         
         // Remove bet from local bet_array
@@ -887,22 +660,10 @@ function setupSocketEventHandlers(socket) {
     socket.on('onGameCrashed', (data) => {
         console.log('💥 [SERVER] Game crashed at', data.crashMultiplier + 'x');
         
-        // ========== IMMEDIATELY DISABLE CASHOUT BUTTONS ==========
-        // This MUST happen FIRST before any other processing to prevent losses
-        // Users cannot cash out after crash - disable buttons instantly
-        $("#main_bet_section").find("#cashout_button").hide().prop('disabled', true);
-        $("#extra_bet_section").find("#cashout_button").hide().prop('disabled', true);
-        
-        // Also set a global flag to block any pending cashout requests
-        window.gameCrashed = true;
-        window.crashedAtMultiplier = data.crashMultiplier;
-        // ==========================================================
-        
         // IMPORTANT: Reset animation state so next game can start
         window.isAnimationInProgress = false;
         window.currentAnimationGameId = null;
         window.lastKnownMultiplier = 1.00; // Reset multiplier tracker
-        window.isInstantCrash = false; // Reset instant crash flag
         
         // Hide loading screen (in case it was showing)
         $('.loading-game').removeClass('show');
@@ -914,7 +675,6 @@ function setupSocketEventHandlers(socket) {
         // - Playing crash sound
         // - Showing "FLEW AWAY" message
         // - Stopping plane animation
-        // - Button state management (BET/CANCEL/CASHOUT)
         if (typeof crash_plane === 'function') {
             crash_plane(data.crashMultiplier);
         }

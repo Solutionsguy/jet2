@@ -1,73 +1,5 @@
 $('body').addClass('overflow-hidden');
 
-// ========== BET INTENT HELPER FUNCTION ==========
-// Sends betIntent to socket server immediately when a bet is queued
-// This triggers AGGRESSIVE mode BEFORE the AJAX call completes
-// Works for both manual bets and auto-bets
-// @param betAmount - the bet amount
-// @param isAutoBet - true if this is an auto-bet (should be treated as first bet placer)
-function sendBetIntent(betAmount, isAutoBet = false) {
-    try {
-        if (typeof getAviatorSocket === 'function') {
-            const aviatorSocket = getAviatorSocket();
-            if (aviatorSocket && typeof aviatorSocket.isSocketConnected === 'function' && aviatorSocket.isSocketConnected()) {
-                const rawSocket = aviatorSocket.getSocket();
-                if (rawSocket && rawSocket.connected) {
-                    // Get wallet balance from UI for quick validation
-                    const walletText = $("#wallet_balance").text();
-                    const walletBalance = parseFloat(walletText.replace(/[^0-9.]/g, '')) || 0;
-                    
-                    rawSocket.emit('betIntent', {
-                        odapuId: member_id,
-                        odapu: username,
-                        username: username,
-                        userId: member_id,
-                        betAmount: parseFloat(betAmount) || min_bet_amount,
-                        walletBalance: walletBalance,
-                        timestamp: Date.now(),
-                        isAutoBet: isAutoBet,  // Auto-bets are first bet placers (queued before round)
-                        priority: isAutoBet ? 'first' : 'normal'  // Mark priority for crash calculation
-                    });
-                    return true;
-                }
-            }
-        }
-    } catch (e) {
-        console.log('⚠️ sendBetIntent error:', e.message);
-    }
-    return false;
-}
-// ================================================
-
-// ========== BET CANCEL HELPER FUNCTION ==========
-// Notifies socket server when a user cancels their bet
-// If bet count reaches 0, server switches back to RELAXED mode
-function sendBetCancel() {
-    try {
-        if (typeof getAviatorSocket === 'function') {
-            const aviatorSocket = getAviatorSocket();
-            if (aviatorSocket && typeof aviatorSocket.isSocketConnected === 'function' && aviatorSocket.isSocketConnected()) {
-                const rawSocket = aviatorSocket.getSocket();
-                if (rawSocket && rawSocket.connected) {
-                    rawSocket.emit('betCancel', {
-                        odapuId: member_id,
-                        odapu: username,
-                        username: username,
-                        userId: member_id,
-                        timestamp: Date.now()
-                    });
-                    console.log('🚫 BET CANCEL sent to server');
-                    return true;
-                }
-            }
-        }
-    } catch (e) {
-        console.log('⚠️ sendBetCancel error:', e.message);
-    }
-    return false;
-}
-// ================================================
-
 function scrollFunction() {
     $(".list-body").mCustomScrollbar({
         scrollInertia: 50,
@@ -207,18 +139,6 @@ function info_data(intialData) {
 var main_counter = 0;
 var extra_counter = 0;
 function cash_out_now(element, section_no, increment = '') {
-    
-    // ========== CRASH PROTECTION ==========
-    // Block ALL cashout attempts after game has crashed
-    // This prevents losses from late/lagging cashout requests
-    if (window.gameCrashed === true) {
-        console.log('❌ BLOCKED: Cashout attempt after crash at', window.crashedAtMultiplier + 'x');
-        // Hide cashout buttons immediately
-        $("#main_bet_section").find("#cashout_button").hide();
-        $("#extra_bet_section").find("#cashout_button").hide();
-        return; // Exit function - do not process cashout
-    }
-    // ======================================
 
     if (section_no == 0) {
         cashOutSound();
@@ -656,11 +576,6 @@ function new_game_generated() {
 
             if (bet_amount >= min_bet_amount && bet_amount <= max_bet_amount) {
                 bet_array.push({ bet_type: bet_type, bet_amount: bet_amount, section_no: 0 });
-                
-                // NOTE: betIntent is now sent ONLY from the auto-bet toggle change handler
-                // and from bet_now() when user clicks BET button.
-                // Sending here causes "invalid game status" errors because new_game_generated()
-                // is called during the flying phase, not waiting phase.
             }
         }
 
@@ -684,11 +599,6 @@ function new_game_generated() {
 
             if (bet_amount >= min_bet_amount && bet_amount <= max_bet_amount) {
                 bet_array.push({ bet_type: bet_type, bet_amount: bet_amount, section_no: 1 });
-                
-                // NOTE: betIntent is now sent ONLY from the auto-bet toggle change handler
-                // and from bet_now() when user clicks BET button.
-                // Sending here causes "invalid game status" errors because new_game_generated()
-                // is called during the flying phase, not waiting phase.
             }
         }
 
@@ -1006,15 +916,6 @@ function bet_now(element, section_no) {
         $(".error-toaster2").addClass('show');
         errorToastrStageTimeOut();
     } else {
-        // ========== INSTANT BET INTENT ==========
-        // Send betIntent to socket server IMMEDIATELY when user clicks bet
-        // This triggers AGGRESSIVE mode BEFORE the AJAX call completes
-        let bet_amount_for_intent = $(element).parent().parent().find(".bet-block .spinner #bet_amount").val();
-        if (sendBetIntent(bet_amount_for_intent)) {
-            console.log('⚡ BET INTENT sent - AGGRESSIVE mode will activate immediately');
-        }
-        // ========================================
-        
         var bet_type = $(element).parent().parent().parent().find(".navigation #bet_type").val(); // 0 - Normal, 1 - Auto
         // var bet_amount = parseFloat($(element).parent().parent().find(".bet-block .spinner #bet_amount").val());
         let bet_amount = $(element).parent().parent().find(".bet-block .spinner #bet_amount").val();
@@ -1085,11 +986,6 @@ function cancle_now(element, section_no) {
         if (typeof savePendingBets === 'function') {
             savePendingBets();
         }
-        
-        // ========== NOTIFY SERVER OF BET CANCELLATION ==========
-        // If no more bets, server will switch back to RELAXED mode
-        sendBetCancel();
-        // =======================================================
 
         // delete bet_array[section_no];
         $(element).parent().parent().find("#bet_button").show();
@@ -1147,15 +1043,6 @@ function place_bet_now() {
                                 }
                             }
                             
-                            // DEBUG: Log auto cash-out settings before sending
-                            console.log('🔍 DEBUG AUTO-CASHOUT:');
-                            console.log('   section_no:', bet_array[i].section_no);
-                            console.log('   main_checkout checked:', $('#main_checkout').prop('checked'));
-                            console.log('   main_incrementor value:', $('#main_incrementor').val());
-                            console.log('   extra_checkout checked:', $('#extra_checkout').prop('checked'));
-                            console.log('   extra_incrementor value:', $('#extra_incrementor').val());
-                            console.log('   FINAL autoCashOutAt:', autoCashOutAt);
-                            
                             socket.placeBet({
                                 betId: betId,
                                 odapuId: typeof user_id !== 'undefined' ? user_id : null,
@@ -1167,7 +1054,7 @@ function place_bet_now() {
                                 // SERVER-SIDE AUTO CASH-OUT: Send target multiplier to server
                                 autoCashOutAt: autoCashOutAt
                             });
-                            console.log('📡 Bet broadcast via socket:', bet_array[i].bet_amount, autoCashOutAt ? '(auto cash-out at ' + autoCashOutAt + 'x)' : '(NO auto cash-out)');
+                            console.log('📡 Bet broadcast via socket:', bet_array[i].bet_amount, autoCashOutAt ? '(auto cash-out at ' + autoCashOutAt + 'x)' : '');
                         }
                     }
                 }
@@ -1397,11 +1284,6 @@ $("#main_auto_bet").on('change', function () {
     let isChecked = $(this).prop('checked');
     let section_no = 0;
     const isCheckedCashout = $("#main_checkout").prop('checked');
-    
-    // Save auto-bet state to localStorage
-    if (typeof saveAutoBetState === 'function') {
-        saveAutoBetState();
-    }
 
     if (isChecked) {
         $("#main_bet_section").find("#bet_button").hide();
@@ -1441,16 +1323,6 @@ $("#main_auto_bet").on('change', function () {
             } else {
                 bet_array.push({ bet_type: bet_type, bet_amount: bet_amount, section_no: section_no });
             }
-            
-            // ========== AUTO-BET TOGGLE INTENT (FIRST BET PLACER) ==========
-            // Send betIntent when auto-bet is turned ON
-            // isAutoBet=true marks this as FIRST BET PLACER (committed before round)
-            try {
-                if (sendBetIntent(bet_amount, true)) {
-                    console.log('⚡ AUTO-BET TOGGLE INTENT (FIRST PLACER) sent for main section');
-                }
-            } catch (e) { /* ignore errors */ }
-            // ===============================================================
         }
 
         $(".main_bet_amount").prop('disabled', true);
@@ -1516,11 +1388,6 @@ $("#extra_auto_bet").on('change', function () {
     let isChecked = $(this).prop('checked');
     let section_no = 1;
     const isCheckedCashout = $('#extra_checkout').prop('checked');
-    
-    // Save auto-bet state to localStorage
-    if (typeof saveAutoBetState === 'function') {
-        saveAutoBetState();
-    }
 
     if (isChecked) {
         $("#extra_bet_section").find("#bet_button").hide();
@@ -1561,16 +1428,6 @@ $("#extra_auto_bet").on('change', function () {
             } else {
                 bet_array.push({ bet_type: bet_type, bet_amount: bet_amount, section_no: section_no });
             }
-            
-            // ========== AUTO-BET TOGGLE INTENT (FIRST BET PLACER) ==========
-            // Send betIntent when auto-bet is turned ON
-            // isAutoBet=true marks this as FIRST BET PLACER (committed before round)
-            try {
-                if (sendBetIntent(bet_amount, true)) {
-                    console.log('⚡ AUTO-BET TOGGLE INTENT (FIRST PLACER) sent for extra section');
-                }
-            } catch (e) { /* ignore errors */ }
-            // ===============================================================
         }
         $(".extra_bet_amount").prop('disabled', true);
         $("#extra_minus_btn").prop('disabled', true);

@@ -1,0 +1,689 @@
+Now I have a comprehensive understanding of the current frontend. Let me create a detailed PRD for a complete frontend redesign:
+
+---
+
+# Product Requirements Document (PRD)
+## Aviator Crash Game - Frontend Redesign
+
+---
+
+## 1. Executive Summary
+
+### 1.1 Product Overview
+A complete redesign of the Aviator crash game frontend to modernize the user interface, improve user experience, optimize performance, and create a more engaging gambling experience.
+
+### 1.2 Current State Analysis
+The existing frontend is built with:
+- **Framework**: Vanilla JavaScript with jQuery
+- **Styling**: Bootstrap 5 + Custom CSS (~3700 lines)
+- **Template**: Laravel Blade (crash.blade.php - ~1400 lines)
+- **Animation**: Canvas-based plane animation with SVG sprites
+- **Real-time**: Socket.IO for multiplayer synchronization
+
+**Current Pain Points:**
+- Monolithic CSS file with poor organization
+- Mixed inline styles throughout Blade template
+- jQuery-heavy codebase limiting modern reactive patterns
+- Non-responsive canvas animations
+- Inconsistent component styling
+- Poor separation of concerns (logic mixed with presentation)
+- Heavy page load (~20+ CSS/JS files)
+
+---
+
+## 2. Goals & Objectives
+
+### 2.1 Primary Goals
+1. **Modern Tech Stack**: Migrate to React/Vue.js for component-based architecture
+2. **Performance**: Reduce initial load time by 50%
+3. **Mobile-First**: Fully responsive design optimized for mobile gambling
+4. **Engagement**: Increase user session duration through better UX
+5. **Maintainability**: Modular, testable codebase
+
+### 2.2 Success Metrics
+| Metric | Current | Target |
+|--------|---------|--------|
+| First Contentful Paint | ~3s | <1.5s |
+| Time to Interactive | ~5s | <2.5s |
+| Mobile Usability Score | ~70 | >95 |
+| Bundle Size | ~2MB | <500KB |
+
+---
+
+## 3. Technical Architecture
+
+### 3.1 Recommended Tech Stack
+
+| Layer | Technology | Rationale |
+|-------|------------|-----------|
+| Framework | **React 18** or **Vue 3** | Component-based, large ecosystem |
+| State Management | Zustand (React) / Pinia (Vue) | Lightweight, simple API |
+| Styling | **Tailwind CSS** + CSS Modules | Utility-first, tree-shakeable |
+| Animation | **Framer Motion** / **GSAP** | Smooth 60fps animations |
+| Build Tool | **Vite** | Fast HMR, optimized builds |
+| Real-time | Socket.IO Client | Already in use, proven |
+| Canvas | **PixiJS** or **Konva** | WebGL-accelerated 2D graphics |
+
+### 3.2 Project Structure
+```
+src/
+├── components/
+│   ├── Game/
+│   │   ├── GameCanvas/           # Plane animation, graph
+│   │   ├── Multiplier/           # Live multiplier display
+│   │   ├── CrashHistory/         # Round history badges
+│   │   └── LoadingScreen/        # Waiting state
+│   ├── Betting/
+│   │   ├── BetPanel/             # Main bet controls
+│   │   ├── BetAmountInput/       # Amount spinner
+│   │   ├── QuickAmountButtons/   # 100, 200, 500, 1000
+│   │   ├── AutoBetToggle/        # Auto bet switch
+│   │   ├── AutoCashoutInput/     # Cashout multiplier
+│   │   └── ActionButton/         # BET/CANCEL/CASHOUT
+│   ├── Sidebar/
+│   │   ├── AllBets/              # Live bets list
+│   │   ├── MyBets/               # User's bet history
+│   │   └── BetListItem/          # Individual bet row
+│   ├── Header/
+│   │   ├── Logo/
+│   │   ├── WalletBalance/
+│   │   ├── UserMenu/
+│   │   └── SoundToggle/
+│   ├── Modals/
+│   │   ├── GameRulesModal/
+│   │   ├── DepositModal/
+│   │   └── ProfileModal/
+│   └── Toast/
+│       ├── CashoutToast/         # Win notification
+│       └── ErrorToast/           # Error notification
+├── hooks/
+│   ├── useSocket.ts              # Socket.IO connection
+│   ├── useGameState.ts           # Game status management
+│   ├── useBetting.ts             # Bet placement logic
+│   ├── useSound.ts               # Audio management
+│   └── useWallet.ts              # Balance management
+├── stores/
+│   ├── gameStore.ts              # Game state
+│   ├── betStore.ts               # Betting state
+│   └── userStore.ts              # User data
+├── services/
+│   ├── api.ts                    # REST API calls
+│   ├── socket.ts                 # Socket service
+│   └── audio.ts                  # Sound management
+├── utils/
+│   ├── formatters.ts             # Currency, numbers
+│   └── validators.ts             # Input validation
+├── styles/
+│   ├── globals.css               # Tailwind base
+│   ├── animations.css            # Keyframe animations
+│   └── themes/                   # Dark/light themes
+└── assets/
+    ├── images/
+    ├── sounds/
+    └── fonts/
+```
+
+---
+
+## 4. Component Specifications
+
+### 4.1 Game Canvas Component
+
+**Purpose**: Display the plane animation, flight path graph, and crash visualization
+
+**Requirements**:
+- WebGL-accelerated rendering for smooth 60fps
+- Responsive canvas that scales to container
+- Animated plane sprite with 4 states (idle, flying, crashed, exploded)
+- Dynamic flight path curve (Bezier curve)
+- Coordinate axes with animated labels
+- Rotating background effect during flight
+- Particle effects on crash
+
+**States**:
+| State | Visual |
+|-------|--------|
+| `waiting` | Static plane at bottom-left, "WAITING" text |
+| `countdown` | Countdown timer (3, 2, 1) |
+| `flying` | Animated plane moving along curve, graph drawing |
+| `crashed` | Explosion effect, "FLEW AWAY!" text, red multiplier |
+
+**Props**:
+```typescript
+interface GameCanvasProps {
+  gameStatus: 'waiting' | 'countdown' | 'flying' | 'crashed';
+  multiplier: number;
+  crashPoint?: number;
+  onAnimationComplete?: () => void;
+}
+```
+
+### 4.2 Multiplier Display Component
+
+**Purpose**: Show the current/final multiplier with visual feedback
+
+**Requirements**:
+- Large, readable font (minimum 48px on mobile)
+- Color transitions based on multiplier value:
+  - 1.00x - 1.50x: White
+  - 1.50x - 2.00x: Yellow
+  - 2.00x - 5.00x: Green
+  - 5.00x+: Gold with glow effect
+  - Crashed: Red with pulse animation
+- "FLEW AWAY!" text on crash
+- Smooth number transitions (count-up animation)
+- Hidden during instant crash (trueInstantCrash mode)
+
+**Props**:
+```typescript
+interface MultiplierProps {
+  value: number;
+  isCrashed: boolean;
+  isInstantCrash: boolean;
+  showFlewAway: boolean;
+}
+```
+
+### 4.3 Bet Panel Component
+
+**Purpose**: Allow users to place and manage bets
+
+**Requirements**:
+- Dual bet panels (main + extra)
+- Bet/Auto mode toggle
+- Amount input with +/- buttons
+- Quick amount buttons (configurable: 100, 200, 500, 1000)
+- Auto-bet toggle switch
+- Auto cash-out toggle with multiplier input
+- Action button states:
+  - **BET** (green): Default state
+  - **CANCEL** (red): Bet placed, waiting for round
+  - **CASH OUT** (yellow/orange): Round in progress, bet active
+- Visual feedback:
+  - Yellow border: Bet pending
+  - Green border: Bet placed successfully
+  - Red border: Bet lost
+  - Pulsing animation on CASH OUT button
+
+**Props**:
+```typescript
+interface BetPanelProps {
+  sectionId: 'main' | 'extra';
+  isVisible: boolean;
+  onRemove?: () => void;
+  minBet: number;
+  maxBet: number;
+  walletBalance: number;
+  currencySymbol: string;
+}
+```
+
+### 4.4 Sidebar - All Bets Component
+
+**Purpose**: Display real-time bets from all players
+
+**Requirements**:
+- Virtualized list for performance (100+ items)
+- Real-time updates via socket
+- Columns: User (avatar + name), Bet, Mult., Cash out
+- Visual states:
+  - Active bet: Normal
+  - Cashed out: Green highlight + multiplier badge
+  - Lost: Greyed out
+- Total bets counter
+- "Previous hand" toggle to view last round
+
+**Props**:
+```typescript
+interface AllBetsProps {
+  bets: Bet[];
+  totalBets: number;
+  showPreviousHand: boolean;
+  onTogglePreviousHand: () => void;
+}
+
+interface Bet {
+  odapuId: string;
+  username: string;
+  avatar: string;
+  amount: number;
+  multiplier?: number;
+  cashout?: number;
+  status: 'active' | 'cashed_out' | 'lost';
+}
+```
+
+### 4.5 Crash History Component
+
+**Purpose**: Display recent round results
+
+**Requirements**:
+- Horizontal scrollable list of badges
+- Color coding based on crash point:
+  - < 2x: Red/pink
+  - 2x - 10x: Purple/blue
+  - 10x+: Gold
+- Click to expand full history
+- Smooth scroll animation
+- Shadow fade on edges
+
+### 4.6 Toast Notifications
+
+**Purpose**: Celebrate wins and show errors
+
+**Cashout Toast**:
+- "You have cashed out!" header
+- Multiplier badge
+- "You got: [amount]" with currency
+- Star decorations
+- Auto-dismiss after 4s
+- Slide-in animation from top
+
+**Error Toast**:
+- Red background
+- Error message
+- Close button
+- Auto-dismiss after 3s
+
+---
+
+## 5. Game States & Flows
+
+### 5.1 Game State Machine
+
+```
+┌─────────────┐
+│   WAITING   │◄──────────────────────────┐
+│  (10-15s)   │                           │
+└──────┬──────┘                           │
+       │                                  │
+       ▼                                  │
+┌─────────────┐                           │
+│  COUNTDOWN  │                           │
+│   (3-5s)    │                           │
+└──────┬──────┘                           │
+       │                                  │
+       ▼                                  │
+┌─────────────┐     crash point           │
+│   FLYING    │────reached────────────────┤
+│ (variable)  │                           │
+└─────────────┘                           │
+       │                                  │
+       ▼                                  │
+┌─────────────┐                           │
+│   CRASHED   │───────(3s delay)──────────┘
+│   (3s)      │
+└─────────────┘
+```
+
+### 5.2 Bet State Machine (Per Bet Panel)
+
+```
+┌─────────────┐
+│    IDLE     │◄───────────────────┐
+│  (BET btn)  │                    │
+└──────┬──────┘                    │
+       │ click BET                 │
+       ▼                           │
+┌─────────────┐     click CANCEL   │
+│   PENDING   │────────────────────┤
+│ (CANCEL btn)│                    │
+└──────┬──────┘                    │
+       │ round starts              │
+       ▼                           │
+┌─────────────┐     click CASHOUT  │
+│   ACTIVE    │───────────────┬────┤
+│(CASHOUT btn)│               │    │
+└──────┬──────┘               │    │
+       │ crash                ▼    │
+       │               ┌──────────┐│
+       │               │  WON     ││
+       │               │(toast)   ││
+       │               └────┬─────┘│
+       ▼                    │      │
+┌─────────────┐             │      │
+│    LOST     │◄────────────┘      │
+│ (greyed)    │                    │
+└──────┬──────┘                    │
+       │ new round                 │
+       └───────────────────────────┘
+```
+
+---
+
+## 6. Socket Events
+
+### 6.1 Incoming Events (Server → Client)
+
+| Event | Payload | Action |
+|-------|---------|--------|
+| `gameStatus` | `{status, countdown?, gameId}` | Update game state |
+| `gameStarted` | `{gameId, instantCrash?}` | Start flying animation |
+| `multiplierUpdate` | `{multiplier}` | Update multiplier display |
+| `gameCrashed` | `{crashMultiplier, gameId}` | Show crash, update history |
+| `betPlaced` | `{username, amount, avatar, betId}` | Add to all bets list |
+| `playerCashout` | `{username, multiplier, amount, betId}` | Update bet status |
+| `forceInstantCrash` | `{crashPoint}` | Hide multiplier, instant crash |
+
+### 6.2 Outgoing Events (Client → Server)
+
+| Event | Payload | When |
+|-------|---------|------|
+| `placeBet` | `{betId, amount, username, autoCashOutAt?}` | User clicks BET |
+| `requestCashout` | `{odapuId, odapu, sectionNo}` | User clicks CASH OUT |
+| `cancelBet` | `{betId, sectionNo}` | User clicks CANCEL |
+
+---
+
+## 7. Responsive Design
+
+### 7.1 Breakpoints
+
+| Name | Width | Layout |
+|------|-------|--------|
+| Mobile S | 320px | Stack all, single bet panel |
+| Mobile L | 425px | Stack all, single bet panel |
+| Tablet | 768px | Side-by-side panels |
+| Desktop | 1024px | Full layout with sidebar |
+| Desktop L | 1440px | Expanded game canvas |
+
+### 7.2 Mobile Layout
+
+```
+┌─────────────────────────────┐
+│         HEADER              │
+├─────────────────────────────┤
+│     CRASH HISTORY           │
+├─────────────────────────────┤
+│                             │
+│       GAME CANVAS           │
+│       (multiplier)          │
+│                             │
+├─────────────────────────────┤
+│       BET PANEL             │
+│   [amount] [-][+]           │
+│   [100][200][500][1000]     │
+│   [====== BET ======]       │
+│   Auto Bet ○  Auto Cash ○   │
+├─────────────────────────────┤
+│   ALL BETS / MY BETS tabs   │
+│   ┌─────────────────────┐   │
+│   │ User  Bet  X  Cash  │   │
+│   │ ...                 │   │
+│   └─────────────────────┘   │
+└─────────────────────────────┘
+```
+
+### 7.3 Desktop Layout
+
+```
+┌───────────────────────────────────────────────────────────────┐
+│                           HEADER                               │
+├───────────────┬───────────────────────────────────────────────┤
+│               │              CRASH HISTORY BADGES              │
+│               ├───────────────────────────────────────────────┤
+│               │                                               │
+│   ALL BETS    │              GAME CANVAS                      │
+│    tab        │             (multiplier)                      │
+│               │                                               │
+│   MY BETS     ├───────────────────────────────────────────────┤
+│    tab        │     BET PANEL 1      │      BET PANEL 2       │
+│               │   [amount][-][+]     │    [amount][-][+]      │
+│   ┌───────┐   │   [100][200][500]    │    [100][200][500]     │
+│   │ User  │   │   [===== BET ====]   │    [===== BET ====]    │
+│   │ Bet   │   │   Auto ○  Cash ○     │    Auto ○  Cash ○      │
+│   │ X     │   │                      │                        │
+│   │ Cash  │   │                      │                        │
+│   └───────┘   │                      │                        │
+└───────────────┴───────────────────────────────────────────────┘
+```
+
+---
+
+## 8. Visual Design System
+
+### 8.1 Color Palette
+
+```css
+/* Primary Colors */
+--color-bg-primary: #0F0F0F;        /* Main background */
+--color-bg-secondary: #1A1A1A;      /* Cards, panels */
+--color-bg-tertiary: #2A2B2E;       /* Inputs, borders */
+
+/* Action Colors */
+--color-bet: #28A745;               /* Green - BET button */
+--color-cancel: #DC3545;            /* Red - CANCEL button */
+--color-cashout: #FFC107;           /* Yellow - CASHOUT button */
+--color-cashout-hover: #E0A800;
+
+/* Multiplier Colors */
+--color-multi-low: #FFFFFF;         /* 1.00x - 1.50x */
+--color-multi-medium: #FFD700;      /* 1.50x - 2.00x */
+--color-multi-high: #28A745;        /* 2.00x - 5.00x */
+--color-multi-epic: #FFD700;        /* 5.00x+ with glow */
+--color-multi-crash: #E50539;       /* Crashed */
+
+/* UI Colors */
+--color-text-primary: #FFFFFF;
+--color-text-secondary: #9CA3AF;
+--color-text-muted: #6B7280;
+--color-border: #374151;
+--color-success: #10B981;
+--color-error: #EF4444;
+```
+
+### 8.2 Typography
+
+```css
+/* Font Family */
+--font-primary: 'Roboto', sans-serif;
+--font-display: 'Oswald', sans-serif;  /* For multiplier, badges */
+
+/* Font Sizes */
+--text-xs: 0.75rem;     /* 12px */
+--text-sm: 0.875rem;    /* 14px */
+--text-base: 1rem;      /* 16px */
+--text-lg: 1.125rem;    /* 18px */
+--text-xl: 1.25rem;     /* 20px */
+--text-2xl: 1.5rem;     /* 24px */
+--text-3xl: 1.875rem;   /* 30px */
+--text-4xl: 2.25rem;    /* 36px */
+--text-5xl: 3rem;       /* 48px - multiplier on desktop */
+--text-6xl: 3.75rem;    /* 60px - multiplier large */
+```
+
+### 8.3 Animations
+
+| Animation | Duration | Easing | Use Case |
+|-----------|----------|--------|----------|
+| Fade In | 200ms | ease-out | Toasts, modals |
+| Slide Up | 300ms | ease-out | Bet confirmation |
+| Pulse | 1000ms | ease-in-out | CASHOUT button |
+| Shake | 500ms | ease-in-out | Error feedback |
+| Count Up | 100ms/step | linear | Multiplier increment |
+| Plane Flight | continuous | custom bezier | Plane movement |
+| Explosion | 500ms | ease-out | Crash effect |
+| Glow | 2000ms | ease-in-out | Epic multiplier |
+
+---
+
+## 9. Sound Design
+
+### 9.1 Sound Effects
+
+| Sound | Trigger | File |
+|-------|---------|------|
+| Background Music | Game active | `background.mp3` |
+| Takeoff | Round starts | `game-start.mp3` |
+| Multiplier Tick | Each 0.10x | `tick.mp3` (new) |
+| Cashout | User cashes out | `cashout.mp3` |
+| Crash | Plane crashes | `plane-crash.mp3` |
+| Bet Placed | Bet confirmed | `bet-placed.mp3` (new) |
+| Error | Bet rejected | `error.mp3` (new) |
+| Win Big | Multiplier > 5x | `win-big.mp3` (new) |
+
+### 9.2 Sound Controls
+
+- Master volume slider
+- Mute toggle button in header
+- Persist preference in localStorage
+- Respect device silent mode
+
+---
+
+## 10. Accessibility (A11y)
+
+### 10.1 Requirements
+
+- **WCAG 2.1 AA** compliance
+- Keyboard navigation for all interactive elements
+- Screen reader support with ARIA labels
+- Color contrast ratio ≥ 4.5:1
+- Focus indicators on all buttons
+- Reduced motion option for animations
+- Touch target minimum 44x44px
+
+### 10.2 ARIA Labels
+
+```html
+<button aria-label="Place bet of 100 KSh">BET</button>
+<button aria-label="Cash out at 2.5x for 250 KSh">CASH OUT</button>
+<div role="status" aria-live="polite">Multiplier: 2.50x</div>
+<div role="alert">Game crashed at 3.45x</div>
+```
+
+---
+
+## 11. Performance Optimization
+
+### 11.1 Strategies
+
+1. **Code Splitting**: Lazy load modals, settings
+2. **Tree Shaking**: Remove unused Tailwind classes
+3. **Image Optimization**: WebP format, lazy loading
+4. **Canvas Optimization**: 
+   - RequestAnimationFrame for rendering
+   - Offscreen canvas for static elements
+   - WebGL acceleration via PixiJS
+5. **Virtual Lists**: For 100+ bets
+6. **Debouncing**: Socket event handlers
+7. **Memoization**: React.memo for bet list items
+
+### 11.2 Bundle Budget
+
+| Chunk | Max Size |
+|-------|----------|
+| Main | 150KB |
+| Vendor | 200KB |
+| Canvas/Game | 100KB |
+| Styles | 50KB |
+| **Total** | **500KB** |
+
+---
+
+## 12. Security Considerations
+
+1. **Input Validation**: Sanitize all bet amounts
+2. **Rate Limiting**: Prevent bet spam (client-side)
+3. **CSRF Protection**: Include token in all API calls
+4. **XSS Prevention**: Escape all user-generated content
+5. **Secure WebSocket**: WSS protocol only in production
+6. **No Sensitive Data**: Never expose crash point before reveal
+
+---
+
+## 13. Testing Strategy
+
+### 13.1 Unit Tests
+- Component rendering
+- State management logic
+- Utility functions
+
+### 13.2 Integration Tests
+- Socket event handling
+- Bet flow end-to-end
+- State transitions
+
+### 13.3 E2E Tests
+- Full game cycle
+- Responsive layouts
+- Cross-browser compatibility
+
+### 13.4 Performance Tests
+- Lighthouse scores
+- Load testing with 1000 concurrent users
+- Animation frame rate monitoring
+
+---
+
+## 14. Migration Plan
+
+### Phase 1: Foundation (Week 1-2)
+- Set up Vite + React/Vue project
+- Implement design system (colors, typography)
+- Create base components (Button, Input, Badge)
+
+### Phase 2: Core Components (Week 3-4)
+- Build Game Canvas with PixiJS
+- Implement Multiplier Display
+- Create Bet Panel components
+
+### Phase 3: Integration (Week 5-6)
+- Connect Socket.IO
+- Implement state management
+- Build sidebar components
+
+### Phase 4: Polish (Week 7-8)
+- Add animations
+- Implement sound system
+- Mobile optimization
+- Accessibility audit
+
+### Phase 5: Testing & Launch (Week 9-10)
+- QA testing
+- Performance optimization
+- Gradual rollout
+
+---
+
+## 15. Future Enhancements
+
+1. **Themes**: Light mode, custom themes
+2. **Social Features**: Chat, friend invites
+3. **Statistics Dashboard**: Detailed player stats
+4. **Achievements**: Badges for milestones
+5. **Tournaments**: Scheduled competitions
+6. **Multi-language**: i18n support
+7. **PWA**: Installable app with offline support
+
+---
+
+## 16. Appendix
+
+### A. Current File Inventory
+
+| File | Lines | Purpose |
+|------|-------|---------|
+| `crash.blade.php` | 1,386 | Main game view |
+| `style.css` | 3,694 | All styles |
+| `aviatorold.js` | 1,200+ | Game logic |
+| `aviator-socket-integration.js` | 900+ | Socket handling |
+| `canvas.js` | 800+ | Plane animation |
+
+### B. API Endpoints
+
+| Endpoint | Method | Purpose |
+|----------|--------|---------|
+| `/game/add_bet` | POST | Place bet |
+| `/game/cashout` | POST | Cash out |
+| `/game/game_over` | POST | Record crash |
+| `/game/get_game_history` | GET | Fetch history |
+
+---
+
+This PRD provides a comprehensive roadmap for redesigning the Aviator frontend. Would you like me to:
+
+1. **Deep dive into any specific component**?
+2. **Create wireframes/mockups** for any section?
+3. **Start implementing** a specific part of this plan?
+4. **Add more technical specifications** for the Socket.IO integration?
