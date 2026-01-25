@@ -56,6 +56,12 @@ class AviatorSocketClient {
         this.socket.on('connect', () => {
             console.log('Connected to Socket.IO server');
             this.isConnected = true;
+            
+            // Hide preloader immediately on socket connection for instant game screen
+            if (typeof jQuery !== 'undefined') {
+                jQuery(".load-txt").hide();
+            }
+            
             this.triggerCallback('onConnectionChange', { connected: true });
             
             // Join game if user is logged in

@@ -63,7 +63,11 @@ function gamegenerate() {
     
     console.log('🎮 Checking socket connection...');
     
-    // Wait for socket to connect
+    // Hide preloader immediately - socket events will control game UI
+    $(".load-txt").hide();
+    
+    // Check socket connection with minimal delay (just enough for socket to initialize)
+    // Reduced from 2500ms to 500ms for faster loading
     setTimeout(() => {
         if (isSocketControlled()) {
             console.log('✅ Socket connected - SERVER controls the game');
@@ -74,7 +78,7 @@ function gamegenerate() {
             console.log('⚠️ Socket not connected - using AJAX fallback');
             legacyGamegenerate();
         }
-    }, 2500);
+    }, 500);
 }
 
 /**
@@ -104,6 +108,7 @@ function initSocketListenerMode() {
 
 /**
  * Legacy AJAX-based game generator (fallback when socket not available)
+ * NOTE: Delays reduced for faster loading - was 1500ms + 5000ms, now 300ms + 1500ms
  */
 function legacyGamegenerate() {
     setTimeout(() => {
@@ -219,8 +224,8 @@ function legacyGamegenerate() {
                         });
                 }
             });
-        }, 5000);
-    }, 1500);
+        }, 1500);  // Reduced from 5000ms for faster loading
+    }, 300);       // Reduced from 1500ms for faster loading
 }
 
 function check_game_running(event) {

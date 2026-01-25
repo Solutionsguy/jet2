@@ -477,6 +477,8 @@ function setupSocketEventHandlers(socket) {
     socket.on('onConnectionChange', (data) => {
         if (data.connected) {
             console.log('✓ Connected to game server');
+            // Hide preloader immediately on connection - game UI will show via socket events
+            $(".load-txt").hide();
             // Don't show toastr for connection - too noisy
         } else {
             console.log('✗ Disconnected from game server');

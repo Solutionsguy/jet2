@@ -35,7 +35,9 @@ let gameState = {
     players: new Map(),
     bets: new Map(),
     startTime: null,
-    gameLoopRunning: false
+    gameLoopRunning: false,
+    phaseStartTime: null,      // Track when current phase started
+    phaseDuration: 0           // Duration of current phase
 };
 
 // Connected clients
@@ -233,8 +235,22 @@ io.on('connection', (socket) => {
             status: 'flying'
         });
     } else if (gameState.gameStatus === 'waiting' || gameState.gameStatus === 'countdown') {
+        // Calculate remaining time in current phase
+        const elapsed = Date.now() - (gameState.phaseStartTime || Date.now());
+        const remaining = Math.max(0, gameState.phaseDuration - elapsed);
+        
+        console.log(`Syncing new client ${socket.id} to ${gameState.gameStatus} phase (${remaining}ms remaining)`);
+        
         socket.emit('gamePhase', {
             phase: gameState.gameStatus,
+            gameId: gameState.currentGameId,
+            duration: remaining
+        });
+    } else if (gameState.gameStatus === 'crashed') {
+        // Game just crashed, new round will start soon
+        console.log(`New client ${socket.id} connected during crashed phase - next round starting soon`);
+        socket.emit('gamePhase', {
+            phase: 'crashed',
             gameId: gameState.currentGameId,
             duration: 0
         });
@@ -799,6 +815,10 @@ function runGameCycle() {
     gameState.crashPointCalculated = false;
     gameState.activeBetIntents = 0;  // Reset active bet intent counter
     
+    // Track phase timing for new client sync
+    gameState.phaseStartTime = Date.now();
+    gameState.phaseDuration = GAME_CONFIG.waitingTime;
+    
     console.log('⏳ Waiting phase - accepting bets...');
     
     io.emit('gamePhase', {
@@ -828,6 +848,10 @@ function startCountdown() {
     // NOTE: Crash point will be generated at the END of countdown (in startFlying)
     // This ensures we check for real bets AFTER players have had time to place them
     
+    // Track phase timing for new client sync
+    gameState.phaseStartTime = Date.now();
+    gameState.phaseDuration = GAME_CONFIG.countdownTime;
+    
     console.log(`🕐 Countdown starting - Game ${gameState.currentGameId}`);
     
     // Emit countdown event
@@ -850,6 +874,10 @@ function startFlying() {
     gameState.gameStatus = 'flying';
     gameState.currentMultiplier = 1.00;
     gameState.startTime = Date.now();
+    
+    // Track phase timing (flying phase has no fixed duration)
+    gameState.phaseStartTime = Date.now();
+    gameState.phaseDuration = 0; // No fixed duration for flying
     
     // Check if there are already real bets OR bet intent (placed during waiting/countdown phase)
     const existingRealBets = Array.from(gameState.bets.values()).filter(bet => !bet.isFake).length;
@@ -1164,6 +1192,10 @@ function simulateFakeCashouts(currentMultiplier) {
  */
 function crashGame() {
     gameState.gameStatus = 'crashed';
+    
+    // Track crashed phase timing (2 second delay before next round)
+    gameState.phaseStartTime = Date.now();
+    gameState.phaseDuration = 2000;
     
     console.log(`💥 Game ${gameState.currentGameId} crashed at ${gameState.currentMultiplier}x`);
     
