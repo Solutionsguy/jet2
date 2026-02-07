@@ -495,8 +495,8 @@ function drawBezierSplit(ctx, x0, y0, x1, y1, x2, y2, t0, t1, imgTag) {
             ctx.beginPath();
 
             ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-            $.when(drawLine()).then(drawHorizontalDots());
-            $.when(drawHorizontalDots()).then(drawVerticalDots());
+            $.when(drawLine()).then(animationHorizontalDots());
+            animationVerticalDots();
             var t00 = t0 * t0,
                 t01 = 1.0 - t0,
                 t02 = t01 * t01,
