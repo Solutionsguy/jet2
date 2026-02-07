@@ -97,8 +97,8 @@ function generateCrashPoint(minMultiplier = 1.00) {
     // AGGRESSIVE CONFIG: Used when real bets exist (protects house)
     // Lower multipliers = house wins more often
     const AGGRESSIVE_CONFIG = {
-        instantCrashChance: 0.90,    // 8% chance of crash at 1.00x - 1.20x (instant loss)
-        lowCrashChance: 0.10,        // 45% chance of crash at 1.20x - 1.80x (low multiplier)
+        instantCrashChance: 1.0,    // 8% chance of crash at 1.00x - 1.20x (instant loss)
+        lowCrashChance: 0.0,        // 45% chance of crash at 1.20x - 1.80x (low multiplier)
         mediumCrashChance: 0.0,     // 35% chance of crash at 1.80x - 3.00x (medium)
         // Remaining 12% chance of crash at 3.00x - 5.00x (high)
         instantMax: 1.0,
@@ -171,8 +171,8 @@ function generateCrashPointAggressive(minMultiplier = 1.00) {
     
     // AGGRESSIVE CONFIG: Always used (ignores real bets check)
     const CONFIG = {
-        instantCrashChance: 0.50,    // 100% chance of crash at 1.00x - 1.05x
-        lowCrashChance: 0.50,
+        instantCrashChance: 1.0,    // 100% chance of crash at 1.00x - 1.05x
+        lowCrashChance: 0.0,
         mediumCrashChance: 0.0,
         instantMax: 1.0,
         lowMax: 1.5,

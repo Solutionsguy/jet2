@@ -10,11 +10,21 @@
         success: function (result) {
             $("#wallet_balance").text(currency_symbol + result);
             $("#header_wallet_balance").text(currency_symbol + result); // Show Header Wallet Balance
-            for(let i=0;i < bet_array.length; i++){
-                if(bet_array[i] && bet_array[i].is_bet){
+            
+            // ========== MODIFIED: DON'T CLEAR QUEUED BETS ==========
+            // Only clear bets that were actually placed (is_bet === 1)
+            // Keep bets without is_bet (queued but not yet placed)
+            for(let i = bet_array.length - 1; i >= 0; i--){
+                if(bet_array[i] && bet_array[i].is_bet === 1){
                     bet_array.splice(i, 1);
                 }
             }
+            
+            // DON'T clear next_round_bet_queue - these are for next round!
+            if (typeof window.next_round_bet_queue !== 'undefined') {
+                console.log('💾 Preserved queued bets:', window.next_round_bet_queue.length);
+            }
+            // ========================================================
             // bet_array = [];
         }
     });

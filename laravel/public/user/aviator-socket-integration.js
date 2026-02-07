@@ -538,8 +538,21 @@ function setupSocketEventHandlers(socket) {
     socket.on('onGamePhase', (data) => {
         console.log('🎮 [SERVER] Game phase:', data.phase);
         
+        // ========== UPDATE GLOBAL PHASE TRACKER ==========
+        window.currentGamePhase = data.phase;
+        console.log('📍 Global phase updated to:', window.currentGamePhase);
+        // =================================================
+        
         if (data.phase === 'waiting') {
             // Waiting for bets phase - NEW ROUND STARTING
+            
+            // ========== PROCESS QUEUED BETS FOR NEXT ROUND ==========
+            if (typeof processNextRoundBetQueue === 'function') {
+                processNextRoundBetQueue();
+            } else {
+                console.log('⚠️ processNextRoundBetQueue function not found');
+            }
+            // =========================================================
             // Hide any previous game elements
             $('.flew_away_section').hide();
             $('#auto_increment_number').removeClass('text-danger');
@@ -590,8 +603,10 @@ function setupSocketEventHandlers(socket) {
             // ===========================================================
             
             // Main section button reset
-            if (is_main_auto_bet) {
-                // Auto-bet is ON - show cancel button (bet will be queued)
+            const mainHasQueuedBet = typeof hasQueuedBet === 'function' ? hasQueuedBet(0) : false;
+            const mainHasPendingBet = typeof bet_array !== 'undefined' ? bet_array.some(bet => bet.section_no === 0) : false;
+            if (is_main_auto_bet || mainHasQueuedBet || mainHasPendingBet) {
+                // Auto-bet or queued/pending bet exists - show cancel button
                 $("#main_bet_section").find("#bet_button").hide();
                 $("#main_bet_section").find("#cancle_button").show();
                 $("#main_bet_section").find("#cancle_button #waiting").show();
@@ -599,7 +614,7 @@ function setupSocketEventHandlers(socket) {
                 $("#main_bet_section .controls").removeClass('bet-border-yellow');
                 $("#main_bet_section .controls").addClass('bet-border-red');
             } else {
-                // Auto-bet is OFF - show bet button
+                // No bet pending - show bet button
                 $("#main_bet_section").find("#bet_button").show();
                 $("#main_bet_section").find("#cancle_button").hide();
                 $("#main_bet_section").find("#cashout_button").hide();
@@ -608,8 +623,10 @@ function setupSocketEventHandlers(socket) {
             }
             
             // Extra section button reset
-            if (is_extra_auto_bet) {
-                // Auto-bet is ON - show cancel button (bet will be queued)
+            const extraHasQueuedBet = typeof hasQueuedBet === 'function' ? hasQueuedBet(1) : false;
+            const extraHasPendingBet = typeof bet_array !== 'undefined' ? bet_array.some(bet => bet.section_no === 1) : false;
+            if (is_extra_auto_bet || extraHasQueuedBet || extraHasPendingBet) {
+                // Auto-bet or queued/pending bet exists - show cancel button
                 $("#extra_bet_section").find("#bet_button").hide();
                 $("#extra_bet_section").find("#cancle_button").show();
                 $("#extra_bet_section").find("#cancle_button #waiting").show();
@@ -617,7 +634,7 @@ function setupSocketEventHandlers(socket) {
                 $("#extra_bet_section .controls").removeClass('bet-border-yellow');
                 $("#extra_bet_section .controls").addClass('bet-border-red');
             } else {
-                // Auto-bet is OFF - show bet button
+                // No bet pending - show bet button
                 $("#extra_bet_section").find("#bet_button").show();
                 $("#extra_bet_section").find("#cancle_button").hide();
                 $("#extra_bet_section").find("#cashout_button").hide();
@@ -654,6 +671,8 @@ function setupSocketEventHandlers(socket) {
             
         } else if (data.phase === 'countdown') {
             // Countdown phase before game starts
+            window.currentGamePhase = 'countdown';
+            
             // Keep loading screen visible during countdown
             $('.loading-game').addClass('show');
             $('.flew_away_section').hide();
@@ -662,6 +681,8 @@ function setupSocketEventHandlers(socket) {
             
         } else if (data.phase === 'crashed') {
             // Game just crashed - show flew away
+            window.currentGamePhase = 'crashed';
+            
             $('.loading-game').removeClass('show');
             $('.flew_away_section').show();
             console.log('💥 Game crashed');
@@ -672,6 +693,11 @@ function setupSocketEventHandlers(socket) {
     socket.on('onGameStarted', (data) => {
         console.log('🎮 [SOCKET EVENT] Game started with ID:', data.gameId);
         console.log('📡 All tabs should now show the same game!');
+        
+        // ========== UPDATE GLOBAL PHASE TRACKER ==========
+        window.currentGamePhase = 'flying';
+        console.log('📍 Global phase updated to: flying');
+        // =================================================
         
         // ========== RESET CRASH PROTECTION ==========
         // Re-enable cashout buttons for new game

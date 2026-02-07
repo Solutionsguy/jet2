@@ -1408,6 +1408,7 @@
     <script src="/user/avatar.js"></script>
     <script src="/user/canvas.js"></script>
     <script src="/user/aviatorold.js?v={{env('APP_VERSION')}}"></script>
+    <script src="{{ asset('js/next-round-bet-queue.js') }}"></script>
     <script src="/user/aviatorbyapp.js?v={{env('APP_VERSION')}}"></script>
     
     <!-- Plane Glow Effect Controller -->

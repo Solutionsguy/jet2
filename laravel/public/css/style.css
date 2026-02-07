@@ -3735,3 +3735,17 @@ width: 100%;
     text-shadow: none;
     color: #449eff;
 }
+
+/* ========== NEXT ROUND BET QUEUE STYLING ========== */
+
+/* Update button text for queued state */
+#cancle_button #waiting {
+    transition: all 0.3s ease;
+}
+
+/* Ensure bet-block has position relative for badge positioning */
+.bet-block {
+    position: relative;
+}
+
+/* ================================================== */

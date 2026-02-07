@@ -1039,14 +1039,10 @@ function bet_now(element, section_no) {
         $(".error-toaster2").addClass('show');
         errorToastrStageTimeOut();
     } else {
-        // ========== INSTANT BET INTENT ==========
-        // Send betIntent to socket server IMMEDIATELY when user clicks bet
-        // This triggers AGGRESSIVE mode BEFORE the AJAX call completes
-        let bet_amount_for_intent = $(element).parent().parent().find(".bet-block .spinner #bet_amount").val();
-        if (sendBetIntent(bet_amount_for_intent)) {
-            console.log('⚡ BET INTENT sent - AGGRESSIVE mode will activate immediately');
-        }
-        // ========================================
+        // ========== NEXT ROUND BET QUEUE SYSTEM ==========
+        const placementMode = typeof getBetPlacementMode === 'function' ? getBetPlacementMode() : 'place_now';
+        console.log('🎲 Bet placement mode:', placementMode, '(phase:', window.currentGamePhase, ')');
+        // =================================================
         
         var bet_type = $(element).parent().parent().parent().find(".navigation #bet_type").val(); // 0 - Normal, 1 - Auto
         // var bet_amount = parseFloat($(element).parent().parent().find(".bet-block .spinner #bet_amount").val());
@@ -1069,6 +1065,23 @@ function bet_now(element, section_no) {
         $(element).parent().parent().find(".bet-block .spinner #bet_amount").val(bet_amount);
 
         if (bet_amount >= min_bet_amount && bet_amount <= max_bet_amount) {
+            // ========== QUEUE BET FOR NEXT ROUND IF NEEDED ==========
+            if (placementMode === 'queue_next') {
+                if (typeof queueBetForNextRound === 'function') {
+                    queueBetForNextRound(bet_type, bet_amount, section_no);
+                }
+                return; // Stop here - queued for next round
+            }
+            // ========================================================
+            
+            // ========== INSTANT BET INTENT ==========
+            // Send betIntent to socket server IMMEDIATELY when user clicks bet
+            // This triggers AGGRESSIVE mode BEFORE the AJAX call completes
+            if (sendBetIntent(bet_amount)) {
+                console.log('⚡ BET INTENT sent - AGGRESSIVE mode will activate immediately');
+            }
+            // ========================================
+            
             $(element).parent().parent().find("#bet_button").hide();
             $(element).parent().parent().find("#cancle_button").show();
             $(element).parent().parent().find("#cancle_button #waiting").show();
@@ -1094,6 +1107,12 @@ function cancle_now(element, section_no) {
         $(".error-toaster2").addClass('show');
         errorToastrStageTimeOut();
     } else {
+        // ========== REMOVE FROM NEXT ROUND QUEUE ==========
+        if (typeof removeFromNextRoundQueue === 'function') {
+            removeFromNextRoundQueue(section_no);
+        }
+        // ==================================================
+        
         if (section_no == 0) {
             $('#main_auto_bet').prop('checked', false);
             $("#main_bet_section .controls").removeClass('bet-border-red');
