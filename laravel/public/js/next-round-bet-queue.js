@@ -146,7 +146,8 @@ window.queueBetForNextRound = function(bet_type, bet_amount, section_no) {
     $(sectionId).find("#bet_button").hide();
     $(sectionId).find("#cancle_button").show();
     $(sectionId).find("#cancle_button #waiting").show();
-    $(sectionId + " .controls").removeClass('bet-border-yellow bet-border-red');
+    $(sectionId + " .controls").removeClass('bet-border-yellow');
+    $(sectionId + " .controls").addClass('bet-border-red');
     
     // Disable controls
     $("." + prefix + "_bet_amount").prop('disabled', true);
