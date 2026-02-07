@@ -1,6 +1,6 @@
 @extends('Layout.usergame')
 @section('content')
-<div class="main-container" style=" background-color: rgb(0, 35, 71);">
+<div class="main-container" style=" background-color: #055522;">
     <div class="collection-page d-none">
         <!--====== Slider Start ======-->
         <div class="owl-carousel owl-theme">

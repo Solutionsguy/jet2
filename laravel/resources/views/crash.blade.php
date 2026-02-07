@@ -95,7 +95,7 @@
         }
 
         .balance_btn {
-            background-color: #003364;
+            background-color: #055522;
         }
 
         #invite_link_btn {

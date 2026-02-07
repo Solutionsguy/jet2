@@ -2,7 +2,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" preserveAspectRatio="none" x="0px" y="0px" width="150px" height="74px" viewBox="0 0 150 74">
 <defs>
 <g id="Symbol_8_0_Layer0_0_FILL">
-<path fill="#E50539" stroke="none" d="
+<path fill="#ff0647" stroke="none" d="
 M 133.05 28.5
 L 132.85 28.65
 Q 132.25 28.9 132.35 29.4 133.2 34.15 134.35 38.65 134.5 39.3 135.4 39.2
@@ -39,7 +39,7 @@ L 129.75 2.05 Z"/>
 </g>
 
 <g id="Symbol_8_0_Layer0_1_FILL">
-<path fill="#E50539" stroke="none" d="
+<path fill="#ff0647" stroke="none" d="
 M 90.75 -2.25
 Q 88.5 -2.05 86.45 -1.5
 L 85.15 2.9
@@ -107,3 +107,5 @@ Q 28.75 23.4 29.5 23.3 33.85 22.95 51.95 19.1 70 15.1 71.35 14.3 72 13.85 72.3 1
 </g>
 </g>
 </svg>
+
+

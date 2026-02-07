@@ -81,7 +81,7 @@ $('#loginForm').validate({
     submitHandler: function(form) {
         $("#loginSubmit").prop('disabled', true);
         // login_ajax($(form).serialize(), "/aviator");
-        login_ajax($(form).serialize(), "/dashboard");
+        login_ajax($(form).serialize(), "/crash");
     }
 });
 
@@ -192,7 +192,7 @@ $('#resetPasswordForm').validate({
                         password : result.data.password,
                     }
                     // login_ajax(data, '/aviator')
-                    login_ajax(data, '/dashboard')
+                    login_ajax(data, '/crash')
                 } else {
     
                 }
@@ -239,7 +239,7 @@ $('#registerViaEmailForm').validate({
                         username : result.data.username,
                         password : result.data.password,
                     }
-                    login_ajax(data,'/dashboard')
+                    login_ajax(data,'/crash')
                 } else if (result.data.is_email_exist == 1) {
                     $('#forgot-modal').modal('show');
                     $("#user_name").val(result.data.email);

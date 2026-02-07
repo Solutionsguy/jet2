@@ -408,7 +408,7 @@ function animationVerticalDots() {
     for (let i = 0; i < 2000; i++) {
         ctx.beginPath();
         ctx.arc((verticalLine - verticalDotSize), ((ctx.canvas.height - (verticalLinedata * i)) * 2 - 5) + VerticalDotsCountRun, 2, 0, 2 * Math.PI);
-        ctx.fillStyle = '#1197D6';
+        ctx.fillStyle = '#ff0647';
         ctx.fill();
         ctx.closePath();
     }
@@ -437,7 +437,7 @@ function drawVerticalDots() {
         ctx.beginPath();
         // console.log(i);
         ctx.arc((verticalLine - verticalDotSize), (verticalLinedata * i) * 2 +5, 2, 0, 2 * Math.PI);
-        ctx.fillStyle = '#1197D6';
+        ctx.fillStyle = '#ff0647';
         ctx.fill();
         ctx.closePath();
     }
@@ -464,7 +464,15 @@ function GameObject(spritesheet, x, y, width, height, timePerFrame, numberOfFram
         lastUpdate = Date.now();
     }
     // window.onload=function(){
+    ctx.save();
     draw(spritesheet, x, y, width, height, timePerFrame, numberOfFrames, ctx, frameIndex);
+
+    // Tint the plane sprite to gold without affecting the rest of the canvas
+    const frameWidth = width / numberOfFrames;
+    ctx.globalCompositeOperation = 'source-atop';
+    ctx.fillStyle = '#ff0647';
+    ctx.fillRect(x, y, frameWidth, height);
+    ctx.restore();
     // }
 }
 
@@ -482,7 +490,7 @@ function drawBezierSplit(ctx, x0, y0, x1, y1, x2, y2, t0, t1, imgTag) {
             ctx.quadraticCurveTo(x1, y1, x2, y2);
             GameObject(imgTag, x2 - imgxposition, y2 - imgyposition, imgwidth, imgheight, 300, 2, ctx);
             ctx.lineWidth = 5;
-            ctx.strokeStyle = '#F00B3E';
+            ctx.strokeStyle = '#ff0647';
             ctx.stroke();
             ctx.closePath();
             fillShape(x2, y2, x0, y0, x1, y1, t1);
@@ -519,7 +527,7 @@ function drawBezierSplit(ctx, x0, y0, x1, y1, x2, y2, t0, t1, imgTag) {
             ctx.quadraticCurveTo(nx1, ny1, nx2, ny2);
             GameObject(imgTag, nx2 - imgxposition, ny2 - imgyposition, imgwidth, imgheight, 300, 2, ctx);
             ctx.lineWidth = 5;
-            ctx.strokeStyle = '#F00B3E';
+            ctx.strokeStyle = '#ff0647';
             ctx.stroke();
             ctx.closePath();
             fillShape(nx2, ny2, nx0, ny0, nx1, ny1, 0);
@@ -593,7 +601,7 @@ function upplane(x0, y0, x1, y1, x2, y2) {
     ctx.quadraticCurveTo(x1, y1, DecreaseX, IncreaseY);
     GameObject(imgTag, DecreaseX - imgxposition, IncreaseY - imgyposition, imgwidth, imgheight, 300, 2, ctx);
     ctx.lineWidth = 5;
-    ctx.strokeStyle = '#F00B3E';
+    ctx.strokeStyle = '#ff0647';
     ctx.stroke();
     ctx.closePath();
     ctx.beginPath();
@@ -601,7 +609,7 @@ function upplane(x0, y0, x1, y1, x2, y2) {
     ctx.quadraticCurveTo(x1, y1, DecreaseX, IncreaseY);
     ctx.lineTo(DecreaseX + 3, IncreaseY);
     ctx.lineTo(DecreaseX, y0);
-    ctx.fillStyle = "rgba(104,1,14,0.8)";
+    ctx.fillStyle = "rgba(255,6,71,0.35)";
     ctx.fill();
     ctx.closePath();
 }
@@ -619,7 +627,7 @@ function downplane(x0, y0, x1, y1, x2, y2) {
     ctx.quadraticCurveTo(x1, y1, IncreaseX, DecreaseY);
     GameObject(imgTag, IncreaseX - imgxposition, DecreaseY - imgyposition, imgwidth, imgheight, 300, 2, ctx);
     ctx.lineWidth = 5;
-    ctx.strokeStyle = '#F00B3E';
+    ctx.strokeStyle = '#ff0647';
     ctx.stroke();
     ctx.stroke();
     ctx.closePath();
@@ -628,7 +636,7 @@ function downplane(x0, y0, x1, y1, x2, y2) {
     ctx.quadraticCurveTo(x1, y1, IncreaseX, DecreaseY);
     ctx.lineTo(IncreaseX + 3, DecreaseY);
     ctx.lineTo(IncreaseX, y0);
-    ctx.fillStyle = "rgba(104,1,14,0.8)";
+    ctx.fillStyle = "rgba(255,6,71,0.35)";
     ctx.fill();
     ctx.closePath();
 }
@@ -644,7 +652,7 @@ function fillShape(nx2, ny2, nx0, ny0, nx1, ny1, t1) {
         ctx.quadraticCurveTo(nx1, ny1, nx2, ny2);
         ctx.lineTo(nx2 + 3, ny2);
         ctx.lineTo(nx2 + 3, y0);
-        ctx.fillStyle = "rgba(104,1,14,0.8)";
+        ctx.fillStyle = "rgba(255,6,71,0.35)";
         ctx.fill();
         ctx.closePath();
     }
@@ -654,7 +662,7 @@ function fillShape(nx2, ny2, nx0, ny0, nx1, ny1, t1) {
         ctx.quadraticCurveTo(nx1, ny1, nx2, ny2);
         ctx.lineTo(nx2, ny2);
         ctx.lineTo(nx2, y0);
-        ctx.fillStyle = "rgba(104,1,14,0.8)";
+        ctx.fillStyle = "rgba(255,6,71,0.35)";
         ctx.fill();
         ctx.closePath();
     }
@@ -735,7 +743,7 @@ function startPlaneAtMultiplier(multiplier) {
         ctx.moveTo(x0, y0);
         ctx.quadraticCurveTo(x1, y1, estimateWidth, estimateHeight);
         ctx.lineWidth = 5;
-        ctx.strokeStyle = '#F00B3E';
+        ctx.strokeStyle = '#ff0647';
         ctx.stroke();
         ctx.closePath();
         
@@ -790,7 +798,7 @@ function startPlaneAtMultiplier(multiplier) {
         }
         
         ctx.lineWidth = 5;
-        ctx.strokeStyle = '#F00B3E';
+        ctx.strokeStyle = '#ff0647';
         ctx.stroke();
         ctx.closePath();
         
@@ -811,7 +819,7 @@ function startPlaneAtMultiplier(multiplier) {
             ctx.lineTo(sx, sy);
         }
         ctx.lineTo(curveX, y0);
-        ctx.fillStyle = "rgba(104,1,14,0.8)";
+        ctx.fillStyle = "rgba(255,6,71,0.35)";
         ctx.fill();
         ctx.closePath();
         
@@ -904,3 +912,4 @@ function resumePlaneAnimation(currentMultiplier) {
 window.startPlaneAtMultiplier = startPlaneAtMultiplier;
 window.stopPlaneAnimations = stopPlaneAnimations;
 window.resumePlaneAnimation = resumePlaneAnimation;
+

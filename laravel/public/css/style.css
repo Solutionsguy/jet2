@@ -112,7 +112,7 @@ body {
 /* Multiplier badge colors - EXACT match to plane glow effect colors */
 /* bg3: Low multiplier (≤2x) - Cyan/Blue (from glow: rgba(0, 200, 255)) */
 .bg3 {
-    background: #00c8ff;
+    background: #055522;
     color: #001820;
 }
 
@@ -189,7 +189,7 @@ a, a:hover {
     height: 60px;
     justify-content: space-between;
     background-image: linear-gradient(0deg,rgba(0,50,102,0) 0,var(--color-second-blue) 73%,var(--color-second-blue) 98%);
-    background-color: #0a519e;
+    background-color: #055522;
     border-bottom: 1px solid #2A2B2E;
     box-shadow: 0 6px 10px #00000080;
     align-items: center;
@@ -283,13 +283,16 @@ a, a:hover {
 
 .menu-icon {
     color: #9b9c9e;
-    font-variation-settings: 'FILL' 0, 'wght' 700, 'GRAD' 0, 'opsz' 48
+    font-variation-settings: 'FILL' 0, 'wght' 700, 'GRAD' 0, 'opsz' 48;
+    pointer-events: auto;
+    cursor: pointer;
 }
 
 .caret-none {
     height: 26px;
     width: 40px;
     border-radius: 20px;
+    cursor: pointer;
 }
 
     .caret-none.dropdown-toggle::after {
@@ -414,7 +417,7 @@ a, a:hover {
 }
 
 footer {
-    background: #003266;
+    background: #04441b;
     border-top-left-radius: 15px;
     border-top-right-radius: 15px;
     display: inline-block;
@@ -2039,7 +2042,7 @@ element.style {
     overflow:auto;
 }*/
 .register-modal-popup .modal-content, .register-modal-popup .login-header {
-    background: #003265;
+    background: #04441b;
     color: #fff;
 }
 
@@ -2100,8 +2103,8 @@ element.style {
 }
 
     .register-tabs .nav-link.active, .register-tabs .nav-link:hover {
-        background: #022449;
-        background-image: linear-gradient(#003265, #022449);
+        background: #033317;
+        background-image: linear-gradient(#04441b, #033317);
         border: none;
         color: #F8CE00;
     }
@@ -2232,7 +2235,7 @@ element.style {
     }
 
 .checks-bg {
-    background: #003265;
+    background: #04441b;
     padding: 10px;
 }
 
@@ -2608,7 +2611,7 @@ element.style {
         }
 
 .dark-bg-main {
-    background: #012348;
+    background: #055522;
 }
 
 .grid-view {
@@ -2795,8 +2798,8 @@ element.style {
 }
 
 .sub-header {
-    background-image: linear-gradient(0deg,#0a519e 50%,#003266 98%);
-    background-color: #0a519e;
+    background-image: linear-gradient(0deg,#055522 50%,#04441b 98%);
+    background-color: #055522;
     height: 60px;
     display: flex;
     align-items: center;
@@ -2917,7 +2920,7 @@ element.style {
 
 .accordian-header {
     color: #fff;
-    background: #003266;
+    background: #04441b;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -3152,19 +3155,19 @@ element.style {
 }
 
 .animation-plane .crash-game__pin {
-    background: url(../images/canvas/plane-0.svg) no-repeat;
+    background: url(../images/canvas/plane-0.svg?v=red) no-repeat;
 }
 
 .animation-plane1 .crash-game__pin {
-    background: url(../images/canvas/plane-1.svg) no-repeat;
+    background: url(../images/canvas/plane-1.svg?v=red) no-repeat;
 }
 
 .animation-plane2 .crash-game__pin {
-    background: url(../images/canvas/plane-2.svg) no-repeat;
+    background: url(../images/canvas/plane-2.svg?v=red) no-repeat;
 }
 
 .animation-plane3 .crash-game__pin {
-    background: url(../images/canvas/plane-3.svg) no-repeat;
+    background: url(../images/canvas/plane-3.svg?v=red) no-repeat;
 }
 
 @-webkit-keyframes steps-sprite {
@@ -3180,7 +3183,7 @@ element.style {
 }
 
 #path400 {
-    stroke: red;
+    stroke: #d4af37;
     stroke-width: 5;
     fill: none;
 }
@@ -3237,7 +3240,7 @@ element.style {
 }
 
 .blue-circle {
-    fill: #1197D6;
+    fill: #055522;
 }
 
 .x-axis {
@@ -3672,7 +3675,7 @@ width: 100%;
 }
 .game-list-boxs {
     border-radius: 10px;
-    background-color: #09519e;
+    background-color: #0a7a3e;
     overflow: hidden;
     transition: all .15s;
 }
@@ -3713,8 +3716,8 @@ width: 100%;
     font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48;
 }
 .title-bg1 {
-    background-color: #002347;
-    background-image: linear-gradient(0deg,#002347 0,#002347 20%,#003266);
+    background-color: #04441b;
+    background-image: linear-gradient(0deg,#04441b 0,#04441b 20%,#04441b);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -3733,7 +3736,7 @@ width: 100%;
 }
 .title-bg1 .material-symbols-outlined {
     text-shadow: none;
-    color: #449eff;
+    color: #055522;
 }
 
 /* ========== NEXT ROUND BET QUEUE STYLING ========== */
@@ -3749,3 +3752,144 @@ width: 100%;
 }
 
 /* ================================================== */
+
+/* ========== GOLD + BLACK + CASINO GREEN THEME OVERRIDES ========== */
+:root {
+    --theme-black: #0b0b0b;
+    --theme-black-2: #121212;
+    --theme-green: #055522;
+    --theme-green-2: #04441b;
+    --theme-gold: #d4af37;
+    --theme-gold-2: #b8902b;
+    --theme-text: #f2e8c9;
+    --color-second-blue: #055522;
+}
+
+body,
+.main-container {
+    background: var(--theme-black);
+    color: var(--theme-text);
+}
+
+.header-top,
+.header-bottom {
+    background-color: var(--theme-green);
+    background-image: none;
+    border-bottom: 1px solid #04441b;
+}
+
+.header-bottom {
+    background-image: none !important;
+    background-color: #033317 !important;
+}
+
+footer {
+    background: var(--theme-green);
+}
+
+.footer-column_center,
+.footer-column_left,
+.footer-highlight {
+    background-color: #04441b;
+}
+
+.ftr-txt,
+.footer-column a,
+.footer-column p,
+.footer-column li {
+    color: var(--theme-text);
+}
+
+.footer-icon_monocolor,
+.footer-icon_monocolor svg {
+    fill: var(--theme-gold);
+}
+
+.footer-icon_monocolor:hover,
+.footer-icon_monocolor:hover svg {
+    fill: var(--theme-gold-2);
+}
+
+.login-btn,
+.register-btn,
+.deposite-btn,
+.orange-btn,
+.green-btn,
+.buttons-block .btn.btn-success,
+.buttons-block .btn.btn-warning,
+.demo-btns {
+    background-image: linear-gradient(0deg, var(--theme-gold-2), var(--theme-gold));
+    box-shadow: 0 10px 20px rgba(212, 175, 55, 0.3);
+    color: #1a1a1a;
+}
+
+.green-btn:hover,
+.orange-btn:hover,
+.demo-btns:hover,
+.login-btn:hover,
+.register-btn:hover,
+.deposite-btn:hover {
+    background-image: linear-gradient(0deg, var(--theme-gold), var(--theme-gold-2));
+    color: #111;
+}
+
+.tabs-navs .active-line,
+.tabs-navs1 .active-line {
+    background: var(--theme-green);
+}
+
+.controls,
+.contents-blocks,
+.list-items,
+.white-box,
+.PaymentCard_limit,
+.history-top,
+.stats {
+    background-color: #111111;
+    border-color: #1f1f1f;
+    color: var(--theme-text);
+}
+
+.list-items.active,
+.list-items.cashed-out-highlight {
+    border-color: var(--theme-gold);
+    background: #1a1a1a;
+}
+
+.btn.btn-danger,
+.btn-danger {
+    background: #8b1d1d;
+    border-color: #8b1d1d;
+}
+
+.fairness .material-symbols-outlined,
+.fairness:hover:after {
+    background-color: var(--theme-green-2);
+    color: #fff;
+}
+
+.title-bg1 {
+    background-color: var(--theme-green);
+    background-image: none;
+}
+
+.title-bg1 h2,
+.title-bg1 .material-symbols-outlined {
+    color: var(--theme-gold);
+    text-shadow: none;
+}
+
+.darkblue-bg,
+.bg-darkblue,
+.blues-box {
+    background: var(--theme-green) !important;
+}
+
+.darkblue-txt,
+.blue-circle {
+    color: var(--theme-green) !important;
+    fill: var(--theme-green) !important;
+}
+
+/* ================================================== */
+
