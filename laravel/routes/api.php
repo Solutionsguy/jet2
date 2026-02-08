@@ -19,6 +19,7 @@ use App\Http\Controllers\Gamesetting;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
 //Data api
 Route::post('/user/withdrawal_list', [Userdetail::class,"withdrawal_list"]);
 

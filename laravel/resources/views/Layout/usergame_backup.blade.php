@@ -3,11 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Betting company {{ env('APP_NAME') }} - online sports betting</title>
+
     <meta name="csrf-token" content="{{ csrf_token() }}">
+
     <link rel="shortcut icon" href="{{ asset('images/logo.png') }}">
+
+    <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+
+    <!-- CSS -->
     <link rel="stylesheet" href="{{ asset('css/jquery.mCustomScrollbar.min.css') }}">
     <link rel="stylesheet" href="{{ asset('css/pretty-checkbox.min.css') }}">
     <link rel="stylesheet" href="{{ asset('css/niceCountryInput.css') }}">
@@ -18,15 +25,14 @@
     <link rel="stylesheet" href="{{ asset('css/toastr.min.css') }}">
     <link rel="stylesheet" href="{{ asset('css/dataTables.bootstrap5.min.css') }}">
     <link rel="stylesheet" href="{{ asset('css/responsive.dataTables.min.css') }}">
+
     @yield('css')
 </head>
+
 <body class="dark-bg-main">
 
 @include('include.header')
 @yield('content')
-
-<input type="hidden" id="referral_code" value="">
-
     <input type="hidden" id="referral_code" value="">
     <!--====== Login Modal Start ======-->
     <div class="modal fade l-modal" id="login-modal" tabindex="-1" aria-labelledby="login-modal"
@@ -406,7 +412,207 @@
                                                 </span>
                                             </span>
                                             <input type="text" class="form-control ps-0" id="promo_code"
-                                                name="promocode" placeholder="Enter Promocode" value="{{isset($_GET['refer']) ? $_GET['refer'] : ''}}">
+                                                name="promocode" placeholder="Enter Promocode" value="{{isset(<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Betting company {{ env('APP_NAME') }} - online sports betting</title>
+
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    <link rel="shortcut icon" href="{{ asset('images/logo.png') }}">
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ asset('css/jquery.mCustomScrollbar.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/pretty-checkbox.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/niceCountryInput.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/jquery.ccpicker.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/owl.carousel.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/bootstrap.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/toastr.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/dataTables.bootstrap5.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/responsive.dataTables.min.css') }}">
+
+    @yield('css')
+</head>
+
+<body class="dark-bg-main">
+
+@include('include.header')
+@yield('content')
+@include('include.footer')
+
+<input type="hidden" id="referral_code" value="">
+
+{{-- ?? Modals unchanged (HTML is OK) --}}
+
+<!-- JS -->
+<script src="{{ asset('js/jquery.min.js') }}"></script>
+<script src="{{ asset('js/popper.min.js') }}"></script>
+<script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
+<script src="{{ asset('js/jquery.mCustomScrollbar.js') }}"></script>
+<script src="{{ asset('js/niceCountryInput.js') }}"></script>
+<script src="{{ asset('js/jquery.ccpicker.js') }}"></script>
+<script src="{{ asset('js/anime.min.js') }}"></script>
+<script src="{{ asset('js/owl.carousel.min.js') }}"></script>
+<script src="{{ asset('js/main.js') }}"></script>
+<script src="{{ asset('js/jquery.validate.min.js') }}"></script>
+<script src="{{ asset('js/toastr.min.js') }}"></script>
+<script src="{{ asset('js/jquery.dataTables.min.js') }}"></script>
+<script src="{{ asset('js/dataTables.bootstrap5.min.js') }}"></script>
+<script src="{{ asset('js/dataTables.responsive.min.js') }}"></script>
+
+<!-- SweetAlert -->
+<script src="https://unpkg.com/sweetalert@2.1.2/dist/sweetalert.min.js"></script>
+
+<!-- Global APP URL -->
+<script>
+    window.APP_URL = "{{ url('/') }}";
+</script>
+
+<script>
+$.ajaxSetup({
+    headers: {
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+    }
+});
+
+$.ajax({
+    url: window.APP_URL + '/get_user_details',
+    type: 'GET',
+    success: function (result) {
+        if (result.isSuccess) {
+            $("#avatar_img").attr('src', result.data.avatar);
+            $("#username").text(result.data.username);
+
+            if (result.data.notification) {
+                swal('Notification', result.data.notification, 'success')
+                    .then(() => {
+                        $.post(window.APP_URL + '/update_is_notify', {
+                            id: result.data.id,
+                            request_type: result.data.request_type
+                        });
+                    });
+            }
+        }
+    }
+});
+</script>
+
+<!-- Login logic -->
+<script src="{{ asset('user/login.js') }}"></script>
+
+@yield('js')
+</body>
+</html>
+GET['refer']) ? <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Betting company {{ env('APP_NAME') }} - online sports betting</title>
+
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    <link rel="shortcut icon" href="{{ asset('images/logo.png') }}">
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ asset('css/jquery.mCustomScrollbar.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/pretty-checkbox.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/niceCountryInput.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/jquery.ccpicker.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/owl.carousel.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/bootstrap.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/toastr.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/dataTables.bootstrap5.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/responsive.dataTables.min.css') }}">
+
+    @yield('css')
+</head>
+
+<body class="dark-bg-main">
+
+@include('include.header')
+@yield('content')
+@include('include.footer')
+
+<input type="hidden" id="referral_code" value="">
+
+{{-- ?? Modals unchanged (HTML is OK) --}}
+
+<!-- JS -->
+<script src="{{ asset('js/jquery.min.js') }}"></script>
+<script src="{{ asset('js/popper.min.js') }}"></script>
+<script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
+<script src="{{ asset('js/jquery.mCustomScrollbar.js') }}"></script>
+<script src="{{ asset('js/niceCountryInput.js') }}"></script>
+<script src="{{ asset('js/jquery.ccpicker.js') }}"></script>
+<script src="{{ asset('js/anime.min.js') }}"></script>
+<script src="{{ asset('js/owl.carousel.min.js') }}"></script>
+<script src="{{ asset('js/main.js') }}"></script>
+<script src="{{ asset('js/jquery.validate.min.js') }}"></script>
+<script src="{{ asset('js/toastr.min.js') }}"></script>
+<script src="{{ asset('js/jquery.dataTables.min.js') }}"></script>
+<script src="{{ asset('js/dataTables.bootstrap5.min.js') }}"></script>
+<script src="{{ asset('js/dataTables.responsive.min.js') }}"></script>
+
+<!-- SweetAlert -->
+<script src="https://unpkg.com/sweetalert@2.1.2/dist/sweetalert.min.js"></script>
+
+<!-- Global APP URL -->
+<script>
+    window.APP_URL = "{{ url('/') }}";
+</script>
+
+<script>
+$.ajaxSetup({
+    headers: {
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+    }
+});
+
+$.ajax({
+    url: window.APP_URL + '/get_user_details',
+    type: 'GET',
+    success: function (result) {
+        if (result.isSuccess) {
+            $("#avatar_img").attr('src', result.data.avatar);
+            $("#username").text(result.data.username);
+
+            if (result.data.notification) {
+                swal('Notification', result.data.notification, 'success')
+                    .then(() => {
+                        $.post(window.APP_URL + '/update_is_notify', {
+                            id: result.data.id,
+                            request_type: result.data.request_type
+                        });
+                    });
+            }
+        }
+    }
+});
+</script>
+
+<!-- Login logic -->
+<script src="{{ asset('user/login.js') }}"></script>
+
+@yield('js')
+</body>
+</html>
+GET['refer'] : ''}}">
                                             {{-- <!-- <div class="CheckButton-icon d-flex align-items-center">
                                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14 14" class="Icon_icon__2Th0s"><path d="M7 14c-.627 0-1.224-.109-1.802-.264L6.53 11.96c.156.014.309.041.469.041A5 5 0 007 2a4.937 4.937 0 00-3.519 1.481L6 6H0V0l2.055 2.055A6.961 6.961 0 017 0a7 7 0 110 14zM3.703 9.012l4.97-4.08 1.09 1.431-6.113 6.2-.005-.007-.007.006L.23 8.772l1.42-1.249z"></path></svg>
                                             </div>
@@ -450,8 +656,14 @@
     <!--====== Register Modal End ======-->
 
 
+
 @include('include.footer')
 
+<input type="hidden" id="referral_code" value="">
+
+{{-- ?? Modals unchanged (HTML is OK) --}}
+
+<!-- JS -->
 <script src="{{ asset('js/jquery.min.js') }}"></script>
 <script src="{{ asset('js/popper.min.js') }}"></script>
 <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
@@ -466,8 +678,11 @@
 <script src="{{ asset('js/jquery.dataTables.min.js') }}"></script>
 <script src="{{ asset('js/dataTables.bootstrap5.min.js') }}"></script>
 <script src="{{ asset('js/dataTables.responsive.min.js') }}"></script>
+
+<!-- SweetAlert -->
 <script src="https://unpkg.com/sweetalert@2.1.2/dist/sweetalert.min.js"></script>
 
+<!-- Global APP URL -->
 <script>
     window.APP_URL = "{{ url('/') }}";
 </script>
@@ -486,6 +701,7 @@ $.ajax({
         if (result.isSuccess) {
             $("#avatar_img").attr('src', result.data.avatar);
             $("#username").text(result.data.username);
+
             if (result.data.notification) {
                 swal('Notification', result.data.notification, 'success')
                     .then(() => {
@@ -500,26 +716,9 @@ $.ajax({
 });
 </script>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    if (typeof bootstrap === 'undefined') return;
-    var dropdownElementList = [].slice.call(document.querySelectorAll('[data-bs-toggle="dropdown"]'));
-    var dropdownList = dropdownElementList.map(function (dropdownToggleEl) {
-        return new bootstrap.Dropdown(dropdownToggleEl, { autoClose: true });
-    });
-    dropdownElementList.forEach(function(btn) {
-        btn.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            var dropdown = bootstrap.Dropdown.getOrCreateInstance(this);
-            dropdown.toggle();
-        });
-    });
-});
-</script>
-
+<!-- Login logic -->
 <script src="{{ asset('user/login.js') }}"></script>
 
 @yield('js')
 </body>
-</html>
+</html>

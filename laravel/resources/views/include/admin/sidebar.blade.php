@@ -51,6 +51,18 @@
                  <i class="mdi mdi-account-network menu-icon"></i>
              </a>
          </li>
+         <li class="nav-item">
+             <a class="nav-link" href="rain">
+                 <span class="menu-title">Rain Management</span>
+                 <i class="mdi mdi-cloud-download menu-icon" style="color: #FF9500;"></i>
+             </a>
+         </li>
+         <li class="nav-item">
+             <a class="nav-link" href="freebet">
+                 <span class="menu-title">Freebet Management</span>
+                 <i class="mdi mdi-gift menu-icon" style="color: #667eea;"></i>
+             </a>
+         </li>
          {{-- <li class="nav-item">
              <a class="nav-link" data-bs-toggle="collapse" href="#ui-basic" aria-expanded="false"
                  aria-controls="ui-basic">

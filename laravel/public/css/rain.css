@@ -1,0 +1,148 @@
+/* ========== RAIN/GIVEAWAY SYSTEM STYLES ========== */
+
+/* Rain Create Modal */
+.rain-modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 9999;
+}
+
+/* Rain Create Modal */
+.rain-create-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #111111;
+    border: 2px solid #055522;
+    border-radius: 15px;
+    padding: 30px;
+    z-index: 10000;
+    min-width: 400px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
+}
+
+.rain-create-modal h3 {
+    color: #d4af37;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.rain-balance-info {
+    background: rgba(5, 85, 34, 0.3);
+    padding: 10px;
+    border-radius: 8px;
+    text-align: center;
+    color: #f2e8c9;
+    font-size: 14px;
+    margin-bottom: 15px;
+    border: 1px solid #055522;
+}
+
+.rain-balance-info #rain-user-balance {
+    color: #d4af37;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.rain-create-modal .form-group {
+    margin-bottom: 15px;
+}
+
+.rain-create-modal label {
+    display: block;
+    color: #f2e8c9;
+    margin-bottom: 5px;
+    font-size: 14px;
+}
+
+.rain-create-modal .form-control {
+    width: 100%;
+    background: #0b0b0b;
+    border: 1px solid #055522;
+    border-radius: 6px;
+    padding: 10px;
+    color: #f2e8c9;
+    font-size: 14px;
+}
+
+.rain-create-modal .form-control:focus {
+    border-color: #26c162;
+    outline: none;
+}
+
+.rain-total {
+    background: #055522;
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+    color: #d4af37;
+    margin: 20px 0;
+}
+
+.form-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.form-actions .btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.form-actions .btn-success {
+    background: linear-gradient(0deg, #055522, #26c162);
+    color: white;
+}
+
+.form-actions .btn-secondary {
+    background: #666;
+    color: white;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    .rain-banner {
+        max-width: calc(100vw - 40px);
+        top: 70px;
+    }
+    
+    .rain-banner-content {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    
+    .rain-icon {
+        font-size: 30px;
+    }
+    
+    .rain-title {
+        font-size: 16px;
+    }
+    
+    .rain-details {
+        font-size: 12px;
+    }
+    
+    .btn-join-rain {
+        width: 100%;
+        margin-top: 10px;
+    }
+    
+    .rain-create-modal {
+        min-width: calc(100vw - 40px);
+        max-width: calc(100vw - 40px);
+    }
+}
+
+/* ================================================== */

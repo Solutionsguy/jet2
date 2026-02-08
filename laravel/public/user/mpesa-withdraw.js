@@ -45,38 +45,36 @@ function resetMpesaWithdrawStatus() {
     $('#mpesa_withdraw_btn').prop('disabled', false);
 }
 
-function initiateMpesaWithdrawal() {
+function initiateMpesaWithdraw() {
     var phone = $('#mpesa_withdraw_phone').val().trim();
     var amount = $('#mpesa_withdraw_amount').val();
     var walletBalance = parseFloat($('#mpesa_wallet_balance').val()) || 0;
     var minWithdraw = mpesaMinWithdraw;
-    var csrfToken = $('input[name="_token"]').val() || $('meta[name="csrf-token"]').attr('content');
+    var csrfToken = $('meta[name="csrf-token"]').attr('content');
 
-    // Validation
+    // Validation - phone must be 254XXXXXXXXX format
     if (!phone) {
         toastr.error('Please enter your M-Pesa phone number');
         return;
     }
 
-    // Validate phone format
-    var phoneRegex = /^(07|01|2547|2541|\+2547|\+2541)[0-9]{8}$/;
-    if (!phoneRegex.test(phone.replace(/\s/g, ''))) {
-        toastr.error('Please enter a valid M-Pesa phone number (e.g., 07XXXXXXXX)');
+    if (!phone.match(/^254[0-9]{9}$/)) {
+        toastr.error('Phone number must be in format: 254XXXXXXXXX');
         return;
     }
 
     if (!amount || parseInt(amount) < minWithdraw) {
-        toastr.error('Minimum withdrawal amount is KES ' + minWithdraw);
+        toastr.error('Minimum withdrawal amount is KSh ' + minWithdraw);
         return;
     }
 
     if (parseInt(amount) > walletBalance) {
-        toastr.error('Insufficient balance. Available: KES ' + walletBalance.toFixed(2));
+        toastr.error('Insufficient balance. Available: KSh ' + walletBalance.toFixed(2));
         return;
     }
 
     // Confirm withdrawal
-    if (!confirm('Withdraw KES ' + parseInt(amount).toLocaleString() + ' to M-Pesa number ' + phone + '?')) {
+    if (!confirm('Withdraw KSh ' + parseInt(amount).toLocaleString() + ' to M-Pesa number ' + phone + '?')) {
         return;
     }
 
@@ -87,9 +85,9 @@ function initiateMpesaWithdrawal() {
     $('#mpesa_withdraw_success').hide();
     $('#mpesa_withdraw_error').hide();
 
-    // Send withdrawal request
+    // Send Paystack M-Pesa withdrawal request
     $.ajax({
-        url: '/mpesa/withdraw',
+        url: '/paystack/mpesa/withdraw',
         method: 'POST',
         data: {
             _token: csrfToken,
@@ -113,15 +111,33 @@ function initiateMpesaWithdrawal() {
     });
 }
 
+// Alias for backward compatibility
+function initiateMpesaWithdrawal() {
+    initiateMpesaWithdraw();
+}
+
 function showMpesaWithdrawSuccess(message) {
     $('#mpesa_withdraw_loading').hide();
     $('#mpesa_withdraw_success').show();
     toastr.success(message || 'Withdrawal initiated successfully!');
     
-    // Redirect after 3 seconds
+    // Update wallet balance immediately
+    if (typeof updateWalletBalanceFromServer === 'function') {
+        updateWalletBalanceFromServer();
+        console.log('💰 Wallet balance updated after M-Pesa withdrawal');
+    }
+    
+    // Close modal and stay on same page after 2 seconds
     setTimeout(function() {
-        window.location.href = '/withdraw?msg=Success';
-    }, 3000);
+        // Hide withdraw form/modal if exists
+        if ($('#mpesa_withdraw_modal').length) {
+            $('#mpesa_withdraw_modal').modal('hide');
+        }
+        resetMpesaWithdrawStatus();
+        // Clear form
+        $('#mpesa_withdraw_amount').val('');
+        $('#mpesa_withdraw_phone').val('');
+    }, 2000);
 }
 
 function showMpesaWithdrawError(message) {

@@ -79,7 +79,20 @@ class Userdetail extends Controller
         $message = "Something went wrong!";
         $notification = "";
         $avatar = "images/avtar/av-1.png";
-        $data = array("username"=>user('id'),"avatar"=>$avatar,"notification"=>$notification);
+        
+        // Get both wallet balances
+        $userId = user('id');
+        $walletData = Wallet::where('userid', $userId)->first();
+        $walletBalance = $walletData ? floatval($walletData->amount) : 0;
+        $freebetBalance = $walletData ? floatval($walletData->freebet_amount) : 0;
+        
+        $data = array(
+            "username" => user('id'),
+            "avatar" => $avatar,
+            "notification" => $notification,
+            "wallet" => $walletBalance,
+            "freebet" => $freebetBalance
+        );
         $message = "Success";
         $isSuccess = true;
         $res = array("data" => $data, "isSuccess" => $isSuccess, "message" => $message);

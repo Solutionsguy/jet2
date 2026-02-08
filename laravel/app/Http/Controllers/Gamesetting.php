@@ -119,6 +119,7 @@ class Gamesetting extends Controller
         $betData = array();
         $data = array();
         $new_balance = 0;
+        $new_freebet_balance = 0;
         
         // Validate user is logged in
         $userId = user('id');
@@ -133,8 +134,18 @@ class Gamesetting extends Controller
             return response()->json($response);
         }
         
-        // Get current wallet balance
-        $current_balance = floatval(wallet($userId, 'num'));
+        // Get wallet type (money or freebet)
+        $wallet_type = $r->wallet_type ?? 'money';
+        
+        // Get current wallet balances
+        $walletData = Wallet::where('userid', $userId)->first();
+        if (!$walletData) {
+            $response = array("isSuccess" => false, "data" => array(), "message" => "Wallet not found");
+            return response()->json($response);
+        }
+        
+        $current_balance = floatval($walletData->amount);
+        $current_freebet_balance = floatval($walletData->freebet_amount);
         
         for($i=0; $i < count($r->all_bets); $i++){
             $bet_amount = floatval($r->all_bets[$i]['bet_amount']);
@@ -146,13 +157,23 @@ class Gamesetting extends Controller
                 break;
             }
             
-            // Check if user has enough balance (bet_amount should be <= wallet balance)
-            if ($bet_amount <= $current_balance) {
-                // FIRST deduct the bet amount from wallet
-                $new_balance = addwallet($userId, $bet_amount, "-");
-                
-                // Update current_balance for next iteration (multiple bets)
-                $current_balance = $new_balance;
+            // Check if user has enough balance based on wallet type
+            $available_balance = ($wallet_type === 'freebet') ? $current_freebet_balance : $current_balance;
+            
+            if ($bet_amount <= $available_balance) {
+                // FIRST deduct the bet amount from the appropriate wallet
+                if ($wallet_type === 'freebet') {
+                    // Deduct from freebet wallet
+                    $new_freebet_balance = $current_freebet_balance - $bet_amount;
+                    Wallet::where('userid', $userId)->update(['freebet_amount' => $new_freebet_balance]);
+                    $current_freebet_balance = $new_freebet_balance;
+                    $new_balance = $current_balance; // Keep money balance same
+                } else {
+                    // Deduct from money wallet
+                    $new_balance = addwallet($userId, $bet_amount, "-");
+                    $current_balance = $new_balance;
+                    $new_freebet_balance = $current_freebet_balance; // Keep freebet balance same
+                }
                 
                 // THEN save the bet record
                 $result = new Userbit;
@@ -161,6 +182,7 @@ class Gamesetting extends Controller
                 $result->type = $r->all_bets[$i]['bet_type'] ?? 0;
                 $result->gameid = currentid();
                 $result->section_no = $r->all_bets[$i]['section_no'] ?? 0;
+                $result->wallet_type = $wallet_type; // Store which wallet was used
                 $result->status = 0; // 0 = active bet, 1 = cashed out/completed
                 
                 if ($result->save()) {
@@ -186,23 +208,31 @@ class Gamesetting extends Controller
                     $message = "";
                 } else {
                     // If save failed, refund the deducted amount
-                    addwallet($userId, $bet_amount, "+");
-                    $new_balance = $current_balance + $bet_amount; // Restore balance
+                    if ($wallet_type === 'freebet') {
+                        Wallet::where('userid', $userId)->update(['freebet_amount' => $current_freebet_balance + $bet_amount]);
+                    } else {
+                        addwallet($userId, $bet_amount, "+");
+                    }
                     $status = false;
                     $message = "Failed to save bet to database";
                     break;
                 }
             } else {
                 $status = false;
-                $message = "Insufficient funds! Balance: " . number_format($current_balance, 2) . ", Bet: " . number_format($bet_amount, 2);
+                $wallet_label = ($wallet_type === 'freebet') ? 'Freebet' : 'Money';
+                $message = "Insufficient {$wallet_label} funds! Balance: " . number_format($available_balance, 2) . ", Bet: " . number_format($bet_amount, 2);
                 break; // Stop processing more bets if insufficient funds
             }
         }
         
-        // Build final response data - use the latest balance
+        // Build final response data - use the latest balances
         $final_balance = $status ? $new_balance : floatval(wallet($userId, 'num'));
+        $final_freebet_balance = $status ? $new_freebet_balance : floatval($walletData->freebet_amount);
+        
         $data = array(
             "wallet_balance" => round($final_balance, 2),
+            "freebet_balance" => round($final_freebet_balance, 2),
+            "wallet_type" => $wallet_type,
             "return_bets" => $returnbets,
             "socket_data" => $betData
         );
@@ -370,8 +400,21 @@ class Gamesetting extends Controller
         // Calculate cashout amount - player gets bet_amount * multiplier when they cash out
         $cash_out_amount = $bet_amount * $win_multiplier;
         
-        // Add winnings to wallet and get new balance
-		$new_balance = addwallet($userId, $cash_out_amount, "+");
+        // Get the wallet type used for this bet
+        $bet_wallet_type = $bet->wallet_type ?? 'money';
+        
+        // Add winnings to the appropriate wallet and get new balance
+        if ($bet_wallet_type === 'freebet') {
+            // Credit winnings to money wallet (freebet winnings go to money)
+            $new_balance = addwallet($userId, $cash_out_amount, "+");
+            $walletData = Wallet::where('userid', $userId)->first();
+            $freebet_balance = $walletData ? $walletData->freebet_amount : 0;
+        } else {
+            // Credit winnings to money wallet
+            $new_balance = addwallet($userId, $cash_out_amount, "+");
+            $walletData = Wallet::where('userid', $userId)->first();
+            $freebet_balance = $walletData ? $walletData->freebet_amount : 0;
+        }
 		
 		// Update bet status
         Userbit::where('id', $bet_id)->update([
@@ -384,7 +427,9 @@ class Gamesetting extends Controller
         
 		$data = array(
             "wallet_balance" => round($new_balance, 2),
+            "freebet_balance" => round($freebet_balance, 2),
             "cash_out_amount" => round($cash_out_amount, 2),
+            "wallet_type" => $bet_wallet_type,
             "socket_data" => [
                 "betId" => $bet_id,
                 "userId" => $userId,

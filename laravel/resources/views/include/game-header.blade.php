@@ -93,6 +93,17 @@
                             </a>
                         </li>
 
+                        @if(user('isadmin'))
+                        <li>
+                            <a href="/admin" class="f-12 justify-content-between" style="background: linear-gradient(90deg, #FF9500, #FFA500); color: #000; font-weight: 600;">
+                                <div class="d-flex align-items-center">
+                                    <span class="material-symbols-outlined ico f-20">
+                                        admin_panel_settings
+                                    </span>ADMIN PANEL
+                                </div>
+                            </a>
+                        </li>
+                        @endif
 
                         <li>
                             <a href="/deposit" class="f-12 justify-content-between">
@@ -187,6 +198,19 @@
         <div class="header-left">
             <img src="../../images/logo.svg" class="logo" />
         </div>
+        
+        <!-- Wallet Toggle Button - Center -->
+        <div class="header-center">
+            <div class="wallet-toggle-container">
+                <button class="wallet-toggle-btn active" data-wallet="money" onclick="switchWalletType('money')">
+                    Money
+                </button>
+                <button class="wallet-toggle-btn" data-wallet="freebet" onclick="switchWalletType('freebet')">
+                    Use Freebet
+                </button>
+            </div>
+        </div>
+        
         <div class="header-right d-flex align-items-center">
             <!-- <button class="btn btn-warning m-font-0 rounded-pill py-1 px-2 f-14 d-flex align-items-center h-26" data-bs-toggle="modal" data-bs-target="#how-to-play">
             <span class="material-symbols-outlined f-18 me-1">

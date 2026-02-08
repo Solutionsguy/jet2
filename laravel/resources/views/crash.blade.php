@@ -35,6 +35,13 @@
 
     <!--====== Style CSS ======-->
     <link rel="stylesheet" href="../../css/style.css" />
+    
+    <!--====== Chat CSS ======-->
+    <link rel="stylesheet" href="{{ asset('css/chat.css') }}" />
+    
+    <!--====== Rain CSS ======-->
+    <link rel="stylesheet" href="{{ asset('css/rain.css') }}" />
+    <link rel="stylesheet" href="{{ asset('css/rain-chat.css') }}" />
 
     <!-- ====== Toastr CSS ====== -->
     <link rel="stylesheet" href="../../css/toastr.min.css" />
@@ -379,7 +386,60 @@
         }
 
         .bet-border-yellow {
-            border-color: #e69308 !important;
+            border-color: #FF9500 !important;
+        }
+
+        /* Wallet Toggle Button Styles */
+        .header-center {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex: 1;
+        }
+
+        .wallet-toggle-container {
+            display: inline-flex;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #FF9500;
+            border-radius: 16px;
+            padding: 2px;
+            position: relative;
+            overflow: hidden;
+            height: 30px;
+        }
+
+        .wallet-toggle-btn {
+            padding: 4px 14px;
+            border: none;
+            background: transparent;
+            color: #fff;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 14px;
+            position: relative;
+            z-index: 2;
+            min-width: 75px;
+            text-align: center;
+            line-height: 1.4;
+        }
+
+        .wallet-toggle-btn.active {
+            background: #FF9500;
+            color: #000;
+        }
+
+        .wallet-toggle-btn:hover:not(.active) {
+            background: rgba(255, 149, 0, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            .wallet-toggle-btn {
+                padding: 6px 15px;
+                font-size: 12px;
+                min-width: 85px;
+            }
         }
 
         /* Plane glow effect - radial gradient behind the plane
@@ -752,6 +812,7 @@
                             </div>
                             <div class="navigation">
                                 <input id="bet_type" type="hidden" value="0">
+                                <input id="wallet_type" type="hidden" value="money">
                                 <div class="navigation-switcher">
                                     <div class="slider bet-btn">Bet</div>
                                     <div class="slider auto-btn">Auto</div>
@@ -976,6 +1037,32 @@
             </div>
         </div>
         <!--====== Right Sidebar End ======-->
+        <!--====== Chat Toggle Button ======-->
+        <button class="chat-toggle-btn" id="chat-toggle-btn" onclick="toggleChat()">
+            <span class="material-symbols-outlined">chat</span>
+            <span class="chat-unread-badge" id="chat-unread-badge" style="display: none;">0</span>
+        </button>
+
+        <!--====== Chat Sidebar Start ======-->
+        <div class="chat-sidebar" id="chat-sidebar-popup">
+            <div id="chat-container">
+                <div class="chat-header">
+                    <h3>
+                        <span class="chat-online-indicator"></span>
+                        CHAT
+                    </h3>
+                    <button class="rain-admin-btn" onclick="window.rainSystem.showCreateRainModal()" title="Create Rain">
+                        🌧️
+                    </button>
+                </div>
+                <div id="chat-messages"></div>
+                <div class="chat-input-container">
+                    <textarea id="chat-input" placeholder="Type a message..." rows="1" maxlength="500"></textarea>
+                    <button type="button" id="chat-send-btn">Send</button>
+                </div>
+            </div>
+        </div>
+        <!--====== Chat Sidebar End ======-->
     </div>
 
     <!--====== Hinal (Start) ======-->
@@ -1104,7 +1191,7 @@
                         </div>
                     </div>
                     <p class="mt-2">But remember, if you did not have time to Cash Out before the Lucky Plane flies
-                        away, your bet will be lost. Aviator is pure excitement! Risk and win. It’s all in your hands!
+                        away, your bet will be lost. Aviator is pure excitement! Risk and win. It�s all in your hands!
                     </p>
                     <h6 class="secondary-font mt-2">More Detail</h6>
                     <ul class="list-unstyled list-ul">
@@ -1118,33 +1205,33 @@
                     <h5 class="secondary-font mt-2">GAME FUNCTIONS</h5>
                     <h6 class="secondary-font mt-2">Bet & Cash Out</h6>
                     <ul class="list-unstyled list-ul">
-                        <li>Select an amount and press the “Bet” button to make a bet.</li>
+                        <li>Select an amount and press the �Bet� button to make a bet.</li>
                         <li>You can make two bets simultaneously, by adding a second bet panel. To add a second bet
                             panel, press the plus icon, which is located on the top right corner of the first bet panel.
                         </li>
-                        <li>Press the “Cash Out” button to cash out your winnings. Your win is your bet multiplied by
+                        <li>Press the �Cash Out� button to cash out your winnings. Your win is your bet multiplied by
                             the Cash Out multiplier.</li>
-                        <li>Your bet is lost, if you didn’t cash out before the plane flies away.</li>
+                        <li>Your bet is lost, if you didn�t cash out before the plane flies away.</li>
                     </ul>
                     <h6 class="secondary-font mt-2">Auto Play & Auto Cash Out</h6>
                     <ul class="list-unstyled list-ul">
-                        <li>Auto Play is activated from the “Auto” tab on the Bet Panel, by pressing the “Auto Play”
+                        <li>Auto Play is activated from the �Auto� tab on the Bet Panel, by pressing the �Auto Play�
                             button.</li>
-                        <li>In the Auto Play Panel, the “Stop if cash decreases by” option stops Auto Play, if the
+                        <li>In the Auto Play Panel, the �Stop if cash decreases by� option stops Auto Play, if the
                             balance is decreased by the selected amount.</li>
-                        <li>In the Auto Play Panel, the “Stop if cash increases by” option stops Auto Play, if the
+                        <li>In the Auto Play Panel, the �Stop if cash increases by� option stops Auto Play, if the
                             balance is increased by the selected amount.</li>
-                        <li>In the Auto Play Panel, the “Stop if single win exceeds” option stops Auto Play, if a single
+                        <li>In the Auto Play Panel, the �Stop if single win exceeds� option stops Auto Play, if a single
                             win exceeds the selected amount.</li>
-                        <li>Auto Cash Out is available from the “Auto” tab on the Bet panel. After activation, your bet
+                        <li>Auto Cash Out is available from the �Auto� tab on the Bet panel. After activation, your bet
                             will be automatically cashed out when it reaches the multiplier entered</li>
                     </ul>
                     <h6 class="secondary-font mt-2">Live Bets & Statistics</h6>
                     <ul class="list-unstyled list-ul">
                         <li>On the left side of the game interface (or under the Bet Panel on mobile), is located the
                             Live Bets panel. Here you can see all bets that are being made in the current round.</li>
-                        <li>In the “My Bets” panel you can see all of your bets and Cash Out information.</li>
-                        <li>In the “Top” panel, game statistics are located. You can browse wins by amount, or Cash Out
+                        <li>In the �My Bets� panel you can see all of your bets and Cash Out information.</li>
+                        <li>In the �Top� panel, game statistics are located. You can browse wins by amount, or Cash Out
                             multiplier, and see the biggest round multipliers.</li>
                     </ul>
                     <h6 class="secondary-font mt-2">Free Bets</h6>
@@ -1154,12 +1241,12 @@
                     </ul>
                     <h6 class="secondary-font mt-2">Randomisation</h6>
                     <ul class="list-unstyled list-ul">
-                        <li>The multiplier for each round is generated by a “Provably Fair” algorithm and is completely
+                        <li>The multiplier for each round is generated by a �Provably Fair� algorithm and is completely
                             transparent, and 100% fair.</li>
                         <li>You can check and modify the Provably Fair settings from the Game menu > Provably Fair
                             settings.</li>
-                        <li>You can check the fairness of each round by pressing icon, opposite the results in the “My
-                            Bets” or inside “Top” tabs.</li>
+                        <li>You can check the fairness of each round by pressing icon, opposite the results in the �My
+                            Bets� or inside �Top� tabs.</li>
                     </ul>
                     <h6 class="secondary-font mt-2">Return to Player</h6>
                     <ul class="list-unstyled list-ul">
@@ -1201,11 +1288,68 @@
         var currency_id = '{{ user('currency') }}';
         var currency_symbol = '{{ user('currency') }}';
         var wallet_balance = '{{ wallet(user('id')) }}';
+        var freebet_balance = '{{ \App\Models\Wallet::where('userid', user('id'))->first()->freebet_amount ?? 0 }}';
         var profile_image = '1';
         var member_id = '{{ user('id') }}';
         var min_bet_amount = parseFloat('{{ setting('min_bet_amount') }}');
         var max_bet_amount = parseFloat('{{ setting('max_bet_amount') }}');
         var current_game_data = {{ currentid() }};
+        var current_wallet_type = 'money'; // Default to money wallet
+
+        // Wallet Toggle Function
+        function switchWalletType(walletType) {
+            current_wallet_type = walletType;
+            $('#wallet_type').val(walletType);
+            
+            // Update button states
+            $('.wallet-toggle-btn').removeClass('active');
+            $('.wallet-toggle-btn[data-wallet="' + walletType + '"]').addClass('active');
+            
+            console.log('💰 Switching to ' + walletType + ' wallet');
+            console.log('📊 Current balances - Money:', wallet_balance, 'Freebet:', freebet_balance);
+            
+            // Update displayed balance
+            updateWalletBalance();
+        }
+
+        // Update Wallet Balance Display
+        function updateWalletBalance() {
+            var balance;
+            if (current_wallet_type === 'freebet') {
+                // Handle freebet_balance which might be a string or number
+                if (typeof freebet_balance === 'string') {
+                    balance = parseFloat(freebet_balance.replace(/,/g, '')) || 0;
+                } else {
+                    balance = parseFloat(freebet_balance) || 0;
+                }
+            } else {
+                // Handle wallet_balance which is a string with possible commas
+                if (typeof wallet_balance === 'string') {
+                    balance = parseFloat(wallet_balance.replace(/,/g, '')) || 0;
+                } else {
+                    balance = parseFloat(wallet_balance) || 0;
+                }
+            }
+            
+            var formattedBalance = balance.toLocaleString('en-US', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+            
+            // Update all balance display elements with currency symbol
+            $('#wallet_balance').html(formattedBalance);
+            $('#header_wallet_balance').html(currency_symbol + formattedBalance);
+            $('.wallet-balance span').html(formattedBalance);
+            
+            console.log('💵 Updated balance display:', formattedBalance, '(' + current_wallet_type + ')', 'Raw:', current_wallet_type === 'freebet' ? freebet_balance : wallet_balance);
+            console.log('🎯 Target elements found - #wallet_balance:', $('#wallet_balance').length, '#header_wallet_balance:', $('#header_wallet_balance').length, '.wallet-balance span:', $('.wallet-balance span').length);
+            console.log('📍 Current values - #wallet_balance:', $('#wallet_balance').text(), '#header_wallet_balance:', $('#header_wallet_balance').text());
+        }
+
+        // Initialize wallet balance on page load
+        $(document).ready(function() {
+            updateWalletBalance();
+        });
     </script>
 
 
@@ -1253,6 +1397,7 @@
     <script src="{{ asset('user/aviator-socket-integration.js') }}"></script>
     <script src="{{ asset('user/game-socket-sync.js') }}"></script>
     <script src="{{ asset('force-socket-init.js') }}"></script>
+    <script src="{{ asset('user/wallet-auto-refresh.js') }}"></script>
 
     <!--====== Bootstrap js ======-->
     <script src="/js/popper.min.js"></script>
@@ -1300,7 +1445,7 @@
                 var parsed = JSON.parse(savedPendingBets);
                 // Only restore bets that are not yet placed (no is_bet flag)
                 bet_array = parsed.filter(function(bet) { return !bet.is_bet; });
-                console.log('🔄 Restored', bet_array.length, 'pending bet(s) from localStorage');
+                console.log('?? Restored', bet_array.length, 'pending bet(s) from localStorage');
             }
         } catch (e) {
             console.log('Could not restore pending bets:', e);
@@ -1348,7 +1493,7 @@
                     // Check if state is not too old (24 hours max)
                     var maxAge = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
                     if (state.timestamp && (Date.now() - state.timestamp) > maxAge) {
-                        console.log('🔄 Auto-bet state expired, clearing...');
+                        console.log('?? Auto-bet state expired, clearing...');
                         clearAutoBetStorage();
                         return;
                     }
@@ -1364,11 +1509,11 @@
                     // Restore auto-bet checkbox states (trigger change to update UI)
                     if (state.main_auto_bet) {
                         $("#main_auto_bet").prop('checked', true).trigger('change');
-                        console.log('✅ Restored main auto-bet state');
+                        console.log('? Restored main auto-bet state');
                     }
                     if (state.extra_auto_bet) {
                         $("#extra_auto_bet").prop('checked', true).trigger('change');
-                        console.log('✅ Restored extra auto-bet state');
+                        console.log('? Restored extra auto-bet state');
                     }
                 }
             } catch (e) {
@@ -1409,6 +1554,8 @@
     <script src="/user/canvas.js"></script>
     <script src="/user/aviatorold.js?v={{env('APP_VERSION')}}"></script>
     <script src="{{ asset('js/next-round-bet-queue.js') }}"></script>
+    <script src="{{ asset('js/chat.js') }}"></script>
+    <script src="{{ asset('js/rain.js') }}"></script>
     <script src="/user/aviatorbyapp.js?v={{env('APP_VERSION')}}"></script>
     
     <!-- Plane Glow Effect Controller -->
@@ -1490,7 +1637,7 @@
         
         // Restore UI for pending bets from localStorage
         if (bet_array && bet_array.length > 0) {
-            console.log('🔄 Restoring UI for', bet_array.length, 'pending bet(s)');
+            console.log('?? Restoring UI for', bet_array.length, 'pending bet(s)');
             bet_array.forEach(function(bet) {
                 var sectionId = bet.section_no == 0 ? '#main_bet_section' : '#extra_bet_section';
                 
@@ -1503,7 +1650,7 @@
                 // Update bet amount display
                 $(sectionId).find("#bet_amount").val(bet.bet_amount);
                 
-                console.log('✅ Restored pending bet UI - Section:', bet.section_no, 'Amount:', bet.bet_amount);
+                console.log('? Restored pending bet UI - Section:', bet.section_no, 'Amount:', bet.bet_amount);
             });
         }
         
@@ -1590,3 +1737,4 @@
 </body>
 
 </html>
+

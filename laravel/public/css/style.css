@@ -260,7 +260,7 @@ a, a:hover {
 
 .deposite-btn {
     color: #000000;
-    background: #ffba00;
+    background: #FF9500;
     /*box-shadow: 0 11px 27px rgb(255 186 0 / 43%);*/
 }
 
@@ -1826,9 +1826,9 @@ element.style {
 }
 
 .btn.btn-warning {
-    background-color: #e69308;
+    background-color: #FF9500;
     box-shadow: 0 10px 15px -10px #d07206;
-    border-color: #e69308;
+    border-color: #FF9500;
     color: #5f3816;
 }
 
@@ -3759,8 +3759,8 @@ width: 100%;
     --theme-black-2: #121212;
     --theme-green: #055522;
     --theme-green-2: #04441b;
-    --theme-gold: #d4af37;
-    --theme-gold-2: #b8902b;
+    --theme-gold: #FFA500;
+    --theme-gold-2: #FF9500;
     --theme-text: #f2e8c9;
     --color-second-blue: #055522;
 }
@@ -3818,8 +3818,8 @@ footer {
 .buttons-block .btn.btn-success,
 .buttons-block .btn.btn-warning,
 .demo-btns {
-    background-image: linear-gradient(0deg, var(--theme-gold-2), var(--theme-gold));
-    box-shadow: 0 10px 20px rgba(212, 175, 55, 0.3);
+    background-image: linear-gradient(0deg, #FF9500, #FFA500);
+    box-shadow: 0 10px 20px rgba(255, 149, 0, 0.3);
     color: #1a1a1a;
 }
 

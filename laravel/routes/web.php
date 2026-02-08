@@ -60,6 +60,26 @@ Route::group(['prefix' => 'admin/', 'middleware' => ['isAdmin']], function () {
     Route::get('/amount-setup/{id?}', [Admin::class, "amountsetup"]);
     Route::get('/bank-detail', [Admin::class, "bankdetail"]);
     
+    // Rain Management Routes
+    Route::prefix('rain')->group(function () {
+        Route::get('/', [\App\Http\Controllers\AdminRainController::class, 'index']);
+        Route::post('/create', [\App\Http\Controllers\AdminRainController::class, 'createSupportRain']);
+        Route::get('/history', [\App\Http\Controllers\AdminRainController::class, 'getRainHistory']);
+        Route::get('/analytics', [\App\Http\Controllers\AdminRainController::class, 'getRainAnalytics']);
+        Route::post('/{id}/cancel', [\App\Http\Controllers\AdminRainController::class, 'cancelRain']);
+        Route::get('/{id}/participants', [\App\Http\Controllers\AdminRainController::class, 'getRainParticipants']);
+    });
+    
+    // Freebet Management Routes
+    Route::prefix('freebet')->group(function () {
+        Route::get('/', [\App\Http\Controllers\AdminWalletController::class, 'freebetIndex']);
+        Route::post('/add', [\App\Http\Controllers\AdminWalletController::class, 'addFreebet']);
+        Route::post('/remove', [\App\Http\Controllers\AdminWalletController::class, 'removeFreebet']);
+        Route::post('/bulk', [\App\Http\Controllers\AdminWalletController::class, 'bulkAddFreebet']);
+        Route::get('/stats', [\App\Http\Controllers\AdminWalletController::class, 'getFreebetStats']);
+        Route::get('/user/{userId}/history', [\App\Http\Controllers\AdminWalletController::class, 'getUserFreebetHistory']);
+    });
+    
     Route::group(['prefix' => 'api/'], function () {
         Route::post('/changepassword', [Adminapi::class, "changepassword"]);
         Route::post('/edituser', [Adminapi::class, "edituser"]);
@@ -78,8 +98,32 @@ Route::group(['middleware' => ['isUser']], function () {
 
     Route::get('/profile', [Userdetail::class, "profile"]);
     Route::get('/crash', [Pages::class, "aviator"]);
+    
+    // Chat routes (web auth)
+    Route::get('/chat/messages', [App\Http\Controllers\ChatController::class, 'getMessages']);
+    Route::post('/chat/send', [App\Http\Controllers\ChatController::class, 'sendMessage']);
+    Route::delete('/chat/message/{id}', [App\Http\Controllers\ChatController::class, 'deleteMessage']);
+    
+    // Rain/Giveaway routes
+    Route::post('/rain/create', [App\Http\Controllers\RainController::class, 'createRain']);
+    Route::get('/rain/active', [App\Http\Controllers\RainController::class, 'getActiveRain']);
+    Route::get('/rain/{id}', [App\Http\Controllers\RainController::class, 'getRain']);
+    Route::post('/rain/join', [App\Http\Controllers\RainController::class, 'joinRain']);
+    Route::post('/rain/{id}/distribute', [App\Http\Controllers\RainController::class, 'distributeRain']);
+    
     Route::get('/deposit', [Pages::class, 'deposit']);
     Route::get('/amount-transfer', [Pages::class, "amount_transfer"]);
+    
+    // Paystack Payment Routes (M-Pesa via Paystack)
+    Route::prefix('paystack')->group(function () {
+        Route::post('/mpesa/initialize', [\App\Http\Controllers\PaystackController::class, 'initializeMpesaDeposit']);
+        Route::post('/mpesa/withdraw', [\App\Http\Controllers\PaystackController::class, 'initializeMpesaWithdrawal']);
+        Route::post('/initialize', [\App\Http\Controllers\PaystackController::class, 'initializeDeposit']);
+        Route::get('/callback', [\App\Http\Controllers\PaystackController::class, 'handleCallback']);
+        Route::post('/webhook', [\App\Http\Controllers\PaystackController::class, 'handleWebhook']);
+        Route::get('/config', [\App\Http\Controllers\PaystackController::class, 'getPublicKey']);
+        Route::get('/availability', [\App\Http\Controllers\PaystackController::class, 'checkAvailability']);
+    });
     Route::get('/withdraw', function () {
         return view('withdraw');
     });

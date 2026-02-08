@@ -853,7 +853,7 @@ function setupSocketEventHandlers(socket) {
         }
         
         // Update the wallet balance - fetch fresh balance from server
-        updateWalletBalance();
+        updateWalletBalanceFromServer();
         
         // Show the cash-out toaster notification
         const amt = (parseFloat(data.winAmount)).toFixed(2);
@@ -1002,7 +1002,7 @@ function setupSocketEventHandlers(socket) {
         refreshBetHistory();
         
         // Update wallet balance
-        updateWalletBalance();
+        updateWalletBalanceFromServer();
         
         // Server will automatically start the next game cycle
         // The 'waiting' phase event will hide flew_away and show loading
@@ -1143,21 +1143,56 @@ function refreshBetHistory() {
 }
 
 /**
- * Update wallet balance
+ * Update wallet balance from server
+ * This function fetches the latest wallet balances (both money and freebet) from the server
+ * and updates the UI immediately without page reload.
+ * 
+ * USAGE: Call this function after any wallet transaction (deposit, withdrawal, admin credits, etc.)
+ * 
+ * Example:
+ *   // After successful deposit
+ *   if (typeof updateWalletBalanceFromServer === 'function') {
+ *       updateWalletBalanceFromServer();
+ *   }
  */
-function updateWalletBalance() {
+function updateWalletBalanceFromServer() {
     $.ajax({
         url: '/get_user_details',
         type: "GET",
         dataType: "json",
         success: function(result) {
-            if (result && result.wallet) {
-                $("#wallet_balance").text(currency_symbol + result.wallet);
-                $("#header_wallet_balance").text(currency_symbol + result.wallet);
+            if (result && result.data) {
+                // Update BOTH wallet variables
+                if (result.data.wallet !== undefined) {
+                    wallet_balance = result.data.wallet;
+                }
+                if (result.data.freebet !== undefined) {
+                    freebet_balance = result.data.freebet;
+                }
+                
+                // Update display based on current wallet type
+                if (typeof window.updateWalletBalance === 'function') {
+                    window.updateWalletBalance();
+                } else {
+                    // Fallback - update both wallet displays
+                    var currentWalletType = typeof current_wallet_type !== 'undefined' ? current_wallet_type : 'money';
+                    var displayBalance = (currentWalletType === 'freebet') ? freebet_balance : wallet_balance;
+                    
+                    $("#wallet_balance").text(currency_symbol + displayBalance);
+                    $("#header_wallet_balance").text(currency_symbol + displayBalance);
+                }
+                
+                console.log('💰 Updated from server - Money:', wallet_balance, 'Freebet:', freebet_balance);
             }
+        },
+        error: function(xhr, status, error) {
+            console.error('❌ Failed to update wallet balance:', error);
         }
     });
 }
+
+// Make function globally accessible
+window.updateWalletBalanceFromServer = updateWalletBalanceFromServer;
 
 /**
  * Update bet count

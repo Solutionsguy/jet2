@@ -1,27 +1,21 @@
 /**
- * M-Pesa STK Push Deposit JavaScript
- * Handles M-Pesa Lipa Na M-Pesa deposit functionality
+ * M-Pesa Deposit via Paystack
+ * Handles M-Pesa payments through Paystack payment gateway
  */
 
-var mpesaCheckoutRequestId = null;
-var mpesaStatusCheckInterval = null;
-var mpesaMinRecharge = 10; // Default, will be updated from page
+var mpesaMinRecharge = 1; // Minimum set to 1 for testing
 
 // Initialize on page load
 $(document).ready(function() {
-    // Get min recharge from hidden input if available
     var minRechargeInput = $('#mpesa_min_recharge');
     if (minRechargeInput.length) {
-        mpesaMinRecharge = parseInt(minRechargeInput.val()) || 10;
+        mpesaMinRecharge = parseInt(minRechargeInput.val()) || 1;
     }
 });
 
 function showMpesaDeposit() {
-    // Hide all other deposit boxes
     $('.deposite-box').hide();
-    // Show M-Pesa box
     $('#mpesa').show();
-    // Reset status
     resetMpesaStatus();
 }
 
@@ -31,33 +25,32 @@ function resetMpesaStatus() {
     $('#mpesa_success').hide();
     $('#mpesa_error').hide();
     $('#mpesa_submit_btn').prop('disabled', false);
-    if (mpesaStatusCheckInterval) {
-        clearInterval(mpesaStatusCheckInterval);
-        mpesaStatusCheckInterval = null;
-    }
 }
 
 function initiateMpesaDeposit() {
     var phone = $('#mpesa_phone').val().trim();
     var amount = $('#mpesa_amount').val();
-    var minAmount = mpesaMinRecharge;
-    var csrfToken = $('input[name="_token"]').val() || $('meta[name="csrf-token"]').attr('content');
+    var email = $('#mpesa_email').val().trim();
+    var csrfToken = $('meta[name="csrf-token"]').attr('content');
 
-    // Validation
+    // Validation - phone must be 254XXXXXXXXX format
     if (!phone) {
         toastr.error('Please enter your M-Pesa phone number');
         return;
     }
 
-    if (!amount || parseInt(amount) < minAmount) {
-        toastr.error('Minimum deposit amount is ' + minAmount + ' KES');
+    if (!phone.match(/^254[0-9]{9}$/)) {
+        toastr.error('Phone number must be in format: 254XXXXXXXXX');
         return;
     }
 
-    // Validate phone format (basic validation)
-    var phoneRegex = /^(07|01|2547|2541|\+2547|\+2541)[0-9]{8}$/;
-    if (!phoneRegex.test(phone.replace(/\s/g, ''))) {
-        toastr.error('Please enter a valid M-Pesa phone number (e.g., 07XXXXXXXX)');
+    if (!email) {
+        toastr.error('Please enter your email address');
+        return;
+    }
+
+    if (!amount || parseInt(amount) < mpesaMinRecharge) {
+        toastr.error('Minimum deposit amount is KSh ' + mpesaMinRecharge);
         return;
     }
 
@@ -68,28 +61,29 @@ function initiateMpesaDeposit() {
     $('#mpesa_success').hide();
     $('#mpesa_error').hide();
 
-    // Send STK Push request
+    // Initialize Paystack M-Pesa payment
     $.ajax({
-        url: '/mpesa/deposit',
+        url: '/paystack/mpesa/initialize',
         method: 'POST',
         data: {
             _token: csrfToken,
             phone: phone,
-            amount: amount
+            amount: amount,
+            email: email
         },
         success: function(response) {
             if (response.isSuccess) {
-                toastr.success(response.message);
-                mpesaCheckoutRequestId = response.checkout_request_id;
-                
-                // Start polling for payment status
-                startMpesaStatusCheck();
+                toastr.success('Redirecting to M-Pesa payment...');
+                // Redirect to Paystack payment page
+                setTimeout(function() {
+                    window.location.href = response.authorization_url;
+                }, 1000);
             } else {
-                showMpesaError(response.message || 'Failed to initiate M-Pesa payment');
+                showMpesaError(response.message || 'Failed to initialize payment');
             }
         },
         error: function(xhr) {
-            var errorMsg = 'Failed to initiate M-Pesa payment';
+            var errorMsg = 'Failed to initialize payment';
             if (xhr.responseJSON && xhr.responseJSON.message) {
                 errorMsg = xhr.responseJSON.message;
             }
@@ -98,54 +92,21 @@ function initiateMpesaDeposit() {
     });
 }
 
-function startMpesaStatusCheck() {
-    var checkCount = 0;
-    var maxChecks = 30; // Check for 60 seconds (every 2 seconds)
-    var csrfToken = $('input[name="_token"]').val() || $('meta[name="csrf-token"]').attr('content');
-
-    mpesaStatusCheckInterval = setInterval(function() {
-        checkCount++;
-
-        if (checkCount >= maxChecks) {
-            clearInterval(mpesaStatusCheckInterval);
-            showMpesaError('Payment timeout. Please check your M-Pesa messages and try again if needed.');
-            return;
-        }
-
-        // Query payment status
-        $.ajax({
-            url: '/mpesa/status',
-            method: 'POST',
-            data: {
-                _token: csrfToken,
-                checkout_request_id: mpesaCheckoutRequestId
-            },
-            success: function(response) {
-                if (response.isSuccess && response.status === 'completed') {
-                    clearInterval(mpesaStatusCheckInterval);
-                    showMpesaSuccess();
-                } else if (response.status === 'cancelled' || response.status === 'failed') {
-                    clearInterval(mpesaStatusCheckInterval);
-                    showMpesaError(response.message || 'Payment was cancelled or failed');
-                }
-                // If still pending, continue polling
-            },
-            error: function() {
-                // Continue polling on error (might be temporary)
-                console.log('Status check failed, retrying...');
-            }
-        });
-    }, 2000); // Check every 2 seconds
-}
-
 function showMpesaSuccess() {
     $('#mpesa_loading').hide();
     $('#mpesa_success').show();
-    toastr.success('Payment successful! Your account has been credited.');
+    toastr.success('Payment successful! Your wallet has been credited.');
     
-    // Redirect to deposit page after 2 seconds
+    // Update wallet balance immediately
+    if (typeof updateWalletBalanceFromServer === 'function') {
+        updateWalletBalanceFromServer();
+        console.log('💰 Wallet balance updated after M-Pesa deposit');
+    }
+    
     setTimeout(function() {
-        window.location.href = '/deposit?msg=Success';
+        resetMpesaStatus();
+        $('#mpesa_amount').val('');
+        $('#mpesa_phone').val('');
     }, 2000);
 }
 

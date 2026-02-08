@@ -1,0 +1,49 @@
+GET http://127.0.0.1:8000/rain/active 500 (Internal Server Error)
+checkActiveRain @ rain.js:37
+(anonymous) @ rain.js:17
+rain.js:48  ❌ Failed to check active rain: SyntaxError: Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+checkActiveRain @ rain.js:48
+await in checkActiveRain
+(anonymous) @ rain.js:17
+aviatorbyapp.js?v=3.3.15:25 💾 Preserved queued bets: 0
+chat.js:87   GET http://127.0.0.1:8000/rain/active 500 (Internal Server Error)
+checkAndInjectRainCard @ chat.js:87
+loadMessages @ chat.js:79
+await in loadMessages
+(anonymous) @ chat.js:358
+chat.js:102  Uncaught (in promise) ReferenceError: data is not defined
+    at AviatorChat.checkAndInjectRainCard (chat.js:102:9)
+checkAndInjectRainCard @ chat.js:102
+await in checkAndInjectRainCard
+loadMessages @ chat.js:79
+await in loadMessages
+(anonymous) @ chat.js:358
+socket-client.js:112 Game phase: countdown
+aviator-socket-integration.js:539 🎮 [SERVER] Game phase: countdown
+aviator-socket-integration.js:543 📍 Global phase updated to: countdown
+aviator-socket-integration.js:680 🕐 Game starting in 3 seconds...
+chat.js:87   GET http://127.0.0.1:8000/rain/active 500 (Internal Server Error)
+checkAndInjectRainCard @ chat.js:87
+loadMessages @ chat.js:79
+await in loadMessages
+(anonymous) @ chat.js:358
+chat.js:102  Uncaught (in promise) ReferenceError: data is not defined
+    at AviatorChat.checkAndInjectRainCard (chat.js:102:9)
+checkAndInjectRainCard @ chat.js:102
+await in checkAndInjectRainCard
+loadMessages @ chat.js:79
+await in loadMessages
+(anonymous) @ chat.js:358
+chat.js:87   GET http://127.0.0.1:8000/rain/active 500 (Internal Server Error)
+checkAndInjectRainCard @ chat.js:87
+loadMessages @ chat.js:79
+await in loadMessages
+(anonymous) @ chat.js:358
+chat.js:102  Uncaught (in promise) ReferenceError: data is not defined
+    at AviatorChat.checkAndInjectRainCard (chat.js:102:9)
+checkAndInjectRainCard @ chat.js:102
+await in checkAndInjectRainCard
+loadMessages @ chat.js:79
+await in loadMessages
+(anonymous) @ chat.js:358
+socket-client.
