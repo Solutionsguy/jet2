@@ -919,14 +919,14 @@ function setupSocketEventHandlers(socket) {
     });
 
 // ==========================================
-// CLIENT-SIDE PREDICTION ENGINE
+// CLIENT-SIDE PREDICTION ENGINE (EXPONENTIAL)
 // ==========================================
 window.prediction = {
     isActive: false,
     startTime: 0,
     baseMultiplier: 1.00,
     currentMultiplier: 1.00,
-    rate: 0.1, // Multiplier increase per second (0.1x / sec)
+    growthRate: 1.06, // Matches server-side GROWTH_RATE
     animationFrameId: null,
     lastServerMultiplier: 1.00,
     lastServerTime: 0
@@ -934,7 +934,7 @@ window.prediction = {
 
 /**
  * High-precision multiplier calculation
- * Uses local clock to predict the position between server updates
+ * Uses exponential formula: multiplier = 1.00 * (growthRate ^ seconds)
  */
 function runPredictionLoop() {
     if (!window.prediction.isActive || window.currentGamePhase !== 'flying') {
@@ -944,9 +944,8 @@ function runPredictionLoop() {
     const now = Date.now();
     const elapsedSeconds = (now - window.prediction.startTime) / 1000;
     
-    // Formula: multiplier = 1.00 + (seconds * rate)
-    // Matches server-side: newMultiplier = 1.00 + (elapsedSeconds * 0.1)
-    let predictedValue = window.prediction.baseMultiplier + (elapsedSeconds * window.prediction.rate);
+    // EXPONENTIAL FORMULA: Matches server-side logic exactly
+    let predictedValue = Math.pow(window.prediction.growthRate, elapsedSeconds);
     
     // Safety check: Don't let prediction get TOO far ahead of last known server value
     // (Max 0.2x ahead to handle network jitter)
@@ -967,13 +966,21 @@ function runPredictionLoop() {
  * Start the prediction engine
  */
 function startPrediction(gameId, startMultiplier) {
-    console.log('🚀 Starting Client-Side Prediction...');
+    console.log('🚀 Starting Exponential Prediction Engine...');
     
     window.prediction.isActive = true;
     window.prediction.startTime = Date.now();
     window.prediction.baseMultiplier = startMultiplier || 1.00;
-    window.prediction.currentMultiplier = window.prediction.baseMultiplier;
-    window.prediction.lastServerMultiplier = window.prediction.baseMultiplier;
+    
+    // If starting mid-game, adjust startTime to match the current multiplier
+    if (startMultiplier > 1.00) {
+        // Inverse exponential to find seconds: seconds = log(multiplier) / log(growthRate)
+        const elapsedSeconds = Math.log(startMultiplier) / Math.log(window.prediction.growthRate);
+        window.prediction.startTime = Date.now() - (elapsedSeconds * 1000);
+    }
+
+    window.prediction.currentMultiplier = startMultiplier || 1.00;
+    window.prediction.lastServerMultiplier = startMultiplier || 1.00;
     
     if (window.prediction.animationFrameId) {
         cancelAnimationFrame(window.prediction.animationFrameId);
@@ -995,107 +1002,48 @@ function stopPrediction() {
 
 /**
  * Show flying plane animation and sync UI
- * Used both for new game start and reconnecting mid-game
- * @param {string} gameId - The current game ID
- * @param {number} multiplier - The current multiplier (1.00 for new game, higher for mid-game sync)
- * @param {boolean} isMidGameSync - Whether this is a mid-game sync (page refresh/reconnect)
  */
 function showFlyingPlane(gameId, multiplier, isMidGameSync = false) {
     console.log('🎮 showFlyingPlane called:', { gameId, multiplier, isMidGameSync });
     
-    // PREVENT DUPLICATE ANIMATIONS for same game (but allow mid-game sync)
+    // PREVENT DUPLICATE ANIMATIONS
     if (!isMidGameSync) {
         if (window.isAnimationInProgress && window.currentAnimationGameId === gameId) {
-            console.log('⚠️ Animation already in progress for game', gameId, '- skipping duplicate');
             return;
         }
     }
     
-    // Mark animation as in progress
     window.isAnimationInProgress = true;
     window.currentAnimationGameId = gameId;
     
-    // IMPORTANT: First hide ALL conflicting UI elements to prevent overlap
-    $('.loading-game').removeClass('show');      // Hide loading screen
-    $('.flew_away_section').hide();              // Hide "flew away" message
-    $('#auto_increment_number').removeClass('text-danger'); // Reset multiplier color
-    
-    // Show game elements
+    $('.loading-game').removeClass('show');
+    $('.flew_away_section').hide();
+    $('#auto_increment_number').removeClass('text-danger');
     $("#auto_increment_number_div").show();
     
-    // Update current game data FIRST (needed for bet placement)
-    if (typeof current_game_data !== 'undefined') {
-        current_game_data = { id: gameId };
-    }
     window.currentGameId = gameId;
     
-    // START PREDICTION ENGINE
-    if (isMidGameSync && multiplier > 1.00) {
-        // Estimate when the game started based on current multiplier
-        const estimatedElapsedMs = ((multiplier - 1.00) / 0.1) * 1000;
-        window.prediction.startTime = Date.now() - estimatedElapsedMs;
-        window.prediction.baseMultiplier = 1.00;
-    } else {
-        window.prediction.startTime = Date.now();
-        window.prediction.baseMultiplier = 1.00;
-    }
-    startPrediction(gameId, window.prediction.baseMultiplier);
+    // START EXPONENTIAL PREDICTION
+    startPrediction(gameId, multiplier);
 
-    // Handle animation based on whether this is mid-game sync or new game
+    // Handle animation
     if (isMidGameSync && multiplier > 1.00) {
-        // ============ MID-GAME SYNC ============
-        console.log('🔄 Mid-game sync: Positioning plane at', multiplier + 'x');
-        
-        // Stop ALL existing animations first
-        if (typeof window.stopPlaneAnimations === 'function') {
-            window.stopPlaneAnimations();
-        }
-        
-        // Add rotating background
+        if (typeof window.stopPlaneAnimations === 'function') window.stopPlaneAnimations();
         $(".rotateimage").addClass('rotatebg');
-        
-        // Position plane at current multiplier
         if (typeof window.startPlaneAtMultiplier === 'function') {
-            setTimeout(() => {
-                window.startPlaneAtMultiplier(multiplier);
-            }, 50);
+            setTimeout(() => { window.startPlaneAtMultiplier(multiplier); }, 50);
         }
-        
-        // Restore user's active bets
         restoreMyActiveBets();
-        
     } else {
-        // ============ NEW GAME START ============
-        console.log('🆕 New game: Starting plane animation from beginning');
-        
-        // 1. Reset visual elements
-        if (typeof new_game_generated === 'function') {
-            new_game_generated();
-        }
-        
-        // 2. Place any pending bets
+        if (typeof new_game_generated === 'function') new_game_generated();
         if (typeof bet_array !== 'undefined' && bet_array.length > 0) {
-            if (typeof place_bet_now === 'function') {
-                place_bet_now();
-            }
+            if (typeof place_bet_now === 'function') place_bet_now();
         }
-        
-        // 3. Start plane animation sequence
-        if (typeof lets_fly_one === 'function') {
-            lets_fly_one();
-        }
-        if (typeof lets_fly === 'function') {
-            lets_fly();
-        }
+        if (typeof lets_fly_one === 'function') lets_fly_one();
+        if (typeof lets_fly === 'function') lets_fly();
     }
     
-    // Set multiplier display (Prediction handles real-time, this is for initial state)
-    if (typeof incrementor === 'function') {
-        incrementor(multiplier);
-    }
     updateMultiplierDisplay(multiplier);
-    
-    // Load current bets
     loadCurrentBets();
 }
 
@@ -1103,25 +1051,19 @@ function showFlyingPlane(gameId, multiplier, isMidGameSync = false) {
  * Multiplier update handler - NOW USED FOR CALIBRATION
  */
 socket.on('onMultiplierUpdate', (data) => {
-    // 1. Update the "Source of Truth"
     window.prediction.lastServerMultiplier = data.multiplier;
     window.prediction.lastServerTime = Date.now();
     
-    // 2. Calibration (Drift Correction)
-    // If the prediction is off by more than 0.05x, nudge it closer
+    // Drift Correction (Adjust start time based on actual server value)
     const drift = Math.abs(window.prediction.currentMultiplier - data.multiplier);
     if (drift > 0.05) {
-        // Nudge prediction start time to sync with server
-        const estimatedElapsedMs = ((data.multiplier - window.prediction.baseMultiplier) / window.prediction.rate) * 1000;
-        window.prediction.startTime = Date.now() - estimatedElapsedMs;
+        const elapsedSeconds = Math.log(data.multiplier) / Math.log(window.prediction.growthRate);
+        window.prediction.startTime = Date.now() - (elapsedSeconds * 1000);
     }
 
-    // 3. Keep existing logic for things that MUST stay on server time
     if (typeof incrementor === 'function') {
-        incrementor(data.multiplier); // Pass server value for auto-cashout checks
+        incrementor(data.multiplier);
     }
-    
-    // Sidebar only updates on server ticks to save CPU
     updateActiveBetsCashOutAmounts(data.multiplier);
 });
 

@@ -938,14 +938,10 @@ function startFlying() {
             return;
         }
         
-        // TIME-BASED CALCULATION: Calculate exact multiplier based on real time elapsed
-        // This eliminates "drifting" or "lag" if the server is busy
-        const now = Date.now();
-        const elapsedSeconds = (now - gameState.startTime) / 1000;
-        
-        // Formula: multiplier = 1.00 + (seconds * rate)
-        // Default linear rate is 0.1x per second (matches 0.01 per 100ms)
-        let newMultiplier = 1.00 + (elapsedSeconds * 0.1);
+        // EXPONENTIAL CALCULATION: multiplier = 1.00 * (1.06 ^ seconds)
+        // This makes the game get faster as the multiplier gets higher
+        const GROWTH_RATE = 1.06;
+        let newMultiplier = Math.pow(GROWTH_RATE, elapsedSeconds);
         
         // Precision to 2 decimal places
         gameState.currentMultiplier = Math.floor(newMultiplier * 100) / 100;
