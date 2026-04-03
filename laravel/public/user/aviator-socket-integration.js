@@ -919,14 +919,14 @@ function setupSocketEventHandlers(socket) {
     });
 
 // ==========================================
-// CLIENT-SIDE PREDICTION ENGINE (EXPONENTIAL)
+// CLIENT-SIDE PREDICTION ENGINE (LINEAR)
 // ==========================================
 window.prediction = {
     isActive: false,
     startTime: 0,
     baseMultiplier: 1.00,
     currentMultiplier: 1.00,
-    growthRate: 1.06, // Matches server-side GROWTH_RATE
+    growthRate: 0.12, // Linear growth rate per second
     animationFrameId: null,
     lastServerMultiplier: 1.00,
     lastServerTime: 0
@@ -934,7 +934,7 @@ window.prediction = {
 
 /**
  * High-precision multiplier calculation
- * Uses exponential formula: multiplier = 1.00 * (growthRate ^ seconds)
+ * Uses linear formula: multiplier = 1.00 + (seconds * growthRate)
  */
 function runPredictionLoop() {
     if (!window.prediction.isActive || window.currentGamePhase !== 'flying') {
@@ -944,8 +944,8 @@ function runPredictionLoop() {
     const now = Date.now();
     const elapsedSeconds = (now - window.prediction.startTime) / 1000;
     
-    // EXPONENTIAL FORMULA: Matches server-side logic exactly
-    let predictedValue = Math.pow(window.prediction.growthRate, elapsedSeconds);
+    // LINEAR FORMULA: Matches server-side logic exactly
+    let predictedValue = 1.00 + (elapsedSeconds * window.prediction.growthRate);
     
     // Safety check: Don't let prediction get TOO far ahead of last known server value
     // (Max 0.2x ahead to handle network jitter)
@@ -966,7 +966,7 @@ function runPredictionLoop() {
  * Start the prediction engine
  */
 function startPrediction(gameId, startMultiplier) {
-    console.log('🚀 Starting Exponential Prediction Engine...');
+    console.log('🚀 Starting Linear Prediction Engine...');
     
     window.prediction.isActive = true;
     window.prediction.startTime = Date.now();
@@ -974,8 +974,8 @@ function startPrediction(gameId, startMultiplier) {
     
     // If starting mid-game, adjust startTime to match the current multiplier
     if (startMultiplier > 1.00) {
-        // Inverse exponential to find seconds: seconds = log(multiplier) / log(growthRate)
-        const elapsedSeconds = Math.log(startMultiplier) / Math.log(window.prediction.growthRate);
+        // Inverse linear: seconds = (multiplier - 1.00) / growthRate
+        const elapsedSeconds = (startMultiplier - 1.00) / window.prediction.growthRate;
         window.prediction.startTime = Date.now() - (elapsedSeconds * 1000);
     }
 
@@ -1023,7 +1023,7 @@ function showFlyingPlane(gameId, multiplier, isMidGameSync = false) {
     
     window.currentGameId = gameId;
     
-    // START EXPONENTIAL PREDICTION
+    // START LINEAR PREDICTION
     startPrediction(gameId, multiplier);
 
     // Handle animation
@@ -1057,7 +1057,8 @@ socket.on('onMultiplierUpdate', (data) => {
     // Drift Correction (Adjust start time based on actual server value)
     const drift = Math.abs(window.prediction.currentMultiplier - data.multiplier);
     if (drift > 0.05) {
-        const elapsedSeconds = Math.log(data.multiplier) / Math.log(window.prediction.growthRate);
+        // seconds = (multiplier - 1.00) / growthRate
+        const elapsedSeconds = (data.multiplier - 1.00) / window.prediction.growthRate;
         window.prediction.startTime = Date.now() - (elapsedSeconds * 1000);
     }
 

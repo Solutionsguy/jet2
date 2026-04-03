@@ -938,10 +938,10 @@ function startFlying() {
             return;
         }
         
-        // EXPONENTIAL CALCULATION: multiplier = 1.00 * (1.06 ^ seconds)
-        // This makes the game get faster as the multiplier gets higher
-        const GROWTH_RATE = 1.06;
-        let newMultiplier = Math.pow(GROWTH_RATE, elapsedSeconds);
+        // LINEAR CALCULATION: multiplier = 1.00 + (seconds * rate)
+        // Reverted from exponential as requested
+        const GROWTH_RATE = 0.12; // 0.12x per second
+        let newMultiplier = 1.00 + (elapsedSeconds * GROWTH_RATE);
         
         // Precision to 2 decimal places
         gameState.currentMultiplier = Math.floor(newMultiplier * 100) / 100;
