@@ -120,9 +120,6 @@ function setVariable(is_plan = '') {
         imgyposition = 45;
         imgxposition = 10;
         imgTag.src = "./images/sprite2.png";
-        settimeinterval = 40;
-        checkuplinedownlinecount = 50;
-
     }
     else {
         imgheight = 71;
@@ -130,9 +127,12 @@ function setVariable(is_plan = '') {
         imgyposition = 66;
         imgxposition = 15;
         imgTag.src = "./images/sprite3.png";
-        settimeinterval = 20;
-        checkuplinedownlinecount = 150;
     }
+    
+    // UNIFIED SPEEDS: No more mobile penalties
+    settimeinterval = 20; // 50 FPS for everyone
+    checkuplinedownlinecount = 100; // Consistent bobbing distance
+    
     diffy = calcheight * 70;
     diffx1 = canvasWidth - (calcwidth * 60)
 
@@ -313,15 +313,22 @@ function animationHorizontalDots() {
     ctx.fill();
     ctx.closePath();
     ctx.clip();
-    for (let i = 0; i < 2000; i++) {
+    
+    // TIME-BASED CALCULATION: Move 50 pixels per second
+    // This ensures phone and desktop move at the SAME speed regardless of CPU
+    var speed = 50; 
+    var now = Date.now();
+    var startTime = window.prediction ? window.prediction.startTime : lastUpdate;
+    var elapsed = (now - startTime) / 1000;
+    var offset = (elapsed * speed) % (horizontalLinedata * 2);
+
+    for (let i = 0; i < 200; i++) { // Optimized from 2000 to 200 for phone performance
         ctx.beginPath();
-        ctx.arc((((horizontalLinedata * 2) * i) + 3) - HorizontalDotsCountRun, (ctx.canvas.height - verticalLine) + verticalDotSize, 2, 0, 2 * Math.PI);
+        ctx.arc((((horizontalLinedata * 2) * i) + 3) - offset, (ctx.canvas.height - verticalLine) + verticalDotSize, 2, 0, 2 * Math.PI);
         ctx.fillStyle = 'white';
         ctx.fill();
         ctx.closePath();
-
     }
-    HorizontalDotsCountRun = HorizontalDotsCountRun + 1;
     ctx.restore();
 }
 
@@ -343,14 +350,21 @@ function animationVerticalDots() {
     ctx.rect(0, 0, verticalLine, (ctx.canvas.height - verticalLine));
     ctx.closePath();
     ctx.clip();
-    for (let i = 0; i < 2000; i++) {
+    
+    // TIME-BASED CALCULATION: Move 50 pixels per second
+    var speed = 50;
+    var now = Date.now();
+    var startTime = window.prediction ? window.prediction.startTime : lastUpdate;
+    var elapsed = (now - startTime) / 1000;
+    var offset = (elapsed * speed) % (verticalLinedata * 2);
+
+    for (let i = 0; i < 200; i++) { // Optimized for mobile
         ctx.beginPath();
-        ctx.arc((verticalLine - verticalDotSize), ((ctx.canvas.height - (verticalLinedata * i)) * 2 - 5) + VerticalDotsCountRun, 2, 0, 2 * Math.PI);
+        ctx.arc((verticalLine - verticalDotSize), ((ctx.canvas.height - (verticalLinedata * i)) * 2 - 5) + offset, 2, 0, 2 * Math.PI);
         ctx.fillStyle = '#1197D6';
         ctx.fill();
         ctx.closePath();
     }
-    VerticalDotsCountRun = VerticalDotsCountRun + 1;
     ctx.restore();
 }
 
