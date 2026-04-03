@@ -6,6 +6,7 @@ use App\Models\Gameresult;
 use App\Models\Setting;
 use App\Models\User;
 use App\Models\Userbit;
+use App\Models\Wallet;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
@@ -405,6 +406,31 @@ class Gamesetting extends Controller
         
         // Add winnings to the appropriate wallet and get new balance
         if ($bet_wallet_type === 'freebet') {
+            // Wagering Logic
+            $walletData = Wallet::where('userid', $userId)->first();
+            if ($walletData && $walletData->wagering_remaining > 0) {
+                $minMultiplier = floatval(setting('freebet_min_multiplier', 1.50));
+                
+                // Only count toward wagering if multiplier reaches the requirement
+                if ($win_multiplier >= $minMultiplier) {
+                    $walletData->wagering_remaining -= $bet_amount;
+                    if ($walletData->wagering_remaining < 0) {
+                        $walletData->wagering_remaining = 0;
+                    }
+                    $walletData->save();
+                    
+                    // Check for auto-conversion
+                    if ($walletData->wagering_remaining == 0) {
+                        $transferAmount = $walletData->freebet_amount;
+                        $walletData->amount += $transferAmount;
+                        $walletData->freebet_amount = 0;
+                        $walletData->save();
+                        
+                        addtransaction($userId, 'Wagering', date("ydmhsi"), 'credit', $transferAmount, 'Freebet Unlocked', 'Success', '1');
+                    }
+                }
+            }
+
             // Credit winnings to money wallet (freebet winnings go to money)
             $new_balance = addwallet($userId, $cash_out_amount, "+");
             $walletData = Wallet::where('userid', $userId)->first();
@@ -509,6 +535,30 @@ class Gamesetting extends Controller
         // Calculate cashout amount
         $cash_out_amount = $bet_amount * $win_multiplier;
         
+        // Get wallet type
+        $bet_wallet_type = $bet->wallet_type ?? 'money';
+
+        // Add wagering logic for auto-cashout
+        if ($bet_wallet_type === 'freebet') {
+            $walletData = Wallet::where('userid', $userId)->first();
+            if ($walletData && $walletData->wagering_remaining > 0) {
+                $minMultiplier = floatval(setting('freebet_min_multiplier', 1.50));
+                if ($win_multiplier >= $minMultiplier) {
+                    $walletData->wagering_remaining -= $bet_amount;
+                    if ($walletData->wagering_remaining < 0) $walletData->wagering_remaining = 0;
+                    $walletData->save();
+
+                    if ($walletData->wagering_remaining == 0) {
+                        $transferAmount = $walletData->freebet_amount;
+                        $walletData->amount += $transferAmount;
+                        $walletData->freebet_amount = 0;
+                        $walletData->save();
+                        addtransaction($userId, 'Wagering', date("ydmhsi"), 'credit', $transferAmount, 'Freebet Unlocked (Auto)', 'Success', '1');
+                    }
+                }
+            }
+        }
+
         // Add winnings to wallet
 		$new_balance = addwallet($userId, $cash_out_amount, "+");
 		

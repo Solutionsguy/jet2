@@ -6,6 +6,7 @@ use App\Models\Bankdetail;
 use App\Models\Setting;
 use App\Models\Transaction;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 
 class Admin extends Controller
 {
@@ -18,10 +19,74 @@ class Admin extends Controller
         $user = User::all();
         $recharge = Transaction::where('category', 'recharge')->get();
         $withdrawal = Transaction::where('category', 'withdraw')->get();
+
+        // Today's Stats
+        $today = \Carbon\Carbon::today();
+        $fiveMinsAgo = \Carbon\Carbon::now()->subMinutes(5);
+        $stats = [
+            'new_users_today' => User::whereDate('created_at', $today)->count(),
+            'online_users' => User::where('last_seen', '>=', $fiveMinsAgo)->count(),
+            'deposits_today' => Transaction::where('category', 'recharge')
+                ->where('status', '1')
+                ->whereDate('created_at', $today)
+                ->sum('amount'),
+            'withdrawals_today' => Transaction::where('category', 'withdraw')
+                ->where('status', '1')
+                ->whereDate('created_at', $today)
+                ->sum('amount'),
+            'total_bets_today' => \App\Models\Userbit::whereDate('created_at', $today)->sum('amount'),
+            'p2p_pending' => \App\Models\P2PWithdrawal::whereIn('status', ['searching', 'matched'])->count(),
+        ];
+
+        // 7-Day Chart Data
+        $chartData = [
+            'labels' => [],
+            'deposits' => [],
+            'withdrawals' => [],
+            'users' => []
+        ];
+
+        for ($i = 6; $i >= 0; $i--) {
+            $date = \Carbon\Carbon::today()->subDays($i);
+            $dateString = $date->format('M d');
+            
+            $chartData['labels'][] = $dateString;
+            $chartData['deposits'][] = Transaction::where('category', 'recharge')
+                ->where('status', '1')
+                ->whereDate('created_at', $date)
+                ->sum('amount');
+            $chartData['withdrawals'][] = Transaction::where('category', 'withdraw')
+                ->where('status', '1')
+                ->whereDate('created_at', $date)
+                ->sum('amount');
+            $chartData['users'][] = User::whereDate('created_at', $date)->count();
+        }
+
+        // Leaderboards (Top 10)
+        $topDepositors = Transaction::where('category', 'recharge')
+            ->where('status', '1')
+            ->select('userid', DB::raw('SUM(amount) as total_deposited'))
+            ->groupBy('userid')
+            ->orderBy('total_deposited', 'desc')
+            ->limit(10)
+            ->with('user')
+            ->get();
+
+        $topHighRollers = \App\Models\Userbit::select('userid', DB::raw('SUM(amount) as total_bet'))
+            ->groupBy('userid')
+            ->orderBy('total_bet', 'desc')
+            ->limit(10)
+            ->with('user')
+            ->get();
+
         return view("admin.dashboard", [
             "user" => $user,
             "recharge" => $recharge,
             "withdrawal" => $withdrawal,
+            "stats" => $stats,
+            "chartData" => $chartData,
+            "topDepositors" => $topDepositors,
+            "topHighRollers" => $topHighRollers
         ]);
     }
     public function userlist()

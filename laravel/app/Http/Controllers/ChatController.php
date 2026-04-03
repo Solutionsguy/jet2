@@ -17,6 +17,10 @@ class ChatController extends Controller
         $limit = $request->input('limit', 50);
         
         $messages = ChatMessage::where('is_deleted', false)
+            ->where(function($query) {
+                $query->where('is_approved', true)
+                      ->orWhereNull('is_approved');
+            })
             ->orderBy('created_at', 'desc')
             ->limit($limit)
             ->get()
@@ -101,20 +105,135 @@ class ChatController extends Controller
             ], 429);
         }
 
+        // Auto-approval logic
+        $autoApprove = setting('auto_approve_chat') !== '0'; // Default to true unless explicitly disabled
+        $isApproved = user('isadmin') || $autoApprove;
+
         // Create message
         $chatMessage = ChatMessage::create([
             'user_id' => $userId,
             'username' => user('username') ?? user('name') ?? 'User',
             'message' => strip_tags($request->message), // Remove HTML tags
             'avatar' => user('image') ?? null,
-            'is_admin' => user('isadmin') ?? false
+            'is_admin' => user('isadmin') ?? false,
+            'is_approved' => $isApproved
         ]);
 
         return response()->json([
             'success' => true,
-            'message' => 'Message sent',
+            'message' => $isApproved ? 'Message sent' : 'Message sent and awaiting approval',
             'data' => $chatMessage
         ]);
+    }
+
+    /**
+     * Admin Management view
+     */
+    public function management()
+    {
+        if (!has_permission('manage_chat')) {
+            return redirect('/')->with('error', 'Unauthorized');
+        }
+
+        $messages = ChatMessage::orderBy('created_at', 'desc')
+            ->paginate(50);
+        
+        $autoApprove = setting('auto_approve_chat') !== '0';
+        
+        return view('admin.chat-management', compact('messages', 'autoApprove'));
+    }
+
+    /**
+     * Approve a message (admin only)
+     */
+    public function approveMessage(Request $request, $id)
+    {
+        if (!has_permission('manage_chat')) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
+        }
+
+        $message = ChatMessage::find($id);
+        if (!$message) {
+            return response()->json(['success' => false, 'message' => 'Message not found'], 404);
+        }
+
+        $admin = session()->get('adminlogin');
+        $message->update([
+            'is_approved' => true,
+            'approved_by' => $admin->id ?? null,
+            'is_deleted' => false // Ensure it's not deleted if being approved
+        ]);
+
+        return response()->json(['success' => true, 'message' => 'Message approved']);
+    }
+
+    /**
+     * Disapprove a message (admin only)
+     */
+    public function disapproveMessage(Request $request, $id)
+    {
+        if (!has_permission('manage_chat')) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
+        }
+
+        $message = ChatMessage::find($id);
+        if (!$message) {
+            return response()->json(['success' => false, 'message' => 'Message not found'], 404);
+        }
+
+        $message->update([
+            'is_approved' => false
+        ]);
+
+        return response()->json(['success' => true, 'message' => 'Message disapproved']);
+    }
+
+    /**
+     * Update a message (admin only)
+     */
+    public function updateMessage(Request $request, $id)
+    {
+        if (!has_permission('manage_chat')) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'message' => 'required|string|max:500|min:1'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['success' => false, 'message' => $validator->errors()->first()], 422);
+        }
+
+        $message = ChatMessage::find($id);
+        if (!$message) {
+            return response()->json(['success' => false, 'message' => 'Message not found'], 404);
+        }
+
+        $message->update([
+            'message' => strip_tags($request->message)
+        ]);
+
+        return response()->json(['success' => true, 'message' => 'Message updated']);
+    }
+
+    /**
+     * Toggle auto-approval setting
+     */
+    public function updateAutoApproveSettings(Request $request)
+    {
+        if (!has_permission('manage_chat')) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
+        }
+
+        $enabled = $request->input('enabled') ? '1' : '0';
+        
+        \App\Models\Setting::updateOrCreate(
+            ['category' => 'auto_approve_chat'],
+            ['value' => $enabled, 'status' => '1']
+        );
+
+        return response()->json(['success' => true, 'message' => 'Auto-approval setting updated']);
     }
 
     /**
@@ -122,10 +241,7 @@ class ChatController extends Controller
      */
     public function deleteMessage(Request $request, $id)
     {
-        $userId = user('id');
-        $isAdmin = user('isadmin');
-        
-        if (!$userId || !$isAdmin) {
+        if (!has_permission('manage_chat')) {
             return response()->json([
                 'success' => false,
                 'message' => 'Unauthorized'

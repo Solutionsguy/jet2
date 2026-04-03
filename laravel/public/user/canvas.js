@@ -279,7 +279,7 @@ if(StopPlaneIntervalID1 == 0){
         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
         ctx.moveTo(nx0, ny0);
         ctx.quadraticCurveTo(nx1, ny1, nx2 + intervalTimex, ny2 - intervalTimey);
-        GameObject(imgTag, (nx2 + intervalTimex) - imgxposition, (ny2 - intervalTimey) - imgyposition, imgwidth, imgheight, 300, 2, ctx);
+        GameObject(imgTag, (nx2 + intervalTimex) - imgxposition, (ny2 - intervalTimey) - imgyposition, imgwidth, imgheight, 100, 2, ctx);
         ctx.closePath();
         StopPlaneIntervalID1++;
         intervalTimex = intervalTimex + 4;
@@ -383,7 +383,7 @@ function animationHorizontalDots() {
         ctx.closePath();
 
     }
-    HorizontalDotsCountRun = HorizontalDotsCountRun + 1;
+    HorizontalDotsCountRun = HorizontalDotsCountRun + 3;
     ctx.restore();
 }
 
@@ -412,7 +412,7 @@ function animationVerticalDots() {
         ctx.fill();
         ctx.closePath();
     }
-    VerticalDotsCountRun = VerticalDotsCountRun + 1;
+    VerticalDotsCountRun = VerticalDotsCountRun + 3;
     ctx.restore();
 }
 
@@ -488,7 +488,7 @@ function drawBezierSplit(ctx, x0, y0, x1, y1, x2, y2, t0, t1, imgTag) {
             animationVerticalDots();
             ctx.moveTo(x0, y0);
             ctx.quadraticCurveTo(x1, y1, x2, y2);
-            GameObject(imgTag, x2 - imgxposition, y2 - imgyposition, imgwidth, imgheight, 300, 2, ctx);
+            GameObject(imgTag, x2 - imgxposition, y2 - imgyposition, imgwidth, imgheight, 100, 2, ctx);
             ctx.lineWidth = 5;
             ctx.strokeStyle = '#ff0647';
             ctx.stroke();
@@ -525,7 +525,7 @@ function drawBezierSplit(ctx, x0, y0, x1, y1, x2, y2, t0, t1, imgTag) {
                 ny1 = lerp(lerp(y0, y1, t0), lerp(y1, y2, t0), t1);
             ctx.moveTo(nx0, ny0);
             ctx.quadraticCurveTo(nx1, ny1, nx2, ny2);
-            GameObject(imgTag, nx2 - imgxposition, ny2 - imgyposition, imgwidth, imgheight, 300, 2, ctx);
+            GameObject(imgTag, nx2 - imgxposition, ny2 - imgyposition, imgwidth, imgheight, 100, 2, ctx);
             ctx.lineWidth = 5;
             ctx.strokeStyle = '#ff0647';
             ctx.stroke();
@@ -599,7 +599,7 @@ function upplane(x0, y0, x1, y1, x2, y2) {
     var DecreaseX = estimateWidth - (countInterval);
     ctx.moveTo(x0, y0);
     ctx.quadraticCurveTo(x1, y1, DecreaseX, IncreaseY);
-    GameObject(imgTag, DecreaseX - imgxposition, IncreaseY - imgyposition, imgwidth, imgheight, 300, 2, ctx);
+    GameObject(imgTag, DecreaseX - imgxposition, IncreaseY - imgyposition, imgwidth, imgheight, 100, 2, ctx);
     ctx.lineWidth = 5;
     ctx.strokeStyle = '#ff0647';
     ctx.stroke();
@@ -625,7 +625,7 @@ function downplane(x0, y0, x1, y1, x2, y2) {
     estimateWidth = IncreaseX;
     ctx.moveTo(x0, y0);
     ctx.quadraticCurveTo(x1, y1, IncreaseX, DecreaseY);
-    GameObject(imgTag, IncreaseX - imgxposition, DecreaseY - imgyposition, imgwidth, imgheight, 300, 2, ctx);
+    GameObject(imgTag, IncreaseX - imgxposition, DecreaseY - imgyposition, imgwidth, imgheight, 100, 2, ctx);
     ctx.lineWidth = 5;
     ctx.strokeStyle = '#ff0647';
     ctx.stroke();
@@ -748,7 +748,7 @@ function startPlaneAtMultiplier(multiplier) {
         ctx.closePath();
         
         // Draw the plane sprite at the end
-        GameObject(imgTag, estimateWidth - imgxposition, estimateHeight - imgyposition, imgwidth, imgheight, 300, 2, ctx);
+        GameObject(imgTag, estimateWidth - imgxposition, estimateHeight - imgyposition, imgwidth, imgheight, 100, 2, ctx);
         
         // Fill the area under the curve
         fillShape(estimateWidth, estimateHeight, x0, y0, x1, y1, 1);
@@ -803,7 +803,7 @@ function startPlaneAtMultiplier(multiplier) {
         ctx.closePath();
         
         // Draw the plane sprite at current position
-        GameObject(imgTag, curveX - imgxposition, curveY - imgyposition, imgwidth, imgheight, 300, 2, ctx);
+        GameObject(imgTag, curveX - imgxposition, curveY - imgyposition, imgwidth, imgheight, 100, 2, ctx);
         
         // Fill the area under the curve
         ctx.beginPath();

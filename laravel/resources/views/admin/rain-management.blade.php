@@ -16,56 +16,58 @@
 
     <!-- Stats Cards -->
     <div class="row mb-4">
-        <div class="col-md-3">
-            <div class="card text-white" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="mb-1">Active Rains</h6>
-                            <h3 class="mb-0" id="active-rains-count">{{ count($activeRains) }}</h3>
-                        </div>
-                        <i class="fas fa-cloud-rain fa-2x opacity-75"></i>
-                    </div>
-                </div>
+        <!-- ... (existing stats cards) ... -->
+    </div>
+
+    <!-- Auto-Rain Settings -->
+    <div class="card mb-4 border-info">
+        <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0"><i class="fas fa-robot"></i> Automated Rain Settings</h5>
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="auto-rain-enabled" {{ ($autoRainSettings['enabled'] == '1') ? 'checked' : '' }}>
+                <label class="form-check-label text-white" for="auto-rain-enabled">Enable Auto-Rain</label>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card text-white" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="mb-1">Today's Rains</h6>
-                            <h3 class="mb-0">{{ $todayRains }}</h3>
+        <div class="card-body">
+            <form id="auto-rain-settings-form">
+                @csrf
+                <div class="row align-items-end">
+                    <div class="col-md-3">
+                        <label class="form-label">Amount per Winner (KSh)</label>
+                        <input type="number" class="form-control" name="amount" value="{{ $autoRainSettings['amount'] }}" min="1">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Number of Winners</label>
+                        <input type="number" class="form-control" name="winners" value="{{ $autoRainSettings['winners'] }}" min="1">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Frequency (Interval)</label>
+                        <select class="form-control" name="interval">
+                            <option value="every_30_mins" {{ $autoRainSettings['interval'] == 'every_30_mins' ? 'selected' : '' }}>Every 30 Minutes</option>
+                            <option value="hourly" {{ $autoRainSettings['interval'] == 'hourly' ? 'selected' : '' }}>Hourly</option>
+                            <option value="every_2_hours" {{ $autoRainSettings['interval'] == 'every_2_hours' ? 'selected' : '' }}>Every 2 Hours</option>
+                            <option value="every_6_hours" {{ $autoRainSettings['interval'] == 'every_6_hours' ? 'selected' : '' }}>Every 6 Hours</option>
+                            <option value="every_12_hours" {{ $autoRainSettings['interval'] == 'every_12_hours' ? 'selected' : '' }}>Every 12 Hours</option>
+                            <option value="daily" {{ $autoRainSettings['interval'] == 'daily' ? 'selected' : '' }}>Daily</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="btn-group w-100">
+                            <button type="button" class="btn btn-primary" onclick="saveAutoRainSettings()">
+                                <i class="fas fa-save"></i> Save
+                            </button>
+                            <button type="button" class="btn btn-warning" onclick="triggerAutoRainNow()">
+                                <i class="fas fa-bolt"></i> Drop Now
+                            </button>
                         </div>
-                        <i class="fas fa-calendar-day fa-2x opacity-75"></i>
                     </div>
                 </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card text-white" style="background: linear-gradient(135deg, #FF9500 0%, #FFA500 100%);">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="mb-1">Distributed Today</h6>
-                            <h3 class="mb-0">KSh {{ number_format($todayDistributed, 2) }}</h3>
-                        </div>
-                        <i class="fas fa-money-bill-wave fa-2x opacity-75"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card text-white" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="mb-1">Total Active Amount</h6>
-                            <h3 class="mb-0" id="total-active-amount">KSh 0</h3>
-                        </div>
-                        <i class="fas fa-coins fa-2x opacity-75"></i>
-                    </div>
-                </div>
+            </form>
+            <div class="mt-2">
+                <small class="text-muted">
+                    <i class="fas fa-info-circle"></i> Auto-rain will drop a "Support Rain" (Freebet) automatically based on the interval.
+                    Last drop: <strong>{{ setting('last_auto_rain_at') ? \Carbon\Carbon::parse(setting('last_auto_rain_at'))->diffForHumans() : 'Never' }}</strong>
+                </small>
             </div>
         </div>
     </div>

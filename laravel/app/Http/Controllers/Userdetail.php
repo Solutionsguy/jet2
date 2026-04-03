@@ -91,7 +91,9 @@ class Userdetail extends Controller
             "avatar" => $avatar,
             "notification" => $notification,
             "wallet" => $walletBalance,
-            "freebet" => $freebetBalance
+            "freebet" => $freebetBalance,
+            "wagering_remaining" => $walletData ? floatval($walletData->wagering_remaining) : 0,
+            "wagering_target" => $walletData ? floatval($walletData->initial_wagering_target) : 0
         );
         $message = "Success";
         $isSuccess = true;

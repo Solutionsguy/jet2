@@ -4,9 +4,9 @@
     <div class="collection-page d-none">
         <!--====== Slider Start ======-->
         <div class="owl-carousel owl-theme">
-            <div class="item"><img src="{{ asset('images/01.jpg') }}" class="w-100" /></div>
-            <div class="item"><img src="{{ asset('images/02.jpg') }}" class="w-100" /></div>
-            <div class="item"><img src="{{ asset('images/03.jpg') }}" class="w-100" /></div>
+            <div class="item"><img src="{{ asset('images/01.png') }}" class="w-100" /></div>
+            <div class="item"><img src="{{ asset('images/02.png') }}" class="w-100" /></div>
+            <div class="item"><img src="{{ asset('images/03.png') }}" class="w-100" /></div>
         </div>
         <!--====== Slider End ======-->
         <!--====== Game List Start ======-->
@@ -32,7 +32,7 @@
                                         PLAY NOW
                                     </a>
                                 @else
-                                    <a href="#" class="btn demo-btns" data-bs-toggle="modal"
+                                    <a href="javascript:void(0);" class="btn demo-btns" data-bs-toggle="modal"
                                         data-bs-target="#login-modal" id="login">
                                         LOGIN
                                     </a>
@@ -46,4 +46,19 @@
         <!--====== Game List End ======-->
     </div>
 </div>
+@endsection
+
+@section('js')
+<script>
+    $(document).ready(function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('refer')) {
+            $('#register-modal').modal('show');
+        } else if (window.location.pathname === '/login' || urlParams.has('login')) {
+            $('#login-modal').modal('show');
+        } else if (window.location.pathname === '/register') {
+            $('#register-modal').modal('show');
+        }
+    });
+</script>
 @endsection

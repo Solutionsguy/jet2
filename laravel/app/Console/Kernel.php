@@ -15,7 +15,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
+        // Check for auto-rain every minute (command handles timing based on settings)
+        $schedule->command('rain:auto')->everyMinute();
     }
 
     /**

@@ -38,7 +38,10 @@ Route::get('/dashboard', function () {
     return view('welcome');
 });
 Route::get('/register', function () {
-    return view('register');
+    return view('welcome');
+});
+Route::get('/login', function () {
+    return view('welcome');
 });
 // Auth Login
 Route::post('/auth/login', [Authentication::class, "login"]);
@@ -50,28 +53,59 @@ Route::post('/auth/admin/login', [Authentication::class, "adminlogin"]);
 
 // Admin Login
 Route::get('/admin', [Admin::class, "login"]);
-Route::group(['prefix' => 'admin/', 'middleware' => ['isAdmin']], function () {
+Route::group(['prefix' => 'admin', 'middleware' => ['isAdmin']], function () {
+
     Route::get('/dashboard', [Admin::class, "dashboard"]);
-    Route::get('/user-list', [Admin::class, "userlist"]);
     Route::get('/change-password', [Admin::class, "chagepassword"]);
-    Route::get('/user/edit/{id}', [Admin::class, "useredit"]);
-    Route::get('/recharge-history', [Admin::class, "rechargehistory"]);
-    Route::get('/withdrawal-history', [Admin::class, "withdrawalhistory"]);
-    Route::get('/amount-setup/{id?}', [Admin::class, "amountsetup"]);
-    Route::get('/bank-detail', [Admin::class, "bankdetail"]);
+    
+    // User Management
+    Route::middleware(['permission:view_users'])->group(function () {
+        Route::get('/user-list', [Admin::class, "userlist"]);
+        Route::get('/user/edit/{id}', [Admin::class, "useredit"]);
+    });
+
+    // Recharge/Deposit Management
+    Route::middleware(['permission:manage_deposits'])->group(function () {
+        Route::get('/recharge-history', [Admin::class, "rechargehistory"]);
+    });
+
+    // Withdrawal Management
+    Route::middleware(['permission:manage_withdrawals'])->group(function () {
+        Route::get('/withdrawal-history', [Admin::class, "withdrawalhistory"]);
+    });
+
+    // Game/System Settings
+    Route::middleware(['permission:game_settings'])->group(function () {
+        Route::get('/amount-setup/{id?}', [Admin::class, "amountsetup"]);
+        Route::get('/bank-detail', [Admin::class, "bankdetail"]);
+    });
+
+    // Role & Admin Management
+    Route::middleware(['permission:full_access'])->group(function () {
+        Route::get('/roles', [\App\Http\Controllers\AdminRoleController::class, 'rolesIndex']);
+        Route::post('/roles', [\App\Http\Controllers\AdminRoleController::class, 'roleStore']);
+        Route::post('/roles/{id}', [\App\Http\Controllers\AdminRoleController::class, 'roleUpdate']);
+        
+        Route::get('/sub-admins', [\App\Http\Controllers\AdminRoleController::class, 'subAdminsIndex']);
+        Route::post('/sub-admins', [\App\Http\Controllers\AdminRoleController::class, 'subAdminStore']);
+    });
     
     // Rain Management Routes
-    Route::prefix('rain')->group(function () {
+    Route::prefix('rain')->middleware(['permission:manage_rain'])->group(function () {
         Route::get('/', [\App\Http\Controllers\AdminRainController::class, 'index']);
         Route::post('/create', [\App\Http\Controllers\AdminRainController::class, 'createSupportRain']);
         Route::get('/history', [\App\Http\Controllers\AdminRainController::class, 'getRainHistory']);
         Route::get('/analytics', [\App\Http\Controllers\AdminRainController::class, 'getRainAnalytics']);
         Route::post('/{id}/cancel', [\App\Http\Controllers\AdminRainController::class, 'cancelRain']);
         Route::get('/{id}/participants', [\App\Http\Controllers\AdminRainController::class, 'getRainParticipants']);
+        
+        // Auto-Rain Settings
+        Route::post('/auto-settings', [\App\Http\Controllers\AdminRainController::class, 'updateAutoRainSettings']);
+        Route::post('/auto-trigger', [\App\Http\Controllers\AdminRainController::class, 'triggerAutoRain']);
     });
     
     // Freebet Management Routes
-    Route::prefix('freebet')->group(function () {
+    Route::prefix('freebet')->middleware(['permission:manage_freebets'])->group(function () {
         Route::get('/', [\App\Http\Controllers\AdminWalletController::class, 'freebetIndex']);
         Route::post('/add', [\App\Http\Controllers\AdminWalletController::class, 'addFreebet']);
         Route::post('/remove', [\App\Http\Controllers\AdminWalletController::class, 'removeFreebet']);
@@ -79,16 +113,40 @@ Route::group(['prefix' => 'admin/', 'middleware' => ['isAdmin']], function () {
         Route::get('/stats', [\App\Http\Controllers\AdminWalletController::class, 'getFreebetStats']);
         Route::get('/user/{userId}/history', [\App\Http\Controllers\AdminWalletController::class, 'getUserFreebetHistory']);
     });
+
+    // Chat Management Routes
+    Route::prefix('chat-management')->middleware(['permission:manage_chat'])->group(function () {
+        Route::get('/', [\App\Http\Controllers\ChatController::class, 'management'])->name('admin.chat.management');
+        Route::post('/approve/{id}', [\App\Http\Controllers\ChatController::class, 'approveMessage']);
+        Route::post('/disapprove/{id}', [\App\Http\Controllers\ChatController::class, 'disapproveMessage']);
+        Route::post('/update/{id}', [\App\Http\Controllers\ChatController::class, 'updateMessage']);
+        Route::post('/delete/{id}', [\App\Http\Controllers\ChatController::class, 'deleteMessage']);
+        Route::post('/auto-approve', [\App\Http\Controllers\ChatController::class, 'updateAutoApproveSettings']);
+    });
     
+    // P2P Management Routes
+    Route::prefix('p2p')->middleware(['permission:manage_p2p'])->group(function () {
+        Route::get('/', function() { return redirect()->route('admin.p2p.peers'); });
+        Route::get('/peers', [\App\Http\Controllers\AdminP2PController::class, 'index'])->name('admin.p2p.peers');
+        Route::post('/peers/store', [\App\Http\Controllers\AdminP2PController::class, 'storePeer'])->name('admin.p2p.peers.store');
+        Route::post('/peers/update/{id}', [\App\Http\Controllers\AdminP2PController::class, 'updatePeer'])->name('admin.p2p.peers.update');
+        Route::get('/peers/delete/{id}', [\App\Http\Controllers\AdminP2PController::class, 'deletePeer'])->name('admin.p2p.peers.delete');
+        Route::get('/peers/toggle/{id}', [\App\Http\Controllers\AdminP2PController::class, 'toggleStatus'])->name('admin.p2p.peers.toggle');
+        Route::get('/withdrawals', [\App\Http\Controllers\AdminP2PController::class, 'withdrawalHistory'])->name('admin.p2p.withdrawals');
+        Route::get('/withdrawals/approve/{id}', [\App\Http\Controllers\AdminP2PController::class, 'approveWithdrawal'])->name('admin.p2p.withdrawals.approve');
+        Route::get('/withdrawals/reject/{id}', [\App\Http\Controllers\AdminP2PController::class, 'rejectWithdrawal'])->name('admin.p2p.withdrawals.reject');
+    });
+
     Route::group(['prefix' => 'api/'], function () {
         Route::post('/changepassword', [Adminapi::class, "changepassword"]);
-        Route::post('/edituser', [Adminapi::class, "edituser"]);
-        Route::post('/recharge/{event}', [Adminapi::class, "rechargeapproval"]);
-        Route::post('/withdraw/{event}', [Adminapi::class, "withdrawalapproval"]);
-        Route::post('/user/delete', [Adminapi::class, "userdelete"]);
-        Route::post('/editamountsetup', [Adminapi::class, "editamountsetup"]);
-        Route::post('/bankdetail', [Adminapi::class, "editbankdetail"]);
-        Route::post('/updatewallet', [Adminapi::class, "updatewallet"]);
+        
+        Route::post('/edituser', [Adminapi::class, "edituser"])->middleware('permission:edit_users');
+        Route::post('/recharge/{event}', [Adminapi::class, "rechargeapproval"])->middleware('permission:manage_deposits');
+        Route::post('/withdraw/{event}', [Adminapi::class, "withdrawalapproval"])->middleware('permission:manage_withdrawals');
+        Route::post('/user/delete', [Adminapi::class, "userdelete"])->middleware('permission:edit_users');
+        Route::post('/editamountsetup', [Adminapi::class, "editamountsetup"])->middleware('permission:game_settings');
+        Route::post('/bankdetail', [Adminapi::class, "editbankdetail"])->middleware('permission:game_settings');
+        Route::post('/updatewallet', [Adminapi::class, "updatewallet"])->middleware('permission:edit_users');
     });
 
     Route::get('/logout', [Admin::class, "logout"]);
@@ -124,6 +182,13 @@ Route::group(['middleware' => ['isUser']], function () {
         Route::get('/config', [\App\Http\Controllers\PaystackController::class, 'getPublicKey']);
         Route::get('/availability', [\App\Http\Controllers\PaystackController::class, 'checkAvailability']);
     });
+    // P2P Withdrawal Routes
+    Route::prefix('p2p')->group(function () {
+        Route::post('/search', [\App\Http\Controllers\P2PController::class, 'startSearch']);
+        Route::get('/status/{reference}', [\App\Http\Controllers\P2PController::class, 'getMatchStatus']);
+        Route::post('/cancel/{reference}', [\App\Http\Controllers\P2PController::class, 'cancelSearch']);
+    });
+
     Route::get('/withdraw', function () {
         return view('withdraw');
     });

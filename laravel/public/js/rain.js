@@ -75,15 +75,20 @@ class RainSystem {
                 
                 // UPDATE WALLET BALANCE IMMEDIATELY
                 if (data.data && data.data.wallet_balance !== undefined) {
-                    wallet_balance = data.data.wallet_balance;
+                    wallet_balance = data.data.wallet_balance.toString();
+                    console.log('💰 Updated wallet_balance after claim:', wallet_balance);
                 }
                 if (data.data && data.data.freebet_balance !== undefined) {
-                    freebet_balance = data.data.freebet_balance;
+                    freebet_balance = data.data.freebet_balance.toString();
+                    console.log('🎁 Updated freebet_balance after claim:', freebet_balance);
                 }
                 
                 // Update display based on current wallet type
                 if (typeof window.updateWalletBalance === 'function') {
+                    console.log('🔄 Calling updateWalletBalance() after claim...');
                     window.updateWalletBalance();
+                } else {
+                    console.warn('⚠️ window.updateWalletBalance() not found!');
                 }
                 
                 // Show notification based on rain type
@@ -123,9 +128,16 @@ class RainSystem {
             return;
         }
         
-        // Get user's wallet balance
-        const walletText = $("#wallet_balance").text();
-        const walletBalance = parseFloat(walletText.replace(/[^0-9.]/g, '')) || 0;
+        // ALWAYS use money wallet for creating rain (freebet cannot be used)
+        let walletBalance = 0;
+        if (typeof wallet_balance !== 'undefined') {
+            walletBalance = parseFloat(wallet_balance.toString().replace(/,/g, '')) || 0;
+        } else {
+            // Fallback to DOM element (crash page)
+            const walletText = $("#wallet_balance").text();
+            walletBalance = parseFloat(walletText.replace(/[^0-9.]/g, '')) || 0;
+        }
+        console.log('💰 Rain modal - money balance:', walletBalance);
         
         // Add backdrop and modal
         const html = `
@@ -133,7 +145,10 @@ class RainSystem {
             <div class="rain-create-modal">
                 <h3>🌧️ Create Rain Giveaway</h3>
                 <div class="rain-balance-info">
-                    Your Balance: KSh <span id="rain-user-balance">${walletBalance.toFixed(2)}</span>
+                    Money Wallet: KSh <span id="rain-user-balance">${walletBalance.toFixed(2)}</span>
+                </div>
+                <div class="rain-info-note" style="background: #1a1a2e; border-left: 3px solid #00d9ff; padding: 8px 12px; margin-bottom: 15px; border-radius: 4px; font-size: 12px; color: #aaa;">
+                    ℹ️ Only money wallet can be used to create rains. Freebet wallet cannot be used.
                 </div>
                 <div class="form-group">
                     <label>Amount Per User (KSh)</label>
@@ -163,9 +178,21 @@ class RainSystem {
             const amount = parseFloat($('#rain-amount-per-user').val()) || 0;
             const winners = parseInt($('#rain-num-winners').val()) || 0;
             const total = amount * winners;
-            const balance = parseFloat($('#rain-user-balance').text()) || 0;
+            
+            // ALWAYS use money wallet balance (not freebet)
+            let balance = 0;
+            if (typeof wallet_balance !== 'undefined') {
+                balance = parseFloat(wallet_balance.toString().replace(/,/g, '')) || 0;
+            } else {
+                balance = parseFloat($('#rain-user-balance').text()) || 0;
+            }
+            
+            // Update displayed balance in modal
+            $('#rain-user-balance').text(balance.toFixed(2));
             
             $('#rain-total-amount').text(total.toFixed(2));
+            
+            console.log('🧮 Rain calculation - Amount:', amount, 'Winners:', winners, 'Total:', total, 'Balance:', balance);
             
             // Check if user has enough balance
             if (total > balance) {
@@ -192,6 +219,10 @@ class RainSystem {
             return;
         }
 
+        // ALWAYS use money wallet (freebet cannot be used for creating rain)
+        const walletType = 'money';
+        console.log('🎯 Creating rain with wallet type:', walletType);
+
         try {
             const response = await fetch('/rain/create', {
                 method: 'POST',
@@ -203,7 +234,8 @@ class RainSystem {
                 credentials: 'same-origin',
                 body: JSON.stringify({
                     amount_per_user: amountPerUser,
-                    num_winners: numWinners
+                    num_winners: numWinners,
+                    wallet_type: walletType
                 })
             });
 
@@ -212,14 +244,22 @@ class RainSystem {
             if (data.success) {
                 toastr.success('Rain created successfully!');
                 
-                // UPDATE WALLET BALANCE IMMEDIATELY (deducted amount)
+                // UPDATE BOTH WALLET BALANCES IMMEDIATELY (deducted amount)
                 if (data.wallet_balance !== undefined) {
-                    wallet_balance = data.wallet_balance;
-                    
-                    // Update display based on current wallet type
-                    if (typeof window.updateWalletBalance === 'function') {
-                        window.updateWalletBalance();
-                    }
+                    wallet_balance = data.wallet_balance.toString();
+                    console.log('💰 Updated wallet_balance after create:', wallet_balance);
+                }
+                if (data.freebet_balance !== undefined) {
+                    freebet_balance = data.freebet_balance.toString();
+                    console.log('🎁 Updated freebet_balance after create:', freebet_balance);
+                }
+                
+                // Update display based on current wallet type
+                if (typeof window.updateWalletBalance === 'function') {
+                    console.log('🔄 Calling updateWalletBalance() after create...');
+                    window.updateWalletBalance();
+                } else {
+                    console.warn('⚠️ window.updateWalletBalance() not found!');
                 }
                 
                 this.closeCreateRainModal();

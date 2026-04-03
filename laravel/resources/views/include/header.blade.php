@@ -6,9 +6,20 @@
         </div>
         @if (session()->has('userlogin'))
             <div class="header-right d-flex align-items-center">
+                <!-- Admin Debug: isadmin={{ user('isadmin') ?? 'NULL' }}, type={{ gettype(user('isadmin')) }} -->
+                @if(user('isadmin') == '1' || user('isadmin') == 1)
+                <!-- ADMIN BUTTON SHOULD SHOW HERE -->
+                <a href="/admin">
+                    <button class="admin-shortcut-btn d-flex align-items-center me-2" title="Admin Panel">
+                        <span class="material-symbols-outlined"> admin_panel_settings </span>
+                    </button>
+                </a>
+                @else
+                <!-- ADMIN BUTTON HIDDEN: isadmin is {{ user('isadmin') ?? 'NULL' }} -->
+                @endif
                 <a href="/deposit">
-                    <button class="deposite-btn rounded-pill d-flex align-items-center me-2">
-                        <span class="material-symbols-outlined me-2"> payments </span>
+                    <button class="deposite-btn d-flex align-items-center me-2">
+                        <span class="material-symbols-outlined me-2"> account_balance_wallet </span>
                         <!-- <span>$</span> -->
                         <span class="me-2" id="header_wallet_balance">KSh{{ wallet(user('id')) }}</span>
                         DEPOSIT
@@ -46,7 +57,8 @@
                             </a>
                         </li>
 
-                        @if(user('isadmin'))
+                        <!-- Debug: isadmin = {{ user('isadmin') ?? 'NULL' }} -->
+                        @if(user('isadmin') == '1' || user('isadmin') == 1)
                         <li>
                             <a href="/admin" class="f-12 justify-content-between" style="background: linear-gradient(90deg, #FF9500, #FFA500); color: #000; font-weight: 600;">
                                 <div class="d-flex align-items-center">
@@ -144,11 +156,11 @@
             </div>
         @else
             <div class="header-right d-flex align-items-center">
-                <button class="register-btn rounded-pill d-flex align-items-center me-2 reg_btn" data-bs-toggle="modal"
+                <button class="register-btn d-flex align-items-center me-2 reg_btn" data-bs-toggle="modal"
                     data-bs-target="#register-modal">
                     Register
                 </button>
-                <button class="login-btn rounded-pill d-flex align-items-center me-2" data-bs-toggle="modal"
+                <button class="login-btn d-flex align-items-center me-2" data-bs-toggle="modal"
                     data-bs-target="#login-modal" id="login">
                     Login
                 </button>

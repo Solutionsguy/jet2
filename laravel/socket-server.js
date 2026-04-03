@@ -97,8 +97,8 @@ function generateCrashPoint(minMultiplier = 1.00) {
     // AGGRESSIVE CONFIG: Used when real bets exist (protects house)
     // Lower multipliers = house wins more often
     const AGGRESSIVE_CONFIG = {
-        instantCrashChance: 1.0,    // 8% chance of crash at 1.00x - 1.20x (instant loss)
-        lowCrashChance: 0.0,        // 45% chance of crash at 1.20x - 1.80x (low multiplier)
+        instantCrashChance: 0.33,    // 8% chance of crash at 1.00x - 1.20x (instant loss)
+        lowCrashChance: 0.67,        // 45% chance of crash at 1.20x - 1.80x (low multiplier)
         mediumCrashChance: 0.0,     // 35% chance of crash at 1.80x - 3.00x (medium)
         // Remaining 12% chance of crash at 3.00x - 5.00x (high)
         instantMax: 1.0,
@@ -111,13 +111,13 @@ function generateCrashPoint(minMultiplier = 1.00) {
     // Higher multipliers make the game look exciting for spectators
     const RELAXED_CONFIG = {
         instantCrashChance: 0.02,    // 2% chance of crash at 1.00x - 1.50x (rare instant)
-        lowCrashChance: 0.0,        // 13% chance of crash at 1.50x - 3.00x (low)
-        mediumCrashChance: 0.98,     // 35% chance of crash at 3.00x - 7.00x (medium)
-        // Remaining 50% chance of crash at 7.00x - 15.00x (high - exciting!)
+        lowCrashChance: 0.0,        // 0% chance of low crash
+        mediumCrashChance: 0.70,     // 70% chance of crash at 1.50x - 10.00x
+        // Remaining 28% chance of crash at 10.00x - 55.00x (high - very exciting!)
         instantMax: 1.0,
-        lowMax: 3.00,
-        mediumMax: 7.00,
-        maxAllowed: 15.00
+        lowMax: 1.50,
+        mediumMax: 10.00,
+        maxAllowed: 55.00
     };
     // ==============================================
     
@@ -171,8 +171,8 @@ function generateCrashPointAggressive(minMultiplier = 1.00) {
     
     // AGGRESSIVE CONFIG: Always used (ignores real bets check)
     const CONFIG = {
-        instantCrashChance: 1.0,    // 100% chance of crash at 1.00x - 1.05x
-        lowCrashChance: 0.0,
+        instantCrashChance: 0.33,    // 100% chance of crash at 1.00x - 1.05x
+        lowCrashChance: 0.67,
         mediumCrashChance: 0.0,
         instantMax: 1.0,
         lowMax: 1.5,
@@ -938,8 +938,17 @@ function startFlying() {
             return;
         }
         
-        gameState.currentMultiplier += GAME_CONFIG.incrementValue;
-        gameState.currentMultiplier = parseFloat(gameState.currentMultiplier.toFixed(2));
+        // TIME-BASED CALCULATION: Calculate exact multiplier based on real time elapsed
+        // This eliminates "drifting" or "lag" if the server is busy
+        const now = Date.now();
+        const elapsedSeconds = (now - gameState.startTime) / 1000;
+        
+        // Formula: multiplier = 1.00 + (seconds * rate)
+        // Default linear rate is 0.1x per second (matches 0.01 per 100ms)
+        let newMultiplier = 1.00 + (elapsedSeconds * 0.1);
+        
+        // Precision to 2 decimal places
+        gameState.currentMultiplier = Math.floor(newMultiplier * 100) / 100;
         
         // Broadcast to ALL clients
         io.emit('multiplierUpdate', {
@@ -957,7 +966,7 @@ function startFlying() {
             clearInterval(multiplierInterval);
             crashGame();
         }
-    }, GAME_CONFIG.incrementSpeed);
+    }, 50); // 50ms = 20 times per second for smoother movement
     
     // IMPORTANT: Recalculate crash point AFTER bet window if real bets arrived late
     // Timeline:

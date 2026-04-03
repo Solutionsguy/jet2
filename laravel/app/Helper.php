@@ -44,7 +44,15 @@ function datealgebra($date, $operator, $value, $format = "Y-m-d")
 function user($parameter,$id=null)
 {
     if ($id == null) {
-        return session()->get('userlogin')[$parameter];
+        $user = session()->get('userlogin');
+        if (!$user) {
+            $user = session()->get('adminlogin');
+        }
+        
+        if ($user) {
+            return is_object($user) ? $user->{$parameter} : ($user[$parameter] ?? null);
+        }
+        return null;
     }else{
         $data = User::where('id', $id)->first();
         if ($data) {
@@ -52,7 +60,6 @@ function user($parameter,$id=null)
         }
         return 'User not found';
     }
-    // return session()->get('userlogin')[$parameter];
 }
 function userdetail($id, $parameter)
 {
@@ -64,7 +71,21 @@ function userdetail($id, $parameter)
 }
 function admin($parameter)
 {
-    return session()->get('adminlogin')[$parameter];
+    $admin = session()->get('adminlogin');
+    if (!$admin) return 'Admin';
+    
+    try {
+        if (is_object($admin)) {
+            return $admin->$parameter ?? 'N/A';
+        }
+        if (is_array($admin)) {
+            return $admin[$parameter] ?? 'N/A';
+        }
+    } catch (\Exception $e) {
+        return 'Admin';
+    }
+    
+    return 'Admin';
 }
 function wallet($userid, $type = "string")
 {
@@ -144,6 +165,38 @@ function addwallet($id, $amount, $symbol = "+")
     }
     return 0;
 }
+
+function addfreebet($id, $amount, $symbol = "+")
+{
+    $wallet = Wallet::where('userid', $id)->first();
+    if ($wallet) {
+        $currentFreebet = floatval($wallet->freebet_amount);
+        $addedAmount = floatval($amount);
+        
+        if ($symbol == "+") {
+            $newFreebet = $currentFreebet + $addedAmount;
+            
+            // Wagering logic: Only increase wagering when adding freebet
+            $multiplier = floatval(setting('freebet_wagering_multiplier') ?? 10);
+            $extraWagering = $addedAmount * $multiplier;
+            
+            $wallet->freebet_amount = $newFreebet;
+            $wallet->wagering_remaining += $extraWagering;
+            $wallet->initial_wagering_target += $extraWagering;
+            $wallet->save();
+            
+        } elseif ($symbol == "-") {
+            $newFreebet = max(0, $currentFreebet - $addedAmount);
+            $wallet->freebet_amount = $newFreebet;
+            $wallet->save();
+        } else {
+            return $currentFreebet;
+        }
+        
+        return $newFreebet;
+    }
+    return 0;
+}
 function appvalidate($input)
 {
     if ($input == '' || $input == null || $input == 0) {
@@ -172,6 +225,7 @@ function status($code, $type)
         if ($code == 2) {
             return array('color' => 'danger', 'name' => 'Cancel');
         }
+        return array('color' => 'secondary', 'name' => 'Unknown');
     } elseif ($type == "user") {
         if ($code == 0) {
             return array('color' => 'danger', 'name' => 'Inactive');
@@ -182,11 +236,26 @@ function status($code, $type)
         if ($code == 2) {
             return array('color' => 'warning', 'name' => 'Pending');
         }
+        return array('color' => 'secondary', 'name' => 'Unknown');
     }
+    return array('color' => 'secondary', 'name' => 'Unknown');
 }
 // function bankdetail($userid,$parameter){
 //     Bank_detail::where('userid',);
 // }
+function has_permission($permission)
+{
+    $admin = session()->get('adminlogin');
+    if (!$admin) return false;
+
+    // If it's the cached session object, we need to refresh it or check against it
+    // For simplicity, we assume the session object might be stale, but the User model has the logic
+    $user = User::find($admin->id);
+    if (!$user || !$user->isadmin) return false;
+
+    return $user->hasPermission($permission);
+}
+
 function platform($id)
 {
     if ($id == 2) {

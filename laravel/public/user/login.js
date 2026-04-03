@@ -48,12 +48,33 @@ function login_ajax(logindata, redirect_url) {
         type: "POST",
         dataType: "json",
         success: function(result) {
+            console.log('Login response:', result); // Debug log
             $("#loginSubmit").prop('disabled', false);
             if (result.isSuccess) {
+                console.log('Login successful, redirecting to:', redirect_url);
                 window.location.href = redirect_url;
             } else {
+                console.log('Login failed:', result.message);
                 $("#login-error").text(result.message).show();
+                // Make error more visible
+                $("#login-error").css({
+                    'color': 'red',
+                    'display': 'block',
+                    'font-weight': 'bold',
+                    'margin-top': '10px'
+                });
             }
+        },
+        error: function(xhr, status, error) {
+            console.error('Login AJAX error:', xhr, status, error);
+            $("#loginSubmit").prop('disabled', false);
+            $("#login-error").text('Connection error. Please try again.').show();
+            $("#login-error").css({
+                'color': 'red',
+                'display': 'block',
+                'font-weight': 'bold',
+                'margin-top': '10px'
+            });
         }
     });
 }

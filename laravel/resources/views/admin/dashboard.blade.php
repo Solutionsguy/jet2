@@ -9,19 +9,93 @@
     <h3 class="page-title">
       <span class="page-title-icon bg-gradient-primary text-white me-2">
         <i class="mdi mdi-home"></i>
-      </span> Dashboard
+      </span> Dashboard Overview (Today)
     </h3>
-    <nav aria-label="breadcrumb">
-      <ul class="breadcrumb">
-        <li class="breadcrumb-item active" aria-current="page">
-          <span></span>Overview <i class="mdi mdi-alert-circle-outline icon-sm text-primary align-middle"></i>
-        </li>
-      </ul>
-    </nav>
   </div>
+
+  <div class="row">
+    <!-- New Users Today -->
+    <div class="col-md-3 stretch-card grid-margin">
+      <div class="card bg-gradient-danger card-img-holder text-white">
+        <div class="card-body">
+          <img src="/aviatoradmin/assets/images/dashboard/circle.svg" class="card-img-absolute" alt="circle-image" />
+          <h4 class="font-weight-normal mb-3">New Users <i class="mdi mdi-account-multiple-plus mdi-24px float-right"></i></h4>
+          <h2 class="mb-5">{{ $stats['new_users_today'] }}</h2>
+          <p class="card-text">Joined today</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Online Users -->
+    <div class="col-md-3 stretch-card grid-margin">
+      <div class="card bg-gradient-primary card-img-holder text-white">
+        <div class="card-body">
+          <img src="/aviatoradmin/assets/images/dashboard/circle.svg" class="card-img-absolute" alt="circle-image" />
+          <h4 class="font-weight-normal mb-3">Online Now <i class="mdi mdi-access-point mdi-24px float-right"></i></h4>
+          <h2 class="mb-5">{{ $stats['online_users'] }}</h2>
+          <p class="card-text">Active in last 5 mins</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Deposits Today -->
+    <div class="col-md-3 stretch-card grid-margin">
+      <div class="card bg-gradient-info card-img-holder text-white">
+        <div class="card-body">
+          <img src="/aviatoradmin/assets/images/dashboard/circle.svg" class="card-img-absolute" alt="circle-image" />
+          <h4 class="font-weight-normal mb-3">Deposits <i class="mdi mdi-cash-multiple mdi-24px float-right"></i></h4>
+          <h2 class="mb-5">KSh {{ number_format($stats['deposits_today'], 2) }}</h2>
+          <p class="card-text">Successful today</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Withdrawals Today -->
+    <div class="col-md-3 stretch-card grid-margin">
+      <div class="card bg-gradient-success card-img-holder text-white">
+        <div class="card-body">
+          <img src="/aviatoradmin/assets/images/dashboard/circle.svg" class="card-img-absolute" alt="circle-image" />
+          <h4 class="font-weight-normal mb-3">Withdrawals <i class="mdi mdi-cash-refund mdi-24px float-right"></i></h4>
+          <h2 class="mb-5">KSh {{ number_format($stats['withdrawals_today'], 2) }}</h2>
+          <p class="card-text">Paid out today</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Total Bets Today -->
+    <div class="col-md-3 stretch-card grid-margin">
+      <div class="card bg-gradient-warning card-img-holder text-white">
+        <div class="card-body">
+          <img src="/aviatoradmin/assets/images/dashboard/circle.svg" class="card-img-absolute" alt="circle-image" />
+          <h4 class="font-weight-normal mb-3">Total Bets <i class="mdi mdi-chart-line mdi-24px float-right"></i></h4>
+          <h2 class="mb-5">KSh {{ number_format($stats['total_bets_today'], 2) }}</h2>
+          <p class="card-text">Betting volume today</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- P2P Quick Alert -->
+    <div class="col-12 grid-margin stretch-card">
+      <div class="card bg-dark text-white shadow">
+        <div class="card-body d-flex justify-content-between align-items-center">
+          <div>
+            <h4 class="mb-0">Pending P2P Matchings</h4>
+            <p class="mb-0 text-muted">Users currently waiting for peers</p>
+          </div>
+          <div class="text-end">
+            <h2 class="mb-0 text-warning">{{ $stats['p2p_pending'] }}</h2>
+            <a href="/admin/p2p/withdrawals" class="text-warning small text-decoration-none">View Details →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="row">
     <div class="col-md-4 stretch-card grid-margin">
-      <div class="card bg-gradient-danger card-img-holder text-white">
+      <div class="card bg-gradient-secondary card-img-holder text-white">
         <div class="card-body">
           <img src="/aviatoradmin/assets/images/dashboard/circle.svg" class="card-img-absolute" alt="circle-image" />
           <h4 class="font-weight-normal mb-3">Total User 
@@ -31,7 +105,7 @@
       </div>
     </div>
     <div class="col-md-4 stretch-card grid-margin">
-      <div class="card bg-gradient-info card-img-holder text-white">
+      <div class="card bg-gradient-secondary card-img-holder text-white">
         <div class="card-body">
           <img src="/aviatoradmin/assets/images/dashboard/circle.svg" class="card-img-absolute" alt="circle-image" />
           <h4 class="font-weight-normal mb-3">Total Recharge
@@ -41,7 +115,7 @@
       </div>
     </div>
     <div class="col-md-4 stretch-card grid-margin">
-      <div class="card bg-gradient-success card-img-holder text-white">
+      <div class="card bg-gradient-secondary card-img-holder text-white">
         <div class="card-body">
           <img src="/aviatoradmin/assets/images/dashboard/circle.svg" class="card-img-absolute" alt="circle-image" />
           <h4 class="font-weight-normal mb-3">Total Withdrawal
@@ -51,89 +125,94 @@
       </div>
     </div>
   </div>
-  {{-- <div class="row">
+  <div class="row">
     <div class="col-md-7 grid-margin stretch-card">
       <div class="card">
         <div class="card-body">
           <div class="clearfix">
-            <h4 class="card-title float-left">Visit And Sales Statistics</h4>
-            <div id="visit-sale-chart-legend" class="rounded-legend legend-horizontal legend-top-right float-right"></div>
+            <h4 class="card-title float-left">Cash Flow (Last 7 Days)</h4>
+            <div id="cash-flow-legend" class="rounded-legend legend-horizontal legend-top-right float-right"></div>
           </div>
-          <canvas id="visit-sale-chart" class="mt-4"></canvas>
+          <div class="chart-container" style="position: relative; height:300px;">
+            <canvas id="cashFlowChart" class="mt-4"></canvas>
+          </div>
         </div>
       </div>
     </div>
     <div class="col-md-5 grid-margin stretch-card">
       <div class="card">
         <div class="card-body">
-          <h4 class="card-title">Traffic Sources</h4>
-          <canvas id="traffic-chart"></canvas>
-          <div id="traffic-chart-legend" class="rounded-legend legend-vertical legend-bottom-left pt-4"></div>
+          <h4 class="card-title">New Users Growth</h4>
+          <div class="chart-container" style="position: relative; height:300px;">
+            <canvas id="userGrowthChart"></canvas>
+          </div>
         </div>
       </div>
     </div>
   </div>
+
   <div class="row">
-    <div class="col-12 grid-margin">
+    <!-- Top 10 High Rollers -->
+    <div class="col-md-6 grid-margin stretch-card">
       <div class="card">
         <div class="card-body">
-          <h4 class="card-title">Recent Tickets</h4>
+          <h4 class="card-title">Top 10 High Rollers (Bets)</h4>
           <div class="table-responsive">
-            <table class="table">
+            <table class="table table-striped">
               <thead>
                 <tr>
-                  <th> Assignee </th>
-                  <th> Subject </th>
-                  <th> Status </th>
-                  <th> Last Update </th>
-                  <th> Tracking ID </th>
+                  <th> User </th>
+                  <th> Total Bet </th>
+                  <th> Action </th>
                 </tr>
               </thead>
               <tbody>
+                @foreach($topHighRollers as $hr)
                 <tr>
-                  <td>
-                    <img src="/aviatoradmin/assets/images/faces/face1.jpg" class="me-2" alt="image"> David Grey
+                  <td class="py-1">
+                    <img src="/aviatoradmin/assets/images/faces/face{{ rand(1,4) }}.jpg" class="me-2" alt="image">
+                    {{ $hr->user->name ?? 'User '.$hr->userid }}
                   </td>
-                  <td> Fund is not recieved </td>
+                  <td> KSh {{ number_format($hr->total_bet, 2) }} </td>
                   <td>
-                    <label class="badge badge-gradient-success">DONE</label>
+                    <a href="/admin/user/edit/{{ $hr->userid }}" class="btn btn-sm btn-outline-primary">View</a>
                   </td>
-                  <td> Dec 5, 2017 </td>
-                  <td> WD-12345 </td>
                 </tr>
+                @endforeach
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Top 10 Depositors -->
+    <div class="col-md-6 grid-margin stretch-card">
+      <div class="card">
+        <div class="card-body">
+          <h4 class="card-title">Top 10 Depositors</h4>
+          <div class="table-responsive">
+            <table class="table table-striped">
+              <thead>
                 <tr>
-                  <td>
-                    <img src="/aviatoradmin/assets/images/faces/face2.jpg" class="me-2" alt="image"> Stella Johnson
-                  </td>
-                  <td> High loading time </td>
-                  <td>
-                    <label class="badge badge-gradient-warning">PROGRESS</label>
-                  </td>
-                  <td> Dec 12, 2017 </td>
-                  <td> WD-12346 </td>
+                  <th> User </th>
+                  <th> Total Deposited </th>
+                  <th> Action </th>
                 </tr>
+              </thead>
+              <tbody>
+                @foreach($topDepositors as $td)
                 <tr>
-                  <td>
-                    <img src="/aviatoradmin/assets/images/faces/face3.jpg" class="me-2" alt="image"> Marina Michel
+                  <td class="py-1">
+                    <img src="/aviatoradmin/assets/images/faces/face{{ rand(1,4) }}.jpg" class="me-2" alt="image">
+                    {{ $td->user->name ?? 'User '.$td->userid }}
                   </td>
-                  <td> Website down for one week </td>
+                  <td> KSh {{ number_format($td->total_deposited, 2) }} </td>
                   <td>
-                    <label class="badge badge-gradient-info">ON HOLD</label>
+                    <a href="/admin/user/edit/{{ $td->userid }}" class="btn btn-sm btn-outline-success">View</a>
                   </td>
-                  <td> Dec 16, 2017 </td>
-                  <td> WD-12347 </td>
                 </tr>
-                <tr>
-                  <td>
-                    <img src="/aviatoradmin/assets/images/faces/face4.jpg" class="me-2" alt="image"> John Doe
-                  </td>
-                  <td> Loosing control on server </td>
-                  <td>
-                    <label class="badge badge-gradient-danger">REJECTED</label>
-                  </td>
-                  <td> Dec 3, 2017 </td>
-                  <td> WD-12348 </td>
-                </tr>
+                @endforeach
               </tbody>
             </table>
           </div>
@@ -141,127 +220,7 @@
       </div>
     </div>
   </div>
-  <div class="row">
-    <div class="col-12 grid-margin stretch-card">
-      <div class="card">
-        <div class="card-body">
-          <h4 class="card-title">Recent Updates</h4>
-          <div class="d-flex">
-            <div class="d-flex align-items-center me-4 text-muted font-weight-light">
-              <i class="mdi mdi-account-outline icon-sm me-2"></i>
-              <span>jack Menqu</span>
-            </div>
-            <div class="d-flex align-items-center text-muted font-weight-light">
-              <i class="mdi mdi-clock icon-sm me-2"></i>
-              <span>October 3rd, 2018</span>
-            </div>
-          </div>
-          <div class="row mt-3">
-            <div class="col-6 pe-1">
-              <img src="/aviatoradmin/assets/images/dashboard/img_1.jpg" class="mb-2 mw-100 w-100 rounded" alt="image">
-              <img src="/aviatoradmin/assets/images/dashboard/img_4.jpg" class="mw-100 w-100 rounded" alt="image">
-            </div>
-            <div class="col-6 ps-1">
-              <img src="/aviatoradmin/assets/images/dashboard/img_2.jpg" class="mb-2 mw-100 w-100 rounded" alt="image">
-              <img src="/aviatoradmin/assets/images/dashboard/img_3.jpg" class="mw-100 w-100 rounded" alt="image">
-            </div>
-          </div>
-          <div class="d-flex mt-5 align-items-top">
-            <img src="/aviatoradmin/assets/images/faces/face3.jpg" class="img-sm rounded-circle me-3" alt="image">
-            <div class="mb-0 flex-grow">
-              <h5 class="me-2 mb-2">School Website - Authentication Module.</h5>
-              <p class="mb-0 font-weight-light">It is a long established fact that a reader will be distracted by the readable content of a page.</p>
-            </div>
-            <div class="ms-auto">
-              <i class="mdi mdi-heart-outline text-muted"></i>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-md-7 grid-margin stretch-card">
-      <div class="card">
-        <div class="card-body">
-          <h4 class="card-title">Project Status</h4>
-          <div class="table-responsive">
-            <table class="table">
-              <thead>
-                <tr>
-                  <th> # </th>
-                  <th> Name </th>
-                  <th> Due Date </th>
-                  <th> Progress </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td> 1 </td>
-                  <td> Herman Beck </td>
-                  <td> May 15, 2015 </td>
-                  <td>
-                    <div class="progress">
-                      <div class="progress-bar bg-gradient-success" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td> 2 </td>
-                  <td> Messsy Adam </td>
-                  <td> Jul 01, 2015 </td>
-                  <td>
-                    <div class="progress">
-                      <div class="progress-bar bg-gradient-danger" role="progressbar" style="width: 75%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td> 3 </td>
-                  <td> John Richards </td>
-                  <td> Apr 12, 2015 </td>
-                  <td>
-                    <div class="progress">
-                      <div class="progress-bar bg-gradient-warning" role="progressbar" style="width: 90%" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td> 4 </td>
-                  <td> Peter Meggik </td>
-                  <td> May 15, 2015 </td>
-                  <td>
-                    <div class="progress">
-                      <div class="progress-bar bg-gradient-primary" role="progressbar" style="width: 50%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td> 5 </td>
-                  <td> Edward </td>
-                  <td> May 03, 2015 </td>
-                  <td>
-                    <div class="progress">
-                      <div class="progress-bar bg-gradient-danger" role="progressbar" style="width: 35%" aria-valuenow="35" aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td> 5 </td>
-                  <td> Ronald </td>
-                  <td> Jun 05, 2015 </td>
-                  <td>
-                    <div class="progress">
-                      <div class="progress-bar bg-gradient-info" role="progressbar" style="width: 65%" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
+  {{-- <div class="row">
     <div class="col-md-5 grid-margin stretch-card">
       <div class="card">
         <div class="card-body">
@@ -325,5 +284,81 @@
 @endsection
 
 @section('js')
-    
+<script>
+  (function($) {
+    'use strict';
+    $(function() {
+      if ($("#cashFlowChart").length) {
+        var ctx = document.getElementById('cashFlowChart').getContext("2d");
+        var chartData = @json($chartData);
+
+        var myChart = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: chartData.labels,
+            datasets: [{
+                label: 'Deposits',
+                data: chartData.deposits,
+                borderColor: '#1bcfb4',
+                backgroundColor: 'rgba(27, 207, 180, 0.1)',
+                borderWidth: 2,
+                fill: true
+              },
+              {
+                label: 'Withdrawals',
+                data: chartData.withdrawals,
+                borderColor: '#fe7c96',
+                backgroundColor: 'rgba(254, 124, 150, 0.1)',
+                borderWidth: 2,
+                fill: true
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              yAxes: [{
+                ticks: {
+                  beginAtZero: true,
+                  callback: function(value) { return 'KSh ' + value; }
+                }
+              }]
+            }
+          }
+        });
+      }
+
+      if ($("#userGrowthChart").length) {
+        var ctx = document.getElementById('userGrowthChart').getContext("2d");
+        var chartData = @json($chartData);
+
+        var myChart = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: chartData.labels,
+            datasets: [{
+              label: 'New Users',
+              data: chartData.users,
+              backgroundColor: '#9a55ff',
+              borderWidth: 0
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              yAxes: [{
+                ticks: {
+                  beginAtZero: true,
+                  stepSize: 1
+                }
+              }]
+            }
+          }
+        });
+      }
+    });
+  })(jQuery);
+</script>
 @endsection

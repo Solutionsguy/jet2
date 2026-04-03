@@ -38,7 +38,7 @@
             </div>
           </a>
           <div class="dropdown-menu navbar-dropdown" aria-labelledby="profileDropdown">
-            <a class="dropdown-item" href="change-password">
+            <a class="dropdown-item" href="/admin/change-password">
               <i class="mdi mdi-cached me-2 text-success"></i> Change Password </a>
             <div class="dropdown-divider"></div>
             <a class="dropdown-item" href="/admin/logout">

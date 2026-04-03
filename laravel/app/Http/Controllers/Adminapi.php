@@ -56,26 +56,32 @@ class Adminapi extends Controller
         $userid = $r->userid;
         $amount = $r->amount;
         if ($event == 'success') {
-            $firstrecharge = Transaction::where('id', $userid)->where('category', 'recharge')->where('status','0')->get();
+            $firstrecharge = Transaction::where('userid', $userid)->where('category', 'recharge')->where('status','1')->get();
             if (count($firstrecharge) == 0) {
-                $level1 = User::where('id', user('promocode', $userid))->first();
-                if ($level1) {
-                    $level1amount = ($amount / 100 ) * setting('level1commission');
-                    // return $level1amount;
-                    addwallet($level1->id, $level1amount);
-                    addtransaction($level1->id, 'Level', date("ydmhsi"), 'credit', $level1amount, 'Level_bonus', 'Success', '1');
+                $currentUser = User::find($userid);
+                if ($currentUser && $currentUser->promocode) {
+                    $level1 = User::where('id', $currentUser->promocode)->first();
+                    if ($level1) {
+                        $level1amount = ($amount / 100 ) * setting('level1commission');
+                        addwallet($level1->id, $level1amount);
+                        addtransaction($level1->id, 'Level', date("ydmhsi"), 'credit', $level1amount, 'Level_bonus', 'Success', '1');
 
-                    $level2 = User::where('id', $level1->promocode)->first();
-                    if ($level2) {
-                        $level2amount = ($amount / setting('level2commission')) * 100;
-                        addwallet($level2->id, $level2amount);
-                        addtransaction($level2->id, 'Level', date("ydmhsi"), 'credit', $level2amount, 'Level_bonus', 'Success', '1');
+                        if ($level1->promocode) {
+                            $level2 = User::where('id', $level1->promocode)->first();
+                            if ($level2) {
+                                $level2amount = ($amount / 100) * setting('level2commission');
+                                addwallet($level2->id, $level2amount);
+                                addtransaction($level2->id, 'Level', date("ydmhsi"), 'credit', $level2amount, 'Level_bonus', 'Success', '1');
 
-                        $level3 = User::where('id', $level2->promocode)->first();
-                        if ($level3) {
-                            $level3amount = ($amount / setting('level3commission')) * 100;
-                            addwallet($level3->id, $level3amount);
-                            addtransaction($level3->id, 'Level', date("ydmhsi"), 'credit', $level3amount, 'Level_bonus', 'Success', '1');
+                                if ($level2->promocode) {
+                                    $level3 = User::where('id', $level2->promocode)->first();
+                                    if ($level3) {
+                                        $level3amount = ($amount / 100) * setting('level3commission');
+                                        addwallet($level3->id, $level3amount);
+                                        addtransaction($level3->id, 'Level', date("ydmhsi"), 'credit', $level3amount, 'Level_bonus', 'Success', '1');
+                                    }
+                                }
+                            }
                         }
                     }
                 }

@@ -212,6 +212,8 @@ a, a:hover {
     align-items: center;
     padding: 0 10px;
     margin-top: 60px;
+    position: relative;
+    z-index: 90;
 }
 
 .modal-dialog {
@@ -233,7 +235,7 @@ a, a:hover {
 .login-btn, .register-btn, .deposite-btn {
     color: #fff;
     text-transform: uppercase;
-    border-radius: 50px;
+    border-radius: 8px;
     border: none;
     height: 42px;
     font-weight: 500;
@@ -247,12 +249,71 @@ a, a:hover {
     line-height: 1.2;
     font-size: 18px;
     box-shadow: none !important;
+    outline: none !important;
+}
+
+.login-btn:focus, .register-btn:focus, .deposite-btn:focus,
+.login-btn:active, .register-btn:active, .deposite-btn:active {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+/* Admin Shortcut Button */
+.admin-shortcut-btn {
+    background: linear-gradient(135deg, #FF9500, #FFA500);
+    color: #000;
+    text-transform: uppercase;
+    border-radius: 8px;
+    border: none;
+    height: 42px;
+    width: 42px;
+    min-width: 42px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(255, 149, 0, 0.4);
+    transition: all 0.3s ease;
+    outline: none !important;
+}
+
+.admin-shortcut-btn:hover {
+    background: linear-gradient(135deg, #FFA500, #FFB520);
+    box-shadow: 0 6px 16px rgba(255, 149, 0, 0.6);
+    transform: translateY(-2px);
+}
+
+.admin-shortcut-btn:focus,
+.admin-shortcut-btn:active {
+    outline: none !important;
+    box-shadow: 0 4px 12px rgba(255, 149, 0, 0.4) !important;
+}
+
+.admin-shortcut-btn .material-symbols-outlined {
+    font-size: 24px;
+    font-weight: 600;
 }
 
 .register-btn {
     background-image: linear-gradient(0deg,#fa4d00 0,#fa5e00);
     box-shadow: 0 10px 30px rgb(250 65 0 / 40%);
 }
+
+/* === REGISTER BUTTON VISIBILITY FIX - Added 2026-03-20 === */
+/* Ensure register button text is clearly visible */
+.register-btn {
+    color: #FFFFFF !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    font-weight: 600;
+}
+
+.register-btn:hover {
+    color: #FFFFFF !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+/* === END REGISTER BUTTON VISIBILITY FIX === */
 
 .login-btn {
     background-image: linear-gradient(0deg,#428cdc 0,#509aea 97%,#509aea);
@@ -282,10 +343,29 @@ a, a:hover {
     }
 
 .menu-icon {
-    color: #9b9c9e;
+    color: #ffffff !important;
     font-variation-settings: 'FILL' 0, 'wght' 700, 'GRAD' 0, 'opsz' 48;
     pointer-events: auto;
     cursor: pointer;
+    font-size: 28px;
+}
+
+/* Ensure dropdown button is clickable */
+.btn-group {
+    position: relative;
+    z-index: 100;
+}
+
+.btn-group .btn-transparent {
+    background: transparent !important;
+    border: none !important;
+    pointer-events: auto !important;
+    cursor: pointer !important;
+    padding: 8px !important;
+}
+
+.btn-group .btn-transparent:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
 }
 
 .caret-none {
@@ -302,6 +382,13 @@ a, a:hover {
 .profile-dropdown {
     min-width: 270px;
     background: #2c2d30;
+    position: absolute !important;
+    right: 0 !important;
+    left: auto !important;
+    top: 100% !important;
+    margin-top: 0.5rem !important;
+    max-height: 80vh;
+    overflow-y: auto;
 }
 
 .profile-head {
@@ -2640,6 +2727,30 @@ element.style {
     margin-bottom: 0;
 }
 
+/* === PAYMENT BUTTON VISIBILITY FIX - Added 2026-03-20 === */
+/* Enhanced visibility for payment method buttons */
+.payment-btn {
+    background: #FFFFFF;
+    border: 3px solid #1183D3;
+    box-shadow: 0 4px 12px rgba(17, 131, 211, 0.2);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.payment-btn:hover {
+    border-color: #FF9500;
+    box-shadow: 0 6px 20px rgba(255, 149, 0, 0.4);
+    transform: translateY(-3px);
+}
+
+.payment-btn.active {
+    filter: drop-shadow(0 5px 20px rgba(255, 149, 0, 0.4));
+    border: 3px solid #FF9500;
+    background: #FFF8F0;
+    transform: scale(1.02);
+}
+/* === END PAYMENT BUTTON VISIBILITY FIX === */
+
     .payment-btn.active {
         filter: drop-shadow(0 5px 20px rgba(251,93,2,.25));
         border: 3px solid #ffba00;
@@ -2684,6 +2795,48 @@ element.style {
     .deposite-box.show {
         display: block;
     }
+
+/* === DEPOSIT BOX VISIBILITY FIX - Added 2026-03-20 === */
+/* Enhanced visibility for deposit box when shown */
+.deposite-box.show {
+    display: block;
+    animation: fadeInDeposit 0.3s ease-in-out;
+}
+
+@keyframes fadeInDeposit {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Make action buttons in deposit box more visible */
+.deposite-box .btn,
+.deposite-box button[type="submit"],
+.deposite-box .btn-primary {
+    background: linear-gradient(0deg, #FF6B00 0%, #FF9500 100%);
+    color: #FFFFFF !important;
+    border: 2px solid #FFFFFF;
+    font-weight: 700;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 15px rgba(255, 107, 0, 0.5);
+    padding: 12px 30px;
+    border-radius: 25px;
+    transition: all 0.3s ease;
+}
+
+.deposite-box .btn:hover,
+.deposite-box button[type="submit"]:hover,
+.deposite-box .btn-primary:hover {
+    background: linear-gradient(0deg, #FF8C00 0%, #FFB347 100%);
+    box-shadow: 0 6px 20px rgba(255, 107, 0, 0.7);
+    transform: translateY(-2px);
+}
+/* === END DEPOSIT BOX VISIBILITY FIX === */
 
 .limit-txt {
     color: #6b7d8e;
@@ -3399,9 +3552,9 @@ element.style {
 }
 
     .rotateimage.rotatebg {
-        -webkit-animation: spin 30s linear infinite;
-        -moz-animation: spin 30s linear infinite;
-        animation: spin 30s linear infinite;
+        -webkit-animation: spin 10s linear infinite;
+        -moz-animation: spin 10s linear infinite;
+        animation: spin 10s linear infinite;
     }
 @media(max-width:1024px){
     .rotateimage {
@@ -3696,16 +3849,29 @@ width: 100%;
     bottom: -20px;
     /*left: 50%;*/
     right: 10px;
-    background: #fa4d00;
+    background: #28a745;
     height: 35px;
-    border-radius: 35px;
+    border-radius: 8px;
     color: #fff;
     border: 1px solid transparent;
     /* transform: translateX(-50%);*/
-    box-shadow: 0 11px 27px rgb(250 65 0 / 63%);
-    background-image: linear-gradient(0deg,#fa4d00 0,#fa5e00);
+    box-shadow: 0 11px 27px rgba(40, 167, 69, 0.63);
+    background-image: linear-gradient(0deg, #28a745 0, #34ce57);
     font-size: 18px;
+    font-weight: 700;
     padding-top: 3px;
+    outline: none !important;
+}
+
+.demo-btns:hover {
+    background-image: linear-gradient(0deg, #34ce57 0, #28a745);
+    box-shadow: 0 11px 27px rgba(40, 167, 69, 0.8);
+}
+
+.demo-btns:focus,
+.demo-btns:active {
+    outline: none !important;
+    box-shadow: 0 11px 27px rgba(40, 167, 69, 0.63) !important;
 }
 .demo-btns:hover {
     color: #fff;
@@ -3893,3 +4059,27 @@ footer {
 
 /* ================================================== */
 
+/* Fix for password toggle icon positioning */
+.login-controls label span#view_password,
+.login-controls label span#view_password_register {
+  left: auto;
+  right: 10px;
+  cursor: pointer;
+}
+/* PAY NOW button visibility fix - keeps text white on orange background */
+#mpesa_submit_btn {
+  color: #FFFFFF !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  font-weight: 600;
+}
+
+#mpesa_submit_btn:hover {
+  color: #FFFFFF !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+/* Fix for double rounded border on deposit page inputs */
+.login-controls.rounded-pill label {
+  border-radius: 50rem;
+  border: none;
+}

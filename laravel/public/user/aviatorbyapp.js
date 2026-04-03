@@ -8,8 +8,19 @@
         },
         dataType: "text",
         success: function (result) {
-            $("#wallet_balance").text(currency_symbol + result);
-            $("#header_wallet_balance").text(currency_symbol + result); // Show Header Wallet Balance
+            // Update the global balance variable (money wallet)
+            if (typeof wallet_balance !== 'undefined') {
+                wallet_balance = result;
+            }
+            
+            // Use updateWalletBalance function to respect current wallet type
+            if (typeof updateWalletBalance === 'function') {
+                updateWalletBalance();
+            } else {
+                // Fallback if function doesn't exist
+                $("#wallet_balance").text(currency_symbol + result);
+                $("#header_wallet_balance").text(currency_symbol + result);
+            }
             
             // ========== MODIFIED: DON'T CLEAR QUEUED BETS ==========
             // Only clear bets that were actually placed (is_bet === 1)

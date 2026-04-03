@@ -2,62 +2,157 @@
  * Admin Rain Management JavaScript
  */
 
+// CSRF Token helper
+const getCsrfToken = () => {
+    return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+};
+
+// Helper for notification fallback
+const showNotification = (type, message) => {
+    // Try iziToast first (common in this admin panel)
+    if (typeof iziToast !== 'undefined') {
+        iziToast[type === 'error' ? 'error' : 'success']({
+            title: type.toUpperCase(),
+            message: message,
+            position: 'topRight'
+        });
+    } 
+    // Fallback to toastr
+    else if (typeof toastr !== 'undefined') {
+        toastr[type](message);
+    } 
+    // Final fallback to alert
+    else {
+        console.log(type.toUpperCase() + ": " + message);
+        alert(type.toUpperCase() + ": " + message);
+    }
+};
+
 // Create Support Rain
 function createSupportRain() {
-    const amount = document.getElementById('rain-amount').value;
-    const winners = document.getElementById('rain-winners').value;
-    const message = document.getElementById('rain-message').value;
+    const amountField = document.getElementById('rain-amount');
+    const winnersField = document.getElementById('rain-winners');
+    const messageField = document.getElementById('rain-message');
+
+    if (!amountField || !winnersField) {
+        showNotification('error', 'Required form fields missing');
+        return;
+    }
+
+    const amount = amountField.value;
+    const winners = winnersField.value;
+    const message = messageField ? messageField.value : '';
     
     if (!amount || !winners) {
-        toastr.error('Please fill in all required fields');
+        showNotification('error', 'Please fill in all required fields');
         return;
     }
     
     if (parseFloat(amount) < 10) {
-        toastr.error('Amount must be at least KSh 10');
+        showNotification('error', 'Amount must be at least KSh 10');
         return;
     }
     
     if (parseInt(winners) < 2 || parseInt(winners) > 100) {
-        toastr.error('Winners must be between 2 and 100');
+        showNotification('error', 'Winners must be between 2 and 100');
         return;
     }
     
     const btn = document.getElementById('create-rain-btn');
-    btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating...';
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating...';
+    }
     
     $.ajax({
         url: '/admin/rain/create',
         type: 'POST',
         data: {
-            _token: '{{ csrf_token() }}',
+            _token: getCsrfToken(),
             amount_per_user: amount,
             num_winners: winners,
             message: message
         },
         success: function(response) {
             if (response.success) {
-                toastr.success(response.message);
+                showNotification('success', response.message);
                 $('#createRainModal').modal('hide');
-                document.getElementById('createRainForm').reset();
-                calculateRainTotal();
+                const form = document.getElementById('createRainForm');
+                if (form) form.reset();
                 
                 // Reload page to show new rain
                 setTimeout(() => {
                     window.location.reload();
                 }, 1000);
             } else {
-                toastr.error(response.message || 'Failed to create rain');
+                showNotification('error', response.message || 'Failed to create rain');
             }
         },
         error: function(xhr) {
             const error = xhr.responseJSON?.message || 'Server error';
-            toastr.error(error);
+            showNotification('error', error);
         },
         complete: function() {
-            btn.disabled = false;
-            btn.innerHTML = '<i class="fas fa-cloud-rain"></i> Create Rain';
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-cloud-rain"></i> Create Rain';
+            }
+        }
+    });
+}
+
+// Auto-Rain Settings
+function saveAutoRainSettings() {
+    const enabledInput = document.getElementById('auto-rain-enabled');
+    const form = document.getElementById('auto-rain-settings-form');
+    
+    if (!enabledInput || !form) {
+        showNotification('error', 'Settings form not found');
+        return;
+    }
+
+    const enabled = enabledInput.checked ? '1' : '0';
+    const formData = new FormData(form);
+    
+    const data = {
+        _token: getCsrfToken(),
+        enabled: enabled,
+        amount: formData.get('amount'),
+        winners: formData.get('winners'),
+        interval: formData.get('interval')
+    };
+
+    $.ajax({
+        url: '/admin/rain/auto-settings',
+        type: 'POST',
+        data: data,
+        success: function(response) {
+            if (response.success) {
+                showNotification('success', response.message);
+                setTimeout(() => { window.location.reload(); }, 1000);
+            }
+        },
+        error: function(xhr) {
+            showNotification('error', xhr.responseJSON?.message || 'Failed to update settings');
+        }
+    });
+}
+
+function triggerAutoRainNow() {
+    if (!confirm('Drop an automated rain immediately?')) return;
+
+    $.ajax({
+        url: '/admin/rain/auto-trigger',
+        type: 'POST',
+        data: { _token: getCsrfToken() },
+        success: function(response) {
+            if (response.success) {
+                showNotification('success', response.message);
+                setTimeout(() => { window.location.reload(); }, 1000);
+            }
+        },
+        error: function(xhr) {
+            showNotification('error', xhr.responseJSON?.message || 'Failed to trigger rain');
         }
     });
 }
@@ -75,10 +170,15 @@ function viewParticipants(rainId) {
                 const participants = response.data.participants;
                 
                 // Update rain info
-                document.getElementById('p-rain-id').textContent = rain.id;
-                document.getElementById('p-amount').textContent = 'KSh ' + parseFloat(rain.amount_per_user).toFixed(2);
-                document.getElementById('p-slots').textContent = rain.num_winners;
-                document.getElementById('p-status').innerHTML = getStatusBadge(rain.status);
+                const idEl = document.getElementById('p-rain-id');
+                const amtEl = document.getElementById('p-amount');
+                const slotsEl = document.getElementById('p-slots');
+                const statusEl = document.getElementById('p-status');
+
+                if (idEl) idEl.textContent = rain.id;
+                if (amtEl) amtEl.textContent = 'KSh ' + parseFloat(rain.amount_per_user).toFixed(2);
+                if (slotsEl) slotsEl.textContent = rain.num_winners;
+                if (statusEl) statusEl.innerHTML = getStatusBadge(rain.status);
                 
                 // Update participants list
                 let html = '';
@@ -97,11 +197,12 @@ function viewParticipants(rainId) {
                         `;
                     });
                 }
-                document.getElementById('participants-list').innerHTML = html;
+                const listEl = document.getElementById('participants-list');
+                if (listEl) listEl.innerHTML = html;
             }
         },
         error: function() {
-            toastr.error('Failed to load participants');
+            showNotification('error', 'Failed to load participants');
         }
     });
 }
@@ -116,43 +217,45 @@ function cancelRain(rainId) {
         url: '/admin/rain/' + rainId + '/cancel',
         type: 'POST',
         data: {
-            _token: '{{ csrf_token() }}'
+            _token: getCsrfToken()
         },
         success: function(response) {
             if (response.success) {
-                toastr.success(response.message);
+                showNotification('success', response.message);
                 setTimeout(() => {
                     window.location.reload();
                 }, 1000);
             } else {
-                toastr.error(response.message || 'Failed to cancel rain');
+                showNotification('error', response.message || 'Failed to cancel rain');
             }
         },
         error: function(xhr) {
             const error = xhr.responseJSON?.message || 'Server error';
-            toastr.error(error);
+            showNotification('error', error);
         }
     });
 }
 
 // Load Rain History
 function loadRainHistory() {
-    const status = document.getElementById('filter-status').value;
-    const type = document.getElementById('filter-type').value;
-    const dateFrom = document.getElementById('filter-date-from').value;
-    const dateTo = document.getElementById('filter-date-to').value;
+    const statusEl = document.getElementById('filter-status');
+    const typeEl = document.getElementById('filter-type');
+    const fromEl = document.getElementById('filter-date-from');
+    const toEl = document.getElementById('filter-date-to');
     
     const container = document.getElementById('rain-history-container');
+    if (!container) return;
+    
     container.innerHTML = '<p class="text-center"><i class="fas fa-spinner fa-spin"></i> Loading...</p>';
     
     $.ajax({
         url: '/admin/rain/history',
         type: 'GET',
         data: {
-            status: status,
-            type: type,
-            date_from: dateFrom,
-            date_to: dateTo
+            status: statusEl ? statusEl.value : 'all',
+            type: typeEl ? typeEl.value : 'all',
+            date_from: fromEl ? fromEl.value : '',
+            date_to: toEl ? toEl.value : ''
         },
         success: function(response) {
             if (response.success) {
@@ -168,6 +271,7 @@ function loadRainHistory() {
 // Display Rain History
 function displayRainHistory(data) {
     const container = document.getElementById('rain-history-container');
+    if (!container) return;
     
     if (data.data.length === 0) {
         container.innerHTML = '<p class="text-center text-muted">No rains found</p>';
@@ -210,19 +314,13 @@ function displayRainHistory(data) {
     
     html += '</tbody></table>';
     
-    // Add pagination if available
-    if (data.links) {
-        html += '<div class="d-flex justify-content-center mt-3">';
-        // Add pagination links here
-        html += '</div>';
-    }
-    
     container.innerHTML = html;
 }
 
 // Load Analytics
 function loadAnalytics() {
     const container = document.getElementById('analytics-container');
+    if (!container) return;
     
     $.ajax({
         url: '/admin/rain/analytics',
@@ -242,6 +340,8 @@ function loadAnalytics() {
 function displayAnalytics(data) {
     const summary = data.summary;
     const activeUsers = data.most_active_users;
+    const container = document.getElementById('analytics-container');
+    if (!container) return;
     
     let html = `
         <div class="row mb-4">
@@ -267,7 +367,7 @@ function displayAnalytics(data) {
                     <div class="card-body">
                         <h6 class="text-muted">Total Participants</h6>
                         <h3>${summary.total_participants}</h3>
-                        <small>Avg: ${summary.avg_participants}/rain</small>
+                        <small>Avg: ${summary.total_rains > 0 ? (summary.total_participants / summary.total_rains).toFixed(1) : 0}/rain</small>
                     </div>
                 </div>
             </div>
@@ -307,7 +407,7 @@ function displayAnalytics(data) {
     
     html += '</tbody></table>';
     
-    document.getElementById('analytics-container').innerHTML = html;
+    container.innerHTML = html;
 }
 
 // Helper Functions
@@ -321,6 +421,7 @@ function getStatusBadge(status) {
 }
 
 function formatDate(dateString) {
+    if (!dateString) return 'N/A';
     const date = new Date(dateString);
     return date.toLocaleString('en-US', {
         month: 'short',
@@ -333,7 +434,10 @@ function formatDate(dateString) {
 // Calculate active rains total
 function updateActiveStats() {
     let totalAmount = 0;
-    document.querySelectorAll('#active-rains-table tbody tr').forEach(row => {
+    const table = document.getElementById('active-rains-table');
+    if (!table) return;
+
+    table.querySelectorAll('tbody tr').forEach(row => {
         const amountText = row.cells[4]?.textContent;
         if (amountText) {
             const amount = parseFloat(amountText.replace('KSh ', '').replace(',', ''));
@@ -343,8 +447,10 @@ function updateActiveStats() {
         }
     });
     
-    document.getElementById('total-active-amount').textContent = 
-        'KSh ' + totalAmount.toLocaleString('en-US', {minimumFractionDigits: 2});
+    const totalEl = document.getElementById('total-active-amount');
+    if (totalEl) {
+        totalEl.textContent = 'KSh ' + totalAmount.toLocaleString('en-US', {minimumFractionDigits: 2});
+    }
 }
 
 // Load analytics when tab is clicked

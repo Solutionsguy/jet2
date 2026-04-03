@@ -71,6 +71,9 @@
                         // Update UI
                         updateWalletDisplay(newMoneyBalance, newFreebetBalance);
                         
+                        // Update Wagering Progress UI
+                        updateWageringDisplay(result.data.wagering_remaining, result.data.wagering_target);
+                        
                         // Show notification
                         showWalletChangeNotification(
                             newMoneyBalance - previousMoneyBalance,
@@ -117,6 +120,40 @@
         console.log('✅ Wallet display updated - Showing:', currentWalletType, '=', formattedBalance);
     }
     
+    /**
+     * Update wagering progress display
+     */
+    function updateWageringDisplay(remaining, target) {
+        if (!target || target <= 0) {
+            $('#wagering_container').hide();
+            return;
+        }
+
+        const rem = parseFloat(remaining) || 0;
+        const tar = parseFloat(target) || 0;
+        const completed = tar - rem;
+        let percentage = (completed / tar) * 100;
+        
+        if (percentage < 0) percentage = 0;
+        if (percentage > 100) percentage = 100;
+
+        // Update UI elements
+        $('#wagering_text').text('KSh ' + Math.round(rem).toLocaleString() + ' / ' + Math.round(tar).toLocaleString());
+        $('#wagering_bar').css('width', percentage + '%').attr('aria-valuenow', percentage);
+        
+        // Show/hide based on wallet type
+        const currentWalletType = typeof current_wallet_type !== 'undefined' ? current_wallet_type : 'money';
+        if (currentWalletType === 'freebet') {
+            $('#wagering_container').removeClass('wagering-hidden');
+            $('#mobile_wagering_info').removeClass('wagering-hidden');
+        } else {
+            $('#wagering_container').addClass('wagering-hidden');
+            $('#mobile_wagering_info').addClass('wagering-hidden');
+        }
+        
+        console.log('📈 Wagering updated:', Math.round(percentage) + '% complete', 'Visible:', currentWalletType === 'freebet');
+    }
+
     /**
      * Show notification when wallet changes
      */

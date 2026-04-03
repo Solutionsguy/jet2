@@ -30,7 +30,8 @@ class RainController extends Controller
 
         $validator = Validator::make($request->all(), [
             'amount_per_user' => 'required|numeric|min:1|max:10000',
-            'num_winners' => 'required|integer|min:1|max:100'
+            'num_winners' => 'required|integer|min:1|max:100',
+            'wallet_type' => 'nullable|in:money,freebet'
         ]);
 
         if ($validator->fails()) {
@@ -43,10 +44,23 @@ class RainController extends Controller
         $amountPerUser = floatval($request->amount_per_user);
         $numWinners = intval($request->num_winners);
         $totalAmount = $amountPerUser * $numWinners;
+        $walletType = $request->wallet_type ?? 'money'; // Default to money wallet
+        
+        // RULE: Freebet wallet CANNOT be used to create rains
+        if ($walletType === 'freebet') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Freebet wallet cannot be used to create rains. Please use your money wallet.'
+            ], 400);
+        }
+        
+        \Log::info("Rain creation request - User: {$userId}, WalletType: {$walletType}, Total: {$totalAmount}");
 
-        // Check user's wallet balance (unless admin)
+        // Check user's wallet balance and deduct (unless admin)
         if (!$isAdmin) {
             $wallet = \App\Models\Wallet::where('userid', $userId)->first();
+            
+            // Only money wallet is allowed for creating rains
             $currentBalance = $wallet ? floatval($wallet->amount) : 0;
             
             if ($currentBalance < $totalAmount) {
@@ -56,10 +70,10 @@ class RainController extends Controller
                 ], 400);
             }
             
-            // Deduct from user's wallet
+            // Deduct from user's money wallet
             addwallet($userId, $totalAmount, "-");
             
-            \Log::info("User {$userId} created rain and deducted KSh {$totalAmount} from wallet");
+            \Log::info("User {$userId} created rain and deducted KSh {$totalAmount} from money wallet");
         }
 
         // Create the rain giveaway
@@ -85,18 +99,21 @@ class RainController extends Controller
             'username' => $displayUsername,
             'message' => '__RAIN_CARD__' . $rain->id, // Special marker for rain cards
             'avatar' => $creator ? ($creator->image ?? null) : null,
-            'is_admin' => $isAdmin ? true : false
+            'is_admin' => $isAdmin ? true : false,
+            'is_approved' => true // System/Paid messages are always approved
         ]);
 
-        // Get updated wallet balance
+        // Get updated wallet balances (both money and freebet)
         $wallet = \App\Models\Wallet::where('userid', $userId)->first();
-        $newBalance = $wallet ? floatval($wallet->amount) : 0;
+        $newMoneyBalance = $wallet ? floatval($wallet->amount) : 0;
+        $newFreebetBalance = $wallet ? floatval($wallet->freebet_amount) : 0;
         
         return response()->json([
             'success' => true,
             'message' => 'Rain created successfully',
             'data' => $rain,
-            'wallet_balance' => $newBalance
+            'wallet_balance' => $newMoneyBalance,
+            'freebet_balance' => $newFreebetBalance
         ]);
     }
 
@@ -231,14 +248,16 @@ class RainController extends Controller
             
             // USER RAIN: Instant credit to cash wallet (first-come, first-served)
             // ADMIN RAIN: Instant credit to freebet wallet (first-come, first-served)
+            \Log::info("Rain claim - User: {$userId}, RainID: {$rain->id}, IsAdmin: " . ($isAdminRain ? 'YES' : 'NO') . ", Amount: {$rain->amount_per_user}");
+            
             if (!$isAdminRain) {
                 // User rain - Add money immediately to cash wallet
                 addwallet($userId, $rain->amount_per_user, "+");
                 \Log::info("User rain instant credit: Added KSh {$rain->amount_per_user} to cash wallet for user {$userId}");
             } else {
                 // Admin rain - Add money immediately to freebet wallet
-                $this->addFreebetWallet($userId, $rain->amount_per_user);
-                \Log::info("Admin rain instant credit: Added KSh {$rain->amount_per_user} to freebet wallet for user {$userId}");
+                $newBalance = $this->addFreebetWallet($userId, $rain->amount_per_user);
+                \Log::info("Admin rain instant credit: Added KSh {$rain->amount_per_user} to freebet wallet for user {$userId}, New balance: {$newBalance}");
             }
             
             // Mark this participant as winner immediately (for both types)
@@ -475,20 +494,7 @@ class RainController extends Controller
      */
     private function addFreebetWallet($userId, $amount)
     {
-        $wallet = \App\Models\Wallet::where('userid', $userId)->first();
-        
-        if ($wallet) {
-            $currentFreebetBalance = floatval($wallet->freebet_amount);
-            $newFreebetBalance = $currentFreebetBalance + floatval($amount);
-            
-            \App\Models\Wallet::where('userid', $userId)->update([
-                'freebet_amount' => $newFreebetBalance
-            ]);
-            
-            return $newFreebetBalance;
-        }
-        
-        return 0;
+        return addfreebet($userId, $amount, "+");
     }
 }
 

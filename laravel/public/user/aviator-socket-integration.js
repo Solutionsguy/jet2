@@ -918,44 +918,78 @@ function setupSocketEventHandlers(socket) {
         }
     });
 
-    // Multiplier update handler - ALL TABS receive the SAME multiplier
-    socket.on('onMultiplierUpdate', (data) => {
-        const now = Date.now();
-        const timeSinceLastUpdate = now - window.lastMultiplierUpdateTime;
-        
-        // Track last known multiplier for resync
-        window.lastKnownMultiplier = data.multiplier;
-        window.lastMultiplierUpdateTime = now;
-        
-        // If tab was hidden and we're getting rapid updates (catch-up), skip intermediate ones
-        // This prevents the flickering caused by processing queued events
-        if (document.hidden) {
-            // Tab is hidden - just track state, don't update UI
-            return;
-        }
-        
-        // If we're catching up (updates coming faster than 50ms apart after being hidden)
-        // Skip to prevent animation overload
-        if (timeSinceLastUpdate < 50 && window.tabWasHidden) {
-            return;
-        }
-        
-        // Log every 0.5x increase for debugging
-        if (Math.floor(data.multiplier * 2) !== Math.floor((data.multiplier - 0.01) * 2)) {
-            console.log('📈 [SYNC] Multiplier:', data.multiplier.toFixed(2) + 'x');
-        }
-        
-        // Update multiplier display
-        if (typeof incrementor === 'function') {
-            incrementor(data.multiplier);
-        }
-        
-        // Update DOM elements
-        updateMultiplierDisplay(data.multiplier);
-        
-        // Update cash out amounts for active bets in sidebar
-        updateActiveBetsCashOutAmounts(data.multiplier);
-    });
+// Track interpolation state
+window.interpolation = {
+    currentValue: 1.00,
+    targetValue: 1.00,
+    startTime: 0,
+    duration: 50, // Expected interval between server updates
+    animationFrameId: null
+};
+
+/**
+ * Smoothly animate the multiplier display using interpolation
+ */
+function animateMultiplier() {
+    const now = Date.now();
+    const elapsed = now - window.interpolation.startTime;
+    const progress = Math.min(elapsed / window.interpolation.duration, 1);
+    
+    // Linear interpolation: current + (target - current) * progress
+    const displayValue = window.interpolation.currentValue + 
+                        (window.interpolation.targetValue - window.interpolation.currentValue) * progress;
+    
+    // Update DOM elements with high precision for smoothness
+    updateMultiplierDisplay(displayValue);
+    
+    // Continue animation until we reach the target or a new update arrives
+    if (progress < 1 && window.currentGamePhase === 'flying') {
+        window.interpolation.animationFrameId = requestAnimationFrame(animateMultiplier);
+    }
+}
+
+/**
+ * Multiplier update handler - ALL TABS receive the SAME multiplier
+ */
+socket.on('onMultiplierUpdate', (data) => {
+    const now = Date.now();
+    
+    // If this is the first update or game just started, reset interpolation
+    if (window.interpolation.targetValue === 1.00 && data.multiplier > 1.00) {
+        window.interpolation.currentValue = 1.00;
+    } else {
+        // Start from where the display currently is to avoid jumps
+        // But don't let it lag too far behind the server
+        const displayElement = document.getElementById('auto_increment_number');
+        const currentDisplay = displayElement ? parseFloat(displayElement.innerText) : window.interpolation.currentValue;
+        window.interpolation.currentValue = currentDisplay;
+    }
+
+    // Update target and timing
+    window.interpolation.targetValue = data.multiplier;
+    window.interpolation.startTime = now;
+    
+    // Reset/Start the animation loop
+    if (window.interpolation.animationFrameId) {
+        cancelAnimationFrame(window.interpolation.animationFrameId);
+    }
+    
+    if (window.currentGamePhase === 'flying') {
+        window.interpolation.animationFrameId = requestAnimationFrame(animateMultiplier);
+    }
+
+    // Track last known multiplier for resync
+    window.lastKnownMultiplier = data.multiplier;
+    window.lastMultiplierUpdateTime = now;
+    
+    // IMPORTANT: Still call the original incrementor for logic (auto-cashouts, etc.)
+    if (typeof incrementor === 'function') {
+        incrementor(data.multiplier);
+    }
+    
+    // Update cash out amounts for active bets in sidebar
+    updateActiveBetsCashOutAmounts(data.multiplier);
+});
 
     // Game crashed handler - ALL clients receive this from server
     socket.on('onGameCrashed', (data) => {

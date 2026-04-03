@@ -15,6 +15,16 @@ $app = new Illuminate\Foundation\Application(
     $_ENV['APP_BASE_PATH'] ?? dirname(__DIR__)
 );
 
+// Force override system environment variables with .env values
+if (file_exists(dirname(__DIR__) . '/.env')) {
+    try {
+        $dotenv = Dotenv\Dotenv::createMutable(dirname(__DIR__));
+        $dotenv->load();
+    } catch (\Exception $e) {
+        // Dotenv fails or not loaded yet
+    }
+}
+
 /*
 |--------------------------------------------------------------------------
 | Bind Important Interfaces

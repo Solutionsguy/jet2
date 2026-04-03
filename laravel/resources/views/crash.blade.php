@@ -3,6 +3,18 @@
 
 <head>
     <meta charset="UTF-8">
+    <script>
+        // GLOBAL DEBUG TOGGLE
+        // Set to true to see console logs, false to hide them for better performance
+        window.DEBUG_MODE = false;
+
+        if (!window.DEBUG_MODE) {
+            console.log = function() {};
+            console.info = function() {};
+            console.warn = function() {};
+            // console.error is kept active to catch critical issues
+        }
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
 
@@ -52,6 +64,9 @@
 
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+
+    <!--====== Plugin js (Loaded early to avoid $ is not defined) ======-->
+    <script src="/js/jquery.min.js"></script>
 
 <!-- Global Variables (defined early for all scripts) -->
 <script>
@@ -1044,24 +1059,7 @@
         </button>
 
         <!--====== Chat Sidebar Start ======-->
-        <div class="chat-sidebar" id="chat-sidebar-popup">
-            <div id="chat-container">
-                <div class="chat-header">
-                    <h3>
-                        <span class="chat-online-indicator"></span>
-                        CHAT
-                    </h3>
-                    <button class="rain-admin-btn" onclick="window.rainSystem.showCreateRainModal()" title="Create Rain">
-                        🌧️
-                    </button>
-                </div>
-                <div id="chat-messages"></div>
-                <div class="chat-input-container">
-                    <textarea id="chat-input" placeholder="Type a message..." rows="1" maxlength="500"></textarea>
-                    <button type="button" id="chat-send-btn">Send</button>
-                </div>
-            </div>
-        </div>
+        @include('include.chat-sidebar')
         <!--====== Chat Sidebar End ======-->
     </div>
 
@@ -1234,10 +1232,13 @@
                         <li>In the �Top� panel, game statistics are located. You can browse wins by amount, or Cash Out
                             multiplier, and see the biggest round multipliers.</li>
                     </ul>
-                    <h6 class="secondary-font mt-2">Free Bets</h6>
+                    <h6 class="secondary-font mt-2">Free Bets & Wagering</h6>
                     <ul class="list-unstyled list-ul">
-                        <li>You can check the status of Free Bets, from the Game Menu > Free Bets. Free Bets are awarded
-                            by the operator, or by the Rain Feature.</li>
+                        <li>You can check the status of Free Bets from the Game Menu > Free Bets. Free Bets are awarded
+                            by the operator or by the Rain Feature.</li>
+                        <li><strong>Wagering Requirement:</strong> Winnings from Free Bets are subject to a wagering multiplier (default 10x). This means if you get 100 KSh in Free Bets, you must place 1,000 KSh in total bets before the funds are converted to your main balance.</li>
+                        <li><strong>Minimum Multiplier:</strong> Only bets cashed out at <strong>1.50x</strong> or higher count towards the wagering requirement.</li>
+                        <li><strong>Conversion:</strong> Once the wagering requirement is met (100% progress), the Free Bet balance is automatically transferred to your main wallet.</li>
                     </ul>
                     <h6 class="secondary-font mt-2">Randomisation</h6>
                     <ul class="list-unstyled list-ul">
@@ -1300,20 +1301,28 @@
         function switchWalletType(walletType) {
             current_wallet_type = walletType;
             $('#wallet_type').val(walletType);
-            
+
             // Update button states
             $('.wallet-toggle-btn').removeClass('active');
             $('.wallet-toggle-btn[data-wallet="' + walletType + '"]').addClass('active');
-            
-            console.log('💰 Switching to ' + walletType + ' wallet');
-            console.log('📊 Current balances - Money:', wallet_balance, 'Freebet:', freebet_balance);
-            
-            // Update displayed balance
-            updateWalletBalance();
-        }
 
-        // Update Wallet Balance Display
-        function updateWalletBalance() {
+            // Show/Hide wagering container
+            if (walletType === 'freebet') {
+                $('#wagering_container').removeClass('wagering-hidden');
+                $('#mobile_wagering_info').removeClass('wagering-hidden');
+            } else {
+                $('#wagering_container').addClass('wagering-hidden');
+                $('#mobile_wagering_info').addClass('wagering-hidden');
+            }
+
+            console.log('💰 Switching to ' + walletType + ' wallet');
+            console.log('💵 Current balances - Money:', wallet_balance, 'Freebet:', freebet_balance);
+
+            // Update displayed balance
+            window.updateWalletBalance();
+        }
+        // Update Wallet Balance Display (globally accessible for rain system)
+        window.updateWalletBalance = function() {
             var balance;
             if (current_wallet_type === 'freebet') {
                 // Handle freebet_balance which might be a string or number
@@ -1344,11 +1353,11 @@
             console.log('💵 Updated balance display:', formattedBalance, '(' + current_wallet_type + ')', 'Raw:', current_wallet_type === 'freebet' ? freebet_balance : wallet_balance);
             console.log('🎯 Target elements found - #wallet_balance:', $('#wallet_balance').length, '#header_wallet_balance:', $('#header_wallet_balance').length, '.wallet-balance span:', $('.wallet-balance span').length);
             console.log('📍 Current values - #wallet_balance:', $('#wallet_balance').text(), '#header_wallet_balance:', $('#header_wallet_balance').text());
-        }
+        };
 
         // Initialize wallet balance on page load
         $(document).ready(function() {
-            updateWalletBalance();
+            window.updateWalletBalance();
         });
     </script>
 
@@ -1402,6 +1411,7 @@
     <!--====== Bootstrap js ======-->
     <script src="/js/popper.min.js"></script>
     <script src="/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ asset('js/dropdown-fix.js') }}"></script>
 
     <!--====== Slimscroll js ======-->
     <!--<script src="/js/jquery.mCustomScrollbar.js"></script>-->
@@ -1555,6 +1565,7 @@
     <script src="/user/aviatorold.js?v={{env('APP_VERSION')}}"></script>
     <script src="{{ asset('js/next-round-bet-queue.js') }}"></script>
     <script src="{{ asset('js/chat.js') }}"></script>
+    <script src="{{ asset('js/emoji-picker.js') }}"></script>
     <script src="{{ asset('js/rain.js') }}"></script>
     <script src="/user/aviatorbyapp.js?v={{env('APP_VERSION')}}"></script>
     
@@ -1674,6 +1685,29 @@
                 if (result.isSuccess) {
                     $("#avatar_img").prop('src', result.data.avatar)
                     $("#username").text(result.data.username)
+                    
+                    // Update Wagering Progress
+                    if (result.data.wagering_target > 0) {
+                        var remaining = parseFloat(result.data.wagering_remaining);
+                        var target = parseFloat(result.data.wagering_target);
+                        var completed = target - remaining;
+                        var percentage = (completed / target) * 100;
+                        if (percentage < 0) percentage = 0;
+                        if (percentage > 100) percentage = 100;
+
+                        $('#wagering_text').text('KSh ' + Math.round(remaining).toLocaleString() + ' / ' + Math.round(target).toLocaleString());
+                        $('#wagering_bar').css('width', percentage + '%').attr('aria-valuenow', percentage);
+                        
+                        // Ensure visibility matches wallet type
+                        if (current_wallet_type === 'freebet') {
+                            $('#wagering_container').removeClass('wagering-hidden');
+                        } else {
+                            $('#wagering_container').addClass('wagering-hidden');
+                        }
+                    } else {
+                        $('#wagering_container').addClass('wagering-hidden');
+                    }
+
                     if (result.data.notification != '') {
                         swal(
                             'Notification',

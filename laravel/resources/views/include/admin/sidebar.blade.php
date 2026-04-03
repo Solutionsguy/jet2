@@ -15,211 +15,126 @@
                  <i class="mdi mdi-bookmark-check text-success nav-profile-badge"></i>
              </a>
          </li>
+         
          <li class="nav-item">
-             <a class="nav-link" href="dashboard">
+             <a class="nav-link" href="{{ url('admin/dashboard') }}">
                  <span class="menu-title">Dashboard</span>
                  <i class="mdi mdi-home menu-icon"></i>
              </a>
          </li>
+
+         @if(has_permission('view_users'))
          <li class="nav-item">
-             <a class="nav-link" href="user-list">
+             <a class="nav-link" href="{{ url('admin/user-list') }}">
                  <span class="menu-title">User Management</span>
                  <i class="mdi mdi-account-network menu-icon"></i>
              </a>
          </li>
+         @endif
+
+         @if(has_permission('manage_deposits'))
          <li class="nav-item">
-             <a class="nav-link" href="recharge-history">
+             <a class="nav-link" href="{{ url('admin/recharge-history') }}">
                  <span class="menu-title">Recharge history</span>
                  <i class="mdi mdi-account-network menu-icon"></i>
              </a>
          </li>
+         @endif
+
+         @if(has_permission('manage_withdrawals'))
          <li class="nav-item">
-             <a class="nav-link" href="withdrawal-history">
+             <a class="nav-link" href="{{ url('admin/withdrawal-history') }}">
                  <span class="menu-title">Withdrawal history</span>
                  <i class="mdi mdi-account-network menu-icon"></i>
              </a>
          </li>
+         @endif
+
+         @if(has_permission('game_settings'))
          <li class="nav-item">
-             <a class="nav-link" href="amount-setup">
+             <a class="nav-link" href="{{ url('admin/amount-setup') }}">
                  <span class="menu-title">Amount Setup</span>
                  <i class="mdi mdi-account-network menu-icon"></i>
              </a>
          </li>
+         @endif
+
+         @if(has_permission('game_settings'))
          <li class="nav-item">
-             <a class="nav-link" href="bank-detail">
+             <a class="nav-link" href="{{ url('admin/bank-detail') }}">
                  <span class="menu-title">Bank Detail</span>
                  <i class="mdi mdi-account-network menu-icon"></i>
              </a>
          </li>
+         @endif
+
+         @if(has_permission('full_access'))
          <li class="nav-item">
-             <a class="nav-link" href="rain">
+             <a class="nav-link" data-bs-toggle="collapse" href="#admin-management" aria-expanded="false"
+                 aria-controls="admin-management">
+                 <span class="menu-title">Admin Settings</span>
+                 <i class="menu-arrow"></i>
+                 <i class="mdi mdi-shield-account menu-icon" style="color: #ff3296;"></i>
+             </a>
+             <div class="collapse" id="admin-management">
+                 <ul class="nav flex-column sub-menu">
+                     <li class="nav-item"> 
+                        <a class="nav-link" href="{{ url('admin/roles') }}">Manage Roles</a>
+                     </li>
+                     <li class="nav-item"> 
+                        <a class="nav-link" href="{{ url('admin/sub-admins') }}">Manage Admins</a>
+                     </li>
+                 </ul>
+             </div>
+         </li>
+         @endif
+
+         @if(has_permission('manage_rain'))
+         <li class="nav-item">
+             <a class="nav-link" href="{{ url('admin/rain') }}">
                  <span class="menu-title">Rain Management</span>
                  <i class="mdi mdi-cloud-download menu-icon" style="color: #FF9500;"></i>
              </a>
          </li>
+         @endif
+
+         @if(has_permission('manage_freebets'))
          <li class="nav-item">
-             <a class="nav-link" href="freebet">
+             <a class="nav-link" href="{{ url('admin/freebet') }}">
                  <span class="menu-title">Freebet Management</span>
                  <i class="mdi mdi-gift menu-icon" style="color: #667eea;"></i>
              </a>
          </li>
-         {{-- <li class="nav-item">
-             <a class="nav-link" data-bs-toggle="collapse" href="#ui-basic" aria-expanded="false"
-                 aria-controls="ui-basic">
-                 <span class="menu-title">Basic UI Elements</span>
-                 <i class="menu-arrow"></i>
-                 <i class="mdi mdi-crosshairs-gps menu-icon"></i>
+         @endif
+
+         @if(has_permission('manage_chat'))
+         <li class="nav-item">
+             <a class="nav-link" href="{{ url('admin/chat-management') }}">
+                 <span class="menu-title">Chat Management</span>
+                 <i class="mdi mdi-message-text menu-icon" style="color: #ff3296;"></i>
              </a>
-             <div class="collapse" id="ui-basic">
+         </li>
+         @endif
+
+         @if(has_permission('manage_p2p'))
+         <li class="nav-item">
+             <a class="nav-link" data-bs-toggle="collapse" href="#p2p-management" aria-expanded="false"
+                 aria-controls="p2p-management">
+                 <span class="menu-title">P2P Management</span>
+                 <i class="menu-arrow"></i>
+                 <i class="mdi mdi-account-switch menu-icon" style="color: #00d25b;"></i>
+             </a>
+             <div class="collapse" id="p2p-management">
                  <ul class="nav flex-column sub-menu">
-                     <li class="nav-item"> <a class="nav-link" href="pages/ui-features/buttons.html">Buttons</a></li>
-                     <li class="nav-item"> <a class="nav-link" href="pages/ui-features/typography.html">Typography</a>
+                     <li class="nav-item"> 
+                        <a class="nav-link" href="{{ route('admin.p2p.peers') }}">Peer Numbers</a>
+                     </li>
+                     <li class="nav-item"> 
+                        <a class="nav-link" href="{{ route('admin.p2p.withdrawals') }}">P2P Withdrawals</a>
                      </li>
                  </ul>
              </div>
-         </li> --}}
-         {{-- <li class="nav-item">
-             <a class="nav-link" href="pages/icons/mdi.html">
-                 <span class="menu-title">Icons</span>
-                 <i class="mdi mdi-contacts menu-icon"></i>
-             </a>
          </li>
-         <li class="nav-item">
-             <a class="nav-link" href="pages/forms/basic_elements.html">
-                 <span class="menu-title">Forms</span>
-                 <i class="mdi mdi-format-list-bulleted menu-icon"></i>
-             </a>
-         </li>
-         <li class="nav-item">
-             <a class="nav-link" href="pages/charts/chartjs.html">
-                 <span class="menu-title">Charts</span>
-                 <i class="mdi mdi-chart-bar menu-icon"></i>
-             </a>
-         </li>
-         <li class="nav-item">
-             <a class="nav-link" href="pages/tables/basic-table.html">
-                 <span class="menu-title">Tables</span>
-                 <i class="mdi mdi-table-large menu-icon"></i>
-             </a>
-         </li>
-         <li class="nav-item">
-             <a class="nav-link" data-bs-toggle="collapse" href="#general-pages" aria-expanded="false"
-                 aria-controls="general-pages">
-                 <span class="menu-title">Sample Pages</span>
-                 <i class="menu-arrow"></i>
-                 <i class="mdi mdi-medical-bag menu-icon"></i>
-             </a>
-             <div class="collapse" id="general-pages">
-                 <ul class="nav flex-column sub-menu">
-                     <li class="nav-item"> <a class="nav-link" href="pages/samples/blank-page.html"> Blank Page </a>
-                     </li>
-                     <li class="nav-item"> <a class="nav-link" href="pages/samples/login.html"> Login </a></li>
-                     <li class="nav-item"> <a class="nav-link" href="pages/samples/register.html"> Register </a></li>
-                     <li class="nav-item"> <a class="nav-link" href="pages/samples/error-404.html"> 404 </a></li>
-                     <li class="nav-item"> <a class="nav-link" href="pages/samples/error-500.html"> 500 </a></li>
-                 </ul>
-             </div>
-         </li> --}}
+         @endif
      </ul>
  </nav>
- <!-- partial -->
- {{-- <!-- partial:partials/_sidebar.html -->
- <nav class="sidebar sidebar-offcanvas" id="sidebar">
-     <ul class="nav">
-         <li class="nav-item nav-profile">
-             <a href="#" class="nav-link">
-                 <div class="nav-profile-image">
-                     <img src="/aviatoradmin/assets/images/faces/face1.jpg" alt="profile">
-                     <span class="login-status online"></span>
-                     <!--change to offline or busy as needed-->
-                 </div>
-                 <div class="nav-profile-text d-flex flex-column">
-                     <span class="font-weight-bold mb-2">David Grey. H</span>
-                     <span class="text-secondary text-small">Project Manager</span>
-                 </div>
-                 <i class="mdi mdi-bookmark-check text-success nav-profile-badge"></i>
-             </a>
-         </li>
-         <li class="nav-item">
-             <a class="nav-link" href="index.html">
-                 <span class="menu-title">Dashboard</span>
-                 <i class="mdi mdi-home menu-icon"></i>
-             </a>
-         </li>
-         <li class="nav-item">
-             <a class="nav-link" data-bs-toggle="collapse" href="#ui-basic" aria-expanded="false"
-                 aria-controls="ui-basic">
-                 <span class="menu-title">Basic UI Elements</span>
-                 <i class="menu-arrow"></i>
-                 <i class="mdi mdi-crosshairs-gps menu-icon"></i>
-             </a>
-             <div class="collapse" id="ui-basic">
-                 <ul class="nav flex-column sub-menu">
-                     <li class="nav-item"> <a class="nav-link" href="pages/ui-features/buttons.html">Buttons</a></li>
-                     <li class="nav-item"> <a class="nav-link" href="pages/ui-features/typography.html">Typography</a>
-                     </li>
-                 </ul>
-             </div>
-         </li>
-         <li class="nav-item">
-             <a class="nav-link" href="pages/icons/mdi.html">
-                 <span class="menu-title">Icons</span>
-                 <i class="mdi mdi-contacts menu-icon"></i>
-             </a>
-         </li>
-         <li class="nav-item">
-             <a class="nav-link" href="pages/forms/basic_elements.html">
-                 <span class="menu-title">Forms</span>
-                 <i class="mdi mdi-format-list-bulleted menu-icon"></i>
-             </a>
-         </li>
-         <li class="nav-item">
-             <a class="nav-link" href="pages/charts/chartjs.html">
-                 <span class="menu-title">Charts</span>
-                 <i class="mdi mdi-chart-bar menu-icon"></i>
-             </a>
-         </li>
-         <li class="nav-item">
-             <a class="nav-link" href="pages/tables/basic-table.html">
-                 <span class="menu-title">Tables</span>
-                 <i class="mdi mdi-table-large menu-icon"></i>
-             </a>
-         </li>
-         <li class="nav-item">
-             <a class="nav-link" data-bs-toggle="collapse" href="#general-pages" aria-expanded="false"
-                 aria-controls="general-pages">
-                 <span class="menu-title">Sample Pages</span>
-                 <i class="menu-arrow"></i>
-                 <i class="mdi mdi-medical-bag menu-icon"></i>
-             </a>
-             <div class="collapse" id="general-pages">
-                 <ul class="nav flex-column sub-menu">
-                     <li class="nav-item"> <a class="nav-link" href="pages/samples/blank-page.html"> Blank Page </a>
-                     </li>
-                     <li class="nav-item"> <a class="nav-link" href="pages/samples/login.html"> Login </a></li>
-                     <li class="nav-item"> <a class="nav-link" href="pages/samples/register.html"> Register </a></li>
-                     <li class="nav-item"> <a class="nav-link" href="pages/samples/error-404.html"> 404 </a></li>
-                     <li class="nav-item"> <a class="nav-link" href="pages/samples/error-500.html"> 500 </a></li>
-                 </ul>
-             </div>
-         </li>
-         <li class="nav-item sidebar-actions">
-             <span class="nav-link">
-                 <div class="border-bottom">
-                     <h6 class="font-weight-normal mb-3">Projects</h6>
-                 </div>
-                 <button class="btn btn-block btn-lg btn-gradient-primary mt-4">+ Add a project</button>
-                 <div class="mt-4">
-                     <div class="border-bottom">
-                         <p class="text-secondary">Categories</p>
-                     </div>
-                     <ul class="gradient-bullet-list mt-4">
-                         <li>Free</li>
-                         <li>Pro</li>
-                     </ul>
-                 </div>
-             </span>
-         </li>
-     </ul>
- </nav>
- <!-- partial --> --}}

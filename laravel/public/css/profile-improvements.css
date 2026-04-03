@@ -1,0 +1,134 @@
+/* ========== PROFILE PAGE IMPROVEMENTS ========== */
+
+/* Force all text to use orange instead of beige/cream */
+.deposite-container,
+.deposite-container *,
+.custom-accordian,
+.custom-accordian *,
+.acc-row,
+.acc-row *,
+.row-controls,
+.row-controls *,
+.row-controls .left,
+.row-controls .right {
+    color: rgb(255, 149, 0) !important;
+}
+
+/* Specifically target the data values */
+.row-controls .right div,
+.acc-row .right div,
+.custom-accordian .right div {
+    color: rgb(255, 149, 0) !important;
+}
+
+/* Override any beige/cream colored text */
+[style*="rgb(242, 232, 204)"],
+[style*="#f2e8cc"],
+[style*="color:"] {
+    color: rgb(255, 149, 0) !important;
+}
+
+/* Improve white-box containers to match theme - ORANGE/GOLD THEME */
+.white-box {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%) !important;
+    border: 1px solid #FF9500 !important;
+    box-shadow: 0 4px 12px rgba(255, 149, 0, 0.3) !important;
+}
+
+/* Form controls with ORANGE/GOLD accent */
+.form-control,
+.form-select {
+    background-color: #2a2a2a !important;
+    border: 1px solid #FF9500 !important;
+    color: #ffffff !important;
+}
+
+.form-control:focus,
+.form-select:focus {
+    background-color: #333333 !important;
+    border-color: #FFA500 !important;
+    box-shadow: 0 0 0 0.2rem rgba(255, 149, 0, 0.25) !important;
+    color: #ffffff !important;
+}
+
+.form-control::placeholder {
+    color: #999999 !important;
+}
+
+/* Labels with better contrast */
+.white-box label,
+.white-box .left {
+    color: #FFA500 !important;
+    font-weight: 500 !important;
+}
+
+/* "No data found" messages - WHITE for better readability */
+.white-box .left + .left {
+    color: #ffffff !important;
+    font-weight: 400 !important;
+}
+
+/* Specific styling for value fields (right column) */
+.white-box .profile-row .left:last-child {
+    color: #ffffff !important;
+}
+
+/* Link text with ORANGE/GOLD accent */
+.white-box .link-text {
+    color: #FF9500 !important;
+}
+
+.white-box .link-text:hover {
+    color: #FFA500 !important;
+}
+
+/* Submit buttons matching DEPOSIT button - ORANGE/GOLD */
+.white-box .green-btn,
+.white-box .orange-btn,
+.white-box button[type="submit"] {
+    background: linear-gradient(135deg, #FF9500, #FFA500) !important;
+    border: none !important;
+    color: #000000 !important;
+    font-weight: 600 !important;
+    box-shadow: 0 4px 12px rgba(255, 149, 0, 0.4) !important;
+}
+
+.white-box .green-btn:hover,
+.white-box .orange-btn:hover,
+.white-box button[type="submit"]:hover {
+    background: linear-gradient(135deg, #FFA500, #FFB520) !important;
+    box-shadow: 0 6px 16px rgba(255, 149, 0, 0.6) !important;
+    transform: translateY(-2px);
+}
+
+/* Profile page title with ORANGE accent */
+.white-box h5,
+.white-box h6 {
+    color: #FFA500 !important;
+    border-bottom: 2px solid #FF9500 !important;
+    padding-bottom: 10px !important;
+    margin-bottom: 20px !important;
+    font-weight: 600 !important;
+}
+
+/* Input groups with ORANGE border */
+.input-group-text {
+    background-color: #2a2a2a !important;
+    border: 1px solid #FF9500 !important;
+    color: #FFA500 !important;
+}
+
+/* Select dropdowns */
+select.form-control option,
+select.form-select option {
+    background-color: #2a2a2a !important;
+    color: #ffffff !important;
+}
+
+/* Disabled inputs */
+.form-control:disabled,
+.form-select:disabled {
+    background-color: #1a1a1a !important;
+    color: #666666 !important;
+    opacity: 0.7 !important;
+}

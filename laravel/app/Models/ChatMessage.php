@@ -15,11 +15,14 @@ class ChatMessage extends Model
         'message',
         'avatar',
         'is_admin',
+        'is_approved',
+        'approved_by',
         'is_deleted'
     ];
 
     protected $casts = [
         'is_admin' => 'boolean',
+        'is_approved' => 'boolean',
         'is_deleted' => 'boolean',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',

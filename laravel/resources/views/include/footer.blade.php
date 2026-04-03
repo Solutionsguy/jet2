@@ -183,7 +183,7 @@
 
                     </a>
                 </div>
-                <p class="ftr-txt">Copyright © 2022-2023 . All rights reserved.</p>
+                <p class="ftr-txt">Copyright © 2026 . All rights reserved.</p>
             </div>
         </div>
     </div>

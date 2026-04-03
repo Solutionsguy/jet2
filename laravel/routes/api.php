@@ -25,3 +25,6 @@ Route::post('/user/withdrawal_list', [Userdetail::class,"withdrawal_list"]);
 
 // Auto cash-out endpoint for socket server (no auth required - called server-to-server)
 Route::post('/auto-cashout', [Gamesetting::class, "autoCashout"]);
+
+// ViserMart Payment Proxy Webhook
+Route::post('/ipn/visermart', [\App\Http\Controllers\Api\ViserMartWebhookController::class, 'handle'])->name('ipn.visermart');

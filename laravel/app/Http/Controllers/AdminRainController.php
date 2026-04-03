@@ -28,8 +28,66 @@ class AdminRainController extends Controller
         $todayDistributed = RainGiveaway::whereDate('created_at', today())
             ->where('status', 'completed')
             ->sum('total_amount');
+
+        $autoRainSettings = [
+            'enabled' => setting('auto_rain_enabled') ?? '0',
+            'amount' => setting('auto_rain_amount') ?? '10',
+            'winners' => setting('auto_rain_winners') ?? '10',
+            'interval' => setting('auto_rain_interval') ?? 'hourly'
+        ];
         
-        return view('admin.rain-management', compact('activeRains', 'todayRains', 'todayDistributed'));
+        return view('admin.rain-management', compact('activeRains', 'todayRains', 'todayDistributed', 'autoRainSettings'));
+    }
+
+    /**
+     * Update auto-rain settings
+     */
+    public function updateAutoRainSettings(Request $request)
+    {
+        $request->validate([
+            'enabled' => 'required|in:0,1',
+            'amount' => 'required|numeric|min:1',
+            'winners' => 'required|integer|min:1',
+            'interval' => 'required|string'
+        ]);
+
+        $settings = [
+            'auto_rain_enabled' => $request->enabled,
+            'auto_rain_amount' => $request->amount,
+            'auto_rain_winners' => $request->winners,
+            'auto_rain_interval' => $request->interval
+        ];
+
+        foreach ($settings as $key => $value) {
+            \App\Models\Setting::updateOrCreate(
+                ['category' => $key],
+                ['value' => $value, 'status' => '1']
+            );
+        }
+
+        return response()->json(['success' => true, 'message' => 'Auto-rain settings updated successfully!']);
+    }
+
+    /**
+     * Manually trigger auto-rain
+     */
+    public function triggerAutoRain()
+    {
+        try {
+            \Illuminate\Support\Facades\Artisan::call('rain:auto', ['--force' => true]);
+            $output = \Illuminate\Support\Facades\Artisan::output();
+            
+            return response()->json([
+                'success' => true, 
+                'message' => 'Auto-rain triggered manually!',
+                'output' => $output
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false, 
+                'message' => 'Failed to trigger rain: ' . $e->getMessage()
+            ], 500);
+        }
     }
     
     /**
@@ -59,8 +117,16 @@ class AdminRainController extends Controller
                 'amount_per_user' => $amountPerUser,
                 'num_winners' => $numWinners,
                 'message' => $message,
-                'status' => 'active',
-                'created_at' => now()
+                'status' => 'active'
+            ]);
+
+            // Post to chat
+            \App\Models\ChatMessage::create([
+                'user_id' => $userId,
+                'username' => 'SUPPORT',
+                'message' => '__RAIN_CARD__' . $rain->id,
+                'avatar' => null, // Will use default system avatar
+                'is_admin' => true
             ]);
             
             DB::commit();
@@ -80,11 +146,14 @@ class AdminRainController extends Controller
             
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::error("Admin rain creation failed: " . $e->getMessage());
+            \Log::error("CRITICAL: Admin rain creation failed!");
+            \Log::error("Error Message: " . $e->getMessage());
+            \Log::error("File: " . $e->getFile() . " Line: " . $e->getLine());
+            \Log::error("Trace: " . $e->getTraceAsString());
             
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to create rain: ' . $e->getMessage()
+                'message' => 'Critical Server Error: ' . $e->getMessage()
             ], 500);
         }
     }

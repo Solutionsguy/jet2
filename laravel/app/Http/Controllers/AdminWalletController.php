@@ -84,11 +84,8 @@ class AdminWalletController extends Controller
                 ], 404);
             }
             
-            // Add freebet
-            $currentFreebet = floatval($wallet->freebet_amount);
-            $newFreebet = $currentFreebet + $amount;
-            
-            $wallet->update(['freebet_amount' => $newFreebet]);
+            // Add freebet using helper (handles wagering)
+            $newFreebet = addfreebet($user->id, $amount, "+");
             
             // Record transaction
             DB::table('freebet_transactions')->insert([
@@ -178,9 +175,8 @@ class AdminWalletController extends Controller
                 ], 400);
             }
             
-            // Remove freebet
-            $newFreebet = $currentFreebet - $amount;
-            $wallet->update(['freebet_amount' => $newFreebet]);
+            // Remove freebet using helper
+            $newFreebet = addfreebet($user->id, $amount, "-");
             
             // Record transaction
             DB::table('freebet_transactions')->insert([
@@ -273,10 +269,8 @@ class AdminWalletController extends Controller
                         continue;
                     }
                     
-                    $currentFreebet = floatval($wallet->freebet_amount);
-                    $newFreebet = $currentFreebet + $amount;
-                    
-                    $wallet->update(['freebet_amount' => $newFreebet]);
+                    // Add freebet using helper
+                    $newFreebet = addfreebet($userId, $amount, "+");
                     
                     // Record transaction
                     DB::table('freebet_transactions')->insert([

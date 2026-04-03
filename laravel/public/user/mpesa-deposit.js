@@ -28,19 +28,20 @@ function resetMpesaStatus() {
 }
 
 function initiateMpesaDeposit() {
-    var phone = $('#mpesa_phone').val().trim();
+    var phoneBody = $('#mpesa_phone').val().trim();
+    var phone = '254' + phoneBody;
     var amount = $('#mpesa_amount').val();
     var email = $('#mpesa_email').val().trim();
     var csrfToken = $('meta[name="csrf-token"]').attr('content');
 
     // Validation - phone must be 254XXXXXXXXX format
-    if (!phone) {
+    if (!phoneBody) {
         toastr.error('Please enter your M-Pesa phone number');
         return;
     }
 
-    if (!phone.match(/^254[0-9]{9}$/)) {
-        toastr.error('Phone number must be in format: 254XXXXXXXXX');
+    if (phoneBody.length !== 9) {
+        toastr.error('Please enter a valid 9-digit phone number (7XXXXXXXX)');
         return;
     }
 

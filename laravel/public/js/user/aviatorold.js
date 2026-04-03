@@ -263,12 +263,22 @@ function cash_out_now(element, section_no, increment = '') {
         dataType: "json",
         success: function (result) {
             if (result.isSuccess) {
+                // Update both wallet balances based on response
                 if (result.data.wallet_balance != '' && result.data.wallet_balance != NaN && result.data.wallet_balance != 'NaN') {
-                    $("#wallet_balance").text(currency_symbol + result.data.wallet_balance);
-                    $("#header_wallet_balance").text(currency_symbol + result.data.wallet_balance); // Show Header Wallet Balance
+                    wallet_balance = result.data.wallet_balance;
+                }
+                if (result.data.freebet_balance != '' && result.data.freebet_balance != NaN && result.data.freebet_balance != 'NaN') {
+                    freebet_balance = result.data.freebet_balance;
+                }
+                
+                // Update the displayed balance based on current wallet type
+                if (typeof updateWalletBalance === 'function') {
+                    updateWalletBalance();
                 } else {
-                    $("#wallet_balance").text(currency_symbol + '0.00');
-                    $("#header_wallet_balance").text(currency_symbol + '0.00'); // Show Header Wallet Balance
+                    // Fallback if updateWalletBalance function doesn't exist
+                    var displayBalance = (current_wallet_type === 'freebet') ? freebet_balance : wallet_balance;
+                    $("#wallet_balance").text(currency_symbol + displayBalance);
+                    $("#header_wallet_balance").text(currency_symbol + displayBalance);
                 }
                 if (section_no == 0) {
                     $("#main_bet_section").find("#bet_button").show();
@@ -991,12 +1001,22 @@ function place_bet_now() {
         success: function (result) {
             if (result.isSuccess) {
 
+                // Update both wallet balances based on response
                 if (result.data.wallet_balance != '' && result.data.wallet_balance != NaN && result.data.wallet_balance != 'NaN') {
-                    $("#wallet_balance").text(currency_symbol + result.data.wallet_balance);
-                    $("#header_wallet_balance").text(currency_symbol + result.data.wallet_balance); // Show Header Wallet Balance
+                    wallet_balance = result.data.wallet_balance;
+                }
+                if (result.data.freebet_balance != '' && result.data.freebet_balance != NaN && result.data.freebet_balance != 'NaN') {
+                    freebet_balance = result.data.freebet_balance;
+                }
+                
+                // Update the displayed balance based on current wallet type
+                if (typeof updateWalletBalance === 'function') {
+                    updateWalletBalance();
                 } else {
-                    $("#wallet_balance").text(currency_symbol + '0.00');
-                    $("#header_wallet_balance").text(currency_symbol + '0.00'); // Show Header Wallet Balance
+                    // Fallback if updateWalletBalance function doesn't exist
+                    var displayBalance = (current_wallet_type === 'freebet') ? freebet_balance : wallet_balance;
+                    $("#wallet_balance").text(currency_symbol + displayBalance);
+                    $("#header_wallet_balance").text(currency_symbol + displayBalance);
                 }
 
                 if (bet_array.length == 1) {

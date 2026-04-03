@@ -8,8 +8,15 @@
         },
         dataType: "text",
         success: function (result) {
-            $("#wallet_balance").text(currency_symbol + result);
-            $("#header_wallet_balance").text(currency_symbol + result); // Show Header Wallet Balance
+            if (typeof wallet_balance !== 'undefined') {
+                wallet_balance = result;
+            }
+            if (typeof updateWalletBalance === 'function') {
+                updateWalletBalance();
+            } else {
+                $("#wallet_balance").text(currency_symbol + result);
+                $("#header_wallet_balance").text(currency_symbol + result);
+            }
             for(let i=0;i < bet_array.length; i++){
                 if(bet_array[i] && bet_array[i].is_bet){
                     bet_array.splice(i, 1);

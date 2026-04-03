@@ -19,4 +19,9 @@ class Userbit extends Model
         'status',
         'cashout_multiplier'
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'userid');
+    }
 }

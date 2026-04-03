@@ -88,7 +88,11 @@ function apex(method, url, data, form, success = null, error = null, reset = fal
                     });
                 } else {
                     $(form).find('button[type=submit]').attr('disable', false);
-                    message(response);
+                    message({
+                        'title': 'Oops!',
+                        'message': 'An unexpected error occurred. Please try again.',
+                        'type': 0
+                    });
                     console.log(e);
                     $(form).find('button[type=submit]').html('Retry');
                 }
