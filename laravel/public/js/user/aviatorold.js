@@ -117,6 +117,12 @@ $('.loading-game').addClass('show');
 // gameLoadingTimer();
 
 $(document).ready(function () {
+    // Uncheck auto-bet and auto-cashout to prevent automatic bet placement on refresh
+    $("#main_auto_bet").prop('checked', false);
+    $("#extra_auto_bet").prop('checked', false);
+    $("#main_checkout").prop('checked', false);
+    $("#extra_checkout").prop('checked', false);
+
     let music = document.getElementById("background_Audio");
     music.volume = 0.2;
     if ($("#music").prop("checked") == true) {
@@ -1185,8 +1191,21 @@ function get_current_hour_minute() {
     return retHour + ':' + retMinute;
 }
 
-function update_round_history(inc_no) {
-    var html = '<div class="' + get_multiplier_badge_class(inc_no) + ' custom-badge">' + parseFloat(inc_no).toFixed(2) + 'x</div>'
+function update_round_history(inc_no, game_id = null) {
+    // If game_id is provided, prevent duplicate entries for the same round
+    if (game_id) {
+        if ($(`.round-id-${game_id}`).length > 0) {
+            console.log(`📋 Round ${game_id} already in history, skipping duplicate.`);
+            return;
+        }
+    }
+
+    const badgeClass = get_multiplier_badge_class(inc_no);
+    const displayVal = parseFloat(inc_no).toFixed(2) + 'x';
+    const uniqueClass = game_id ? `round-id-${game_id}` : '';
+    
+    var html = `<div class="${badgeClass} custom-badge ${uniqueClass}">${displayVal}</div>`;
+    
     $(".payouts-wrapper .payouts-block").prepend(html);
     $(".button-block .history-dropdown .round-history-list").prepend(html);
 }

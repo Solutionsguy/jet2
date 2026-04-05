@@ -232,6 +232,7 @@ io.on('connection', (socket) => {
         socket.emit('syncGameInProgress', {
             gameId: gameState.currentGameId,
             multiplier: gameState.currentMultiplier,
+            startTime: gameState.startTime,
             status: 'flying'
         });
     } else if (gameState.gameStatus === 'waiting' || gameState.gameStatus === 'countdown') {
@@ -267,6 +268,14 @@ io.on('connection', (socket) => {
         cashOutMultiplier: bet.cashOutMultiplier || null
     }));
     socket.emit('syncBets', { bets: currentBets });
+
+    // High-precision clock synchronization (NTP style)
+    socket.on('getServerTime', (data) => {
+        socket.emit('serverTimeResponse', {
+            clientTime: data.clientTime,
+            serverTime: Date.now()
+        });
+    });
 
     // Handle player joining
     socket.on('playerJoin', (data) => {
@@ -569,6 +578,7 @@ io.on('connection', (socket) => {
             socket.emit('syncGameInProgress', {
                 gameId: gameState.currentGameId,
                 multiplier: gameState.currentMultiplier,
+                startTime: gameState.startTime,
                 status: 'flying'
             });
         } else {
@@ -941,6 +951,7 @@ function startFlying() {
         // LINEAR CALCULATION: multiplier = 1.00 + (seconds * rate)
         // Reverted from exponential as requested
         const GROWTH_RATE = 0.12; // 0.12x per second
+        const elapsedSeconds = (Date.now() - gameState.startTime) / 1000;
         let newMultiplier = 1.00 + (elapsedSeconds * GROWTH_RATE);
         
         // Precision to 2 decimal places

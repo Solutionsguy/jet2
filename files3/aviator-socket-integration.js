@@ -17,6 +17,107 @@ window.tabWasHidden = false;
 window.lastKnownMultiplier = 1.00;
 window.lastMultiplierUpdateTime = Date.now();
 
+// Multiplier Prediction & Smoothing Variables
+window.gameStartTime = null;
+window.growthRate = 0.12; // Must match server GROWTH_RATE
+window.predictionLoopId = null;
+window.isGameFlying = false;
+
+// NTP Time Sync Variables
+window.serverTimeOffset = 0;
+window.networkLatency = 0;
+
+/**
+ * Synchronize clock with server (NTP style)
+ */
+function syncClockWithServer(socket) {
+    if (!socket || !socket.isSocketConnected()) return;
+    
+    const clientSendTime = Date.now();
+    
+    // Listen for one-time response
+    socket.on('serverTimeResponse', function handler(data) {
+        const clientRecvTime = Date.now();
+        window.networkLatency = (clientRecvTime - clientSendTime) / 2;
+        
+        // Offset = ServerTime - (ClientTime + Latency)
+        window.serverTimeOffset = data.serverTime - (clientSendTime + window.networkLatency);
+        
+        console.log(`⏱️ Clock Synced: Offset ${window.serverTimeOffset}ms, Latency ${window.networkLatency}ms`);
+        
+        // Remove listener after sync
+        socket.off('serverTimeResponse', handler);
+    });
+    
+    const rawSocket = socket.getSocket ? socket.getSocket() : null;
+    if (rawSocket) {
+        rawSocket.emit('getServerTime', { clientTime: clientSendTime });
+    }
+}
+
+/**
+ * Start client-side multiplier prediction loop
+ * This ensures smooth 60fps increments regardless of network latency
+ */
+function startMultiplierPrediction(startTime) {
+    if (!startTime) return;
+    
+    window.gameStartTime = startTime;
+    window.isGameFlying = true;
+    
+    if (window.predictionLoopId) {
+        cancelAnimationFrame(window.predictionLoopId);
+    }
+    
+    let lastFrameTime = performance.now();
+    
+    function updateLoop(currentTime) {
+        if (!window.isGameFlying) return;
+        
+        // Use synced time for calculation
+        // CorrectedTime = LocalTime + Offset
+        const now = Date.now() + window.serverTimeOffset;
+        const elapsedSeconds = (now - window.gameStartTime) / 1000;
+        
+        // LINEAR CALCULATION: multiplier = 1.00 + (seconds * rate)
+        let predictedMultiplier = 1.00 + (elapsedSeconds * window.growthRate);
+        predictedMultiplier = Math.max(1.00, predictedMultiplier);
+        
+        // Visual Smoothing (LERP)
+        // If the prediction loop is running, we update the UI at 60fps
+        // even if the multiplier only changes by 0.001
+        const displayValue = Math.floor(predictedMultiplier * 100) / 100;
+        
+        // Only update if value changed to avoid heavy DOM manipulation
+        if (displayValue !== window.lastKnownMultiplier) {
+            window.lastKnownMultiplier = displayValue;
+            
+            // Update UI
+            if (typeof incrementor === 'function') {
+                incrementor(displayValue);
+            }
+            updateMultiplierDisplay(displayValue);
+            updateActiveBetsCashOutAmounts(displayValue);
+        }
+        
+        window.predictionLoopId = requestAnimationFrame(updateLoop);
+    }
+    
+    window.predictionLoopId = requestAnimationFrame(updateLoop);
+    console.log('📈 Smooth Multiplier loop started (NTP Synced)');
+}
+
+/**
+ * Stop client-side multiplier prediction
+ */
+function stopMultiplierPrediction() {
+    window.isGameFlying = false;
+    if (window.predictionLoopId) {
+        cancelAnimationFrame(window.predictionLoopId);
+        window.predictionLoopId = null;
+    }
+}
+
 // Track animation state to prevent duplicates
 window.isAnimationInProgress = false;
 window.currentAnimationGameId = null;
@@ -477,7 +578,9 @@ function setupSocketEventHandlers(socket) {
     socket.on('onConnectionChange', (data) => {
         if (data.connected) {
             console.log('✓ Connected to game server');
-            // Don't show toastr for connection - too noisy
+            
+            // Sync clock with server for precision timing
+            syncClockWithServer(socket);
         } else {
             console.log('✗ Disconnected from game server');
             if (typeof toastr !== 'undefined') {
@@ -491,6 +594,12 @@ function setupSocketEventHandlers(socket) {
         console.log('🎮 [SERVER] Game phase:', data.phase);
         
         if (data.phase === 'waiting') {
+            // Update current game ID as soon as it's received
+            if (data.gameId && typeof current_game_data !== 'undefined') {
+                current_game_data = { id: data.gameId };
+                window.currentGameId = data.gameId;
+            }
+
             // Waiting for bets phase - NEW ROUND STARTING
             // Hide any previous game elements
             $('.flew_away_section').hide();
@@ -511,6 +620,17 @@ function setupSocketEventHandlers(socket) {
             }
             
             console.log('⏳ Waiting for next round... (' + (data.duration/1000) + 's)');
+
+            // PLACE PENDING BETS NOW
+            // We wait a small moment to ensure Laravel has registered the new round
+            setTimeout(() => {
+                if (typeof bet_array !== 'undefined' && bet_array.length > 0) {
+                    console.log('💰 [PHASE:WAITING] Placing pending bets:', bet_array.length, 'bet(s)');
+                    if (typeof place_bet_now === 'function') {
+                        place_bet_now();
+                    }
+                }
+            }, 500);
             
         } else if (data.phase === 'countdown') {
             // Countdown phase before game starts
@@ -533,17 +653,46 @@ function setupSocketEventHandlers(socket) {
         console.log('🎮 [SOCKET EVENT] Game started with ID:', data.gameId);
         console.log('📡 All tabs should now show the same game!');
         
+        // Start local multiplier prediction for zero-lag increments
+        if (data.timestamp) {
+            startMultiplierPrediction(data.timestamp);
+        }
+        
         // New game starting - plane starts from beginning
         showFlyingPlane(data.gameId, 1.00, false);
+        
+        // Final check: Place any bets that were queued but not sent
+        if (typeof bet_array !== 'undefined' && bet_array.length > 0) {
+            console.log('💰 [BACKUP] Placing pending bets at takeoff:', bet_array.length);
+            if (typeof place_bet_now === 'function') {
+                place_bet_now();
+            }
+        }
     });
     
     // Sync game in progress - for clients that reconnect mid-game
     socket.on('onSyncGameInProgress', (data) => {
         console.log('🔄 [SYNC] Joining game in progress at', data.multiplier + 'x');
         
+        // Compensate for network latency by using startTime to jump to correct multiplier
+        let syncMultiplier = data.multiplier;
+        if (data.startTime) {
+            const now = Date.now();
+            const elapsedSeconds = (now - data.startTime) / 1000;
+            // predicted = 1.00 + (elapsed * 0.12)
+            const predicted = 1.00 + (elapsedSeconds * window.growthRate);
+            // Use the higher value to ensure we don't jump backwards
+            syncMultiplier = Math.max(data.multiplier, Math.floor(predicted * 100) / 100);
+            
+            console.log('🚀 Latency compensated jump: Server ' + data.multiplier + 'x -> Client ' + syncMultiplier + 'x');
+            
+            // Start local prediction from the accurate start time
+            startMultiplierPrediction(data.startTime);
+        }
+        
         // Mid-game sync - position plane at current multiplier
         // restoreMyActiveBets is called inside showFlyingPlane for mid-game sync
-        showFlyingPlane(data.gameId, data.multiplier, true);
+        showFlyingPlane(data.gameId, syncMultiplier, true);
     });
     
     // Sync bets list - for clients that connect/reconnect
@@ -626,39 +775,38 @@ function setupSocketEventHandlers(socket) {
         window.lastKnownMultiplier = data.multiplier;
         window.lastMultiplierUpdateTime = now;
         
-        // If tab was hidden and we're getting rapid updates (catch-up), skip intermediate ones
-        // This prevents the flickering caused by processing queued events
-        if (document.hidden) {
-            // Tab is hidden - just track state, don't update UI
-            return;
+        // SYNC: If client-side prediction is running, check for drift
+        if (window.isGameFlying && window.gameStartTime) {
+            const elapsedSeconds = (now - window.gameStartTime) / 1000;
+            const predictedMultiplier = 1.00 + (elapsedSeconds * window.growthRate);
+            
+            // If drift is more than 0.10x, adjust the startTime to sync with server
+            if (Math.abs(predictedMultiplier - data.multiplier) > 0.10) {
+                console.log('🔄 [SYNC] Adjusting drift: ' + predictedMultiplier.toFixed(2) + 'x -> ' + data.multiplier.toFixed(2) + 'x');
+                // Recalculate startTime to match server's multiplier
+                window.gameStartTime = now - ((data.multiplier - 1.00) / window.growthRate) * 1000;
+            }
+            // The local loop will pick up the adjusted startTime on next frame
+            return; 
         }
         
-        // If we're catching up (updates coming faster than 50ms apart after being hidden)
-        // Skip to prevent animation overload
-        if (timeSinceLastUpdate < 50 && window.tabWasHidden) {
-            return;
-        }
+        // Fallback if prediction isn't running
+        if (document.hidden) return;
+        if (timeSinceLastUpdate < 50 && window.tabWasHidden) return;
         
-        // Log every 0.5x increase for debugging
-        if (Math.floor(data.multiplier * 2) !== Math.floor((data.multiplier - 0.01) * 2)) {
-            console.log('📈 [SYNC] Multiplier:', data.multiplier.toFixed(2) + 'x');
-        }
-        
-        // Update multiplier display
         if (typeof incrementor === 'function') {
             incrementor(data.multiplier);
         }
-        
-        // Update DOM elements
         updateMultiplierDisplay(data.multiplier);
-        
-        // Update cash out amounts for active bets in sidebar
         updateActiveBetsCashOutAmounts(data.multiplier);
     });
 
     // Game crashed handler - ALL clients receive this from server
     socket.on('onGameCrashed', (data) => {
         console.log('💥 [SERVER] Game crashed at', data.crashMultiplier + 'x');
+        
+        // Stop local prediction immediately
+        stopMultiplierPrediction();
         
         // IMPORTANT: Reset animation state so next game can start
         window.isAnimationInProgress = false;
@@ -676,7 +824,7 @@ function setupSocketEventHandlers(socket) {
         // - Showing "FLEW AWAY" message
         // - Stopping plane animation
         if (typeof crash_plane === 'function') {
-            crash_plane(data.crashMultiplier);
+            crash_plane(data.crashMultiplier, data.gameId);
         }
         
         // Update game over display

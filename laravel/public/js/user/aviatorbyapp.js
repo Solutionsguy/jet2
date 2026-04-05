@@ -8,6 +8,9 @@
         },
         dataType: "text",
         success: function (result) {
+            // Only update balance and cleanup bets here.
+            // History recording is now handled by the socket 'onGameCrashed' event
+            // to prevent double recording.
             if (typeof wallet_balance !== 'undefined') {
                 wallet_balance = result;
             }
@@ -17,12 +20,11 @@
                 $("#wallet_balance").text(currency_symbol + result);
                 $("#header_wallet_balance").text(currency_symbol + result);
             }
-            for(let i=0;i < bet_array.length; i++){
-                if(bet_array[i] && bet_array[i].is_bet){
-                    bet_array.splice(i, 1);
-                }
+            if (typeof bet_array !== 'undefined') {
+                bet_array = bet_array.filter(function(bet) {
+                    return !bet.is_bet;
+                });
             }
-            // bet_array = [];
         }
     });
 }
