@@ -1,6 +1,6 @@
 <footer>
     <div class="footer-top">
-        <a href="dashboard" class="footer-logo"><img src="images/logo.png" class="logo1"></a>
+        <a href="{{ url('/dashboard') }}" class="footer-logo"><img src="{{ asset('images/logo.png') }}" class="logo1"></a>
     </div>
     <div class="footer-top">
         <div class="footer-column footer-column_center social-icons">
@@ -179,7 +179,7 @@
             <div class="footer__antillephone-license d-flex align-items-start">
                 <div class="antialis-inner ">
                     <a class="d-flex align-items-start">
-                        <img src="images/copyright.png" class="w-100">
+                        <img src="{{ asset('images/copyright.png') }}" class="w-100">
 
                     </a>
                 </div>

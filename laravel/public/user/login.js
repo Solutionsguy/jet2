@@ -48,71 +48,50 @@ function login_ajax(logindata, redirect_url) {
         type: "POST",
         dataType: "json",
         success: function(result) {
-            console.log('Login response:', result); // Debug log
             $("#loginSubmit").prop('disabled', false);
             if (result.isSuccess) {
-                console.log('Login successful, redirecting to:', redirect_url);
                 window.location.href = redirect_url;
             } else {
-                console.log('Login failed:', result.message);
-                $("#login-error").text(result.message).show();
-                // Make error more visible
-                $("#login-error").css({
-                    'color': 'red',
-                    'display': 'block',
-                    'font-weight': 'bold',
-                    'margin-top': '10px'
-                });
+                $("#login-error").text(result.message).fadeIn();
             }
         },
         error: function(xhr, status, error) {
-            console.error('Login AJAX error:', xhr, status, error);
             $("#loginSubmit").prop('disabled', false);
-            $("#login-error").text('Connection error. Please try again.').show();
-            $("#login-error").css({
-                'color': 'red',
-                'display': 'block',
-                'font-weight': 'bold',
-                'margin-top': '10px'
-            });
+            $("#login-error").text('Connection error. Please try again.').fadeIn();
         }
     });
 }
 
 
 $('#loginForm').validate({
+    errorPlacement: function(error, element) {
+        // Validation errors are handled by bootstrap/custom styles but we can refine placement
+        error.insertAfter(element.closest('.auth-input-wrapper'));
+    },
     rules: {
         username: {
             required: true
         },
         password: {
-            required: function (element) {
-                return $('#username').val() != '' && $('#password').val() == '';
-            }
+            required: true
         }
     },
     messages: {
         username: {
-            required: "Field must not be empty!",
+            required: "Please enter your email or mobile",
         },
         password: {
-            required: "Field must not be empty!",
+            required: "Please enter your password",
         }
     },
     submitHandler: function(form) {
         $("#loginSubmit").prop('disabled', true);
-        // login_ajax($(form).serialize(), "/aviator");
+        $("#login-error").hide();
         login_ajax($(form).serialize(), "/crash");
     }
 });
 
 $( "#forgotPassword" ).on('click', function(){
-    $(".email_text").text("To recover your password, enter your email or phone number used during registration");
-    $(".email_text").css("color","#094b95");
-    $("#processSubmit").text('PROCEED');
-    $("#user_name_div").show();
-    $("#otp_div").hide();
-    $("#user_name").val('');
     $("#processSubmit").prop('disabled', false);
     $("#otp_error").hide();
     $("#otp").val('');
@@ -130,18 +109,11 @@ $("#forgotPasswordForm").on('submit', function(e) {
         success: function(result) {
             $("#processSubmit").prop('disabled', false);
             if (result.isSuccess) {
-                $(".email_text").text(result.message);
-                $(".email_text").css("color","#88c20a");
-                $("#user_name").val(result.data.username);
                 $("#user_name_div").hide();
                 $("#otp_div").show();
-                $("#processSubmit").text('SEND CODE AGAIN');
-                $("#processSubmit").prop('disabled', true);
                 $("#otp_id").val(result.data.id);
-                setTimeout(() => {
-                    $("#processSubmit").prop('disabled', false);
-                }, 10000);
             } else {
+                $("#otp_error").text(result.message).fadeIn();
             }
         }
     });
@@ -162,10 +134,6 @@ $("#otp").on('input', function() {
                 'username' : username,
             },
             success : function(result) {
-                $("#new_password").val('');
-                $("#confirm_password").val('');
-                $("#confirm_password-error").hide();
-                $("#new_password-error").hide();
                 if(result.isSuccess) {
                     $('#forgot-modal').modal('hide');
                     $('#reset-password-modal').modal('show');
@@ -173,86 +141,36 @@ $("#otp").on('input', function() {
                     $("#otp_error").hide();
                 } else {
                     $("#otp").prop('disabled', false);
-                    $("#otp_error").text(result.message);
-                    $("#otp_error").show();
+                    $("#otp_error").text(result.message).fadeIn();
                 }
             }
         })
     }
 })
 
-$('#resetPasswordForm').validate({ 
-    rules : {
-        password : {
-            minlength : 6,
-        },
-        confirm_password : {
-            equalTo: "#new_password"
-        }
-    },
-    messages : {
-        password : {
-            minlength : "Minimum password length is 6 characters",
-        },
-        confirm_password : {
-            equalTo: "Passwords don't match"
-        }
-    },
-    submitHandler: function(form) {
-        $("#saveSubmit").prop('disabled', true);
-        $.ajax({
-            url: '/laravel/public/reset_password',
-            data : $(form).serialize(),
-            type: "POST",
-            success: function(result) {
-                if (result.isSuccess) {
-                    $("#saveSubmit").prop('disabled', false);
-                    $('#reset-password-modal').modal('hide');
-                    let data = {
-                        username : result.data.username,
-                        password : result.data.password,
-                    }
-                    // login_ajax(data, '/aviator')
-                    login_ajax(data, '/crash')
-                } else {
-    
-                }
-            }
-        });
-    }
-});
-
 $('#registerViaEmailForm').validate({
-    rules: {
-        email: {
-            required: true
-        },
-        regpassword: {
-            required: function (element) {
-                return $('#email').val() != '' && $('#regpassword').val() == '';
-            }
+    errorPlacement: function(error, element) {
+        if (element.attr("type") == "checkbox") {
+            error.insertAfter(element.parent());
+        } else {
+            error.insertAfter(element.closest('.auth-input-wrapper'));
         }
     },
-    messages: {
-        email: {
-            required: "Field must not be empty!",
-        },
-        regpassword: {
-            required: "Field must not be empty!",
-        }
+    rules: {
+        name: { required: true },
+        mobile: { required: true },
+        email: { required: true, email: true },
+        password: { required: true, minlength: 6 }
     },
     submitHandler: function(form) {
-        $(".registerSubmit").prop('disabled', true);
+        $("#register_via_email").prop('disabled', true);
         $.ajax({
             url: $(form).attr('action'),
             data: $(form).serialize(),
             type: "POST",
             dataType: "json",
             success: function(result) {
-                console.log(result);
-                $("#email").val('');
-                $("#regpassword").val('');
-                $(".registerSubmit").prop('disabled', false);
+                $("#register_via_email").prop('disabled', false);
                 if(result.isSuccess) {
                     $('#register-modal').modal('hide');
                     const data = {
@@ -261,76 +179,8 @@ $('#registerViaEmailForm').validate({
                         password : result.data.password,
                     }
                     login_ajax(data,'/crash')
-                } else if (result.data.is_email_exist == 1) {
-                    $('#forgot-modal').modal('show');
-                    $("#user_name").val(result.data.email);
                 } else {
-                    $("#promo_code_error").show();
-                    $("#promo_code_error").text(result.message);
-                }
-            }
-        });
-    }
-});
-$('#amounttransfer').validate({
-    rules: {
-        userid: {
-            required: true
-        },
-        amount: {
-            required: true
-        }
-    },
-    messages: {
-        userid: {
-            required: "Enter user id!",
-        },
-        amount: {
-            required: "Enter Amount!",
-        }
-    },
-    submitHandler: function(form) {
-        $(".registerSubmit").prop('disabled', true);
-        $.ajax({
-            url: $(form).attr('action'),
-            data: $(form).serialize(),
-            type: "POST",
-            dataType: "json",
-            success: function(result) {
-                $("#userid").val('');
-                $("#amount").val('');
-                $(".registerSubmit").prop('disabled', false);
-                if(result.isSuccess) {
-                    window.location.href='/';
-                } else {
-                    $("#promo_code_error").show();
-                    $("#promo_code_error").html(result.message);
-                }
-            }
-        });
-    }
-});
-
-$('#registerOneClickForm').validate({
-    submitHandler: function(form) {
-        $("#registerSubmit").prop('disabled', true);
-        $.ajax({
-            url: $(form).attr('action'),
-            data: $(form).serialize(),
-            type: "POST",
-            dataType: "json",
-            success: function(result) {
-                console.log(result);
-                if(result.isSuccess) {
-                    const data = {
-                        username : result.data.user_name,
-                        password : result.data.password,
-                    }
-                    login_ajax(data,`/deposit?username=${result.data.user_name}&password=${result.data.password}`)
-                } else {    
-                    $("#promocode_error").text(result.message);
-                    $("#promocode_error").show();
-
+                    notify('error', result.message);
                 }
             }
         });
@@ -338,72 +188,18 @@ $('#registerOneClickForm').validate({
 });
 
 $(".reg_btn").on('click', function() {
-    $("#promocode").val('');
     $("#reg_email").val('');
     $("#regpassword").val('');
     $("#promo_code").val('');
-    $("#promo_code_error").hide();
-    $("#promocode_error").hide();
 })
-
-$("#one_click_check").click(function() {
-    if(!$(this).is(":checked")) {
-        $("#one_click_register").prop('disabled', true)
-        $("#one_click_register").css({
-            'background-image' : 'linear-gradient(0deg,#9fa8b3,#becad7)',
-            'box-shadow'       : 'none',
-            'color'            : '#d4d9df',
-        })
-    } else {
-        $("#one_click_register").prop('disabled', false)
-        $("#one_click_register").css({
-            'background-image' : 'linear-gradient(0deg,#fa5e00 0,#fa7c00)',
-            'box-shadow'       : '0 20px 30px rgb(250 65 0 / 40%)',
-            'color'            : '#fff',
-        })
-    }  
-}); 
 
 $("#email_policy").click(function() {
-    if(!$(this).is(":checked")) {
-        $("#register_via_email").prop('disabled', true)
-        $("#register_via_email").css({
-            'background-image' : 'linear-gradient(0deg,#9fa8b3,#becad7)',
-            'box-shadow'       : 'none',
-            'color'            : '#d4d9df',
-        })
-    } else {
-        $("#register_via_email").prop('disabled', false)
-        $("#register_via_email").css({
-            'background-image' : 'linear-gradient(0deg,#fa5e00 0,#fa7c00)',
-            'box-shadow'       : '0 20px 30px rgb(250 65 0 / 40%)',
-            'color'            : '#fff',
-        })
-    }  
+    $("#register_via_email").prop('disabled', !$(this).is(":checked"));
 }); 
 
-/*-------HINAL (START)-------*/
+/*------- Password Visibility Toggles -------*/
 
-$("#view_password").on('click', function() {
-    let type = $("#password").prop('type')
-    if (type == 'password') {
-        $(this).text('visibility');
-        $("#password").prop('type', 'text');
-    } else {
-        $(this).text('visibility_off');
-        $("#password").prop('type', 'password');
-    }
-})
+$(document).ready(function() {
+    // These are now handled in the blade template globally but keeping logic here if needed
+});
 
-$("#view_password_register").on('click', function() {
-    let type = $("#regpassword").prop('type')
-    if (type == 'password') {
-        $(this).text('visibility');
-        $("#regpassword").prop('type', 'text');
-    } else {
-        $(this).text('visibility_off');
-        $("#regpassword").prop('type', 'password');
-    }
-})
-
-/*-------HINAL (END)-------*/

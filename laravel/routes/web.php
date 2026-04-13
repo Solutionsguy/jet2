@@ -31,12 +31,8 @@ Route::get('/clear', function () {
     Artisan::call('optimize');
     dd('Cache cleared successfully');
 });
-Route::get('/', function () {
-    return view('welcome');
-});
-Route::get('/dashboard', function () {
-    return view('welcome');
-});
+Route::get('/', [Pages::class, "welcome"]);
+Route::get('/dashboard', [Pages::class, "welcome"]);
 Route::get('/register', function () {
     return view('welcome');
 });
@@ -149,6 +145,26 @@ Route::group(['prefix' => 'admin', 'middleware' => ['isAdmin']], function () {
         Route::post('/updatewallet', [Adminapi::class, "updatewallet"])->middleware('permission:edit_users');
     });
 
+    // Xaxino Game Management
+    Route::controller(App\Http\Controllers\Admin\AdminGameController::class)->prefix('games')->group(function () {
+        Route::get('/', 'index')->name('admin.game.index');
+        Route::get('/edit/{id}', 'edit')->name('admin.game.edit');
+        Route::post('/update/{id}', 'update')->name('admin.game.update');
+        Route::post('/status/{id}', 'status')->name('admin.game.status');
+        Route::post('/keno-update/{id}', 'kenoUpdate')->name('admin.game.keno.update');
+        Route::get('/log', 'gameLog')->name('admin.game.log');
+        Route::post('/chance-create/{alias?}', 'chanceCreate')->name('admin.game.chance.create');
+    });
+
+    // Category Management
+    Route::controller(App\Http\Controllers\Admin\AdminCategoryController::class)->prefix('categories')->group(function () {
+        Route::get('/', 'index')->name('admin.category.index');
+        Route::post('/store', 'store')->name('admin.category.store');
+        Route::post('/update/{id}', 'update')->name('admin.category.update');
+        Route::post('/status/{id}', 'status')->name('admin.category.status');
+        Route::get('/delete/{id}', 'delete')->name('admin.category.delete');
+    });
+
     Route::get('/logout', [Admin::class, "logout"]);
 });
 
@@ -226,4 +242,11 @@ Route::post('/cash_out', [Gamesetting::class, "cashout"]);
     Route::post('/insert/withdrawal', [Adminapi::class, "withdrawal_query"]);
     Route::post('/depositNow', [Adminapi::class, "depositNow"]);
     Route::post('/wallet_transfer', [Userdetail::class, "wallet_transfer"]);
+
+    // Xaxino Games
+    Route::controller(App\Http\Controllers\PlayController::class)->group(function () {
+        Route::get('/play/{alias}/{type?}', 'playGame')->name('game.play');
+        Route::post('/play/invest/{alias}/{type?}', 'investGame')->name('game.invest');
+        Route::post('/play/end/{alias}/{type?}', 'gameEnd')->name('game.end');
+    });
 });

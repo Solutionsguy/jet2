@@ -116,6 +116,30 @@
          </li>
          @endif
 
+         @if(has_permission('game_settings'))
+         <li class="nav-item">
+             <a class="nav-link" data-bs-toggle="collapse" href="#game-management" aria-expanded="false"
+                 aria-controls="game-management">
+                 <span class="menu-title">Manage Games</span>
+                 <i class="menu-arrow"></i>
+                 <i class="mdi mdi-gamepad-variant menu-icon" style="color: #8e44ad;"></i>
+             </a>
+             <div class="collapse" id="game-management">
+                 <ul class="nav flex-column sub-menu">
+                     <li class="nav-item"> 
+                        <a class="nav-link" href="{{ route('admin.game.index') }}">All Games</a>
+                     </li>
+                     <li class="nav-item"> 
+                        <a class="nav-link" href="{{ route('admin.category.index') }}">Game Categories</a>
+                     </li>
+                     <li class="nav-item"> 
+                        <a class="nav-link" href="{{ route('admin.game.log') }}">Game Logs</a>
+                     </li>
+                 </ul>
+             </div>
+         </li>
+         @endif
+
          @if(has_permission('manage_p2p'))
          <li class="nav-item">
              <a class="nav-link" data-bs-toggle="collapse" href="#p2p-management" aria-expanded="false"

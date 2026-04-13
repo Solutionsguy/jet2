@@ -31,211 +31,28 @@
     <link rel="stylesheet" href="{{ asset('css/toastr.min.css') }}">
     <link rel="stylesheet" href="{{ asset('css/dataTables.bootstrap5.min.css') }}">
     <link rel="stylesheet" href="{{ asset('css/responsive.dataTables.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/auth-redesign.css') }}">
     
     <style>
         label.error {
-            color: #ff9500;
-            font-size: 14px;
-            font-weight: 500;
-        }
-        #view_password, #view_password_register {
-            cursor: pointer;
-            color: #ff9500;
-        }
-        /* Themed Modal Styles */
-        .modal-content {
-            background: rgba(25, 26, 27, 0.98) !important;
-            border: 1px solid #2a2b2e !important;
-            border-radius: 20px !important;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8) !important;
-            overflow: hidden;
-        }
-        .modal-header {
-            border-bottom: 1px solid #2a2b2e !important;
-            background: transparent !important;
-            padding: 20px 30px !important;
-        }
-        .modal-header .btn-close {
-            filter: invert(1) !important;
-            opacity: 0.8;
-        }
-        .modal-body {
-            padding: 30px !important;
-        }
-        .modal-footer-custom {
-            border-top: 1px solid #2a2b2e !important;
-            background: transparent !important;
-            padding: 20px 30px !important;
-            text-align: center;
-        }
-        .modal-title {
-            color: #ff9500;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        /* Ultra-Minimalist Input Style */
-        .input-field-row {
-            display: flex !important;
-            align-items: center !important;
-            border: none !important;
-            border-bottom: 1px solid #333 !important; /* Naked underline */
-            margin-bottom: 30px !important;
-            padding: 5px 0 !important;
-            transition: border-color 0.3s ease;
-            width: 100% !important;
-            background: transparent !important;
-            box-shadow: none !important;
-        }
-        .input-field-row:focus-within {
-            border-bottom-color: #F59E0B !important; /* Only color on focus */
-        }
-        .field-icon {
-            color: #666 !important;
-            margin-right: 15px !important;
-            display: flex !important;
-            align-items: center !important;
-            font-size: 20px !important;
-            border: none !important;
-            background: transparent !important;
-            padding: 0 !important;
-            box-shadow: none !important;
-            outline: none !important;
-        }
-        .field-icon span {
-            border: none !important;
-            background: transparent !important;
-            box-shadow: none !important;
-        }
-        .input-field-row:focus-within .field-icon {
-            color: #F59E0B !important;
-        }
-        .field-input {
-            background: transparent !important;
-            border: none !important;
-            color: #fff !important;
-            font-size: 16px !important;
-            padding: 8px 0 !important;
-            width: 100% !important;
-            outline: none !important;
-            box-shadow: none !important;
-        }
-        .field-input::placeholder {
-            color: #444 !important;
-        }
-        #view_password, #view_password_register {
-            color: #444 !important;
-            cursor: pointer !important;
-            margin-left: 10px !important;
-            border: none !important;
-            background: transparent !important;
-            padding: 0 !important;
-            box-shadow: none !important;
-            display: flex !important;
-            align-items: center !important;
-        }
-        .input-field-row:focus-within #view_password, 
-        .input-field-row:focus-within #view_password_register {
-            color: #F59E0B !important;
-        }
-
-        .theme-btn {
-            width: 100%;
-            background: #ff9500 !important;
-            color: #000 !important;
-            border: none !important;
-            padding: 15px !important;
-            border-radius: 10px !important;
-            font-weight: 800 !important;
-            text-transform: uppercase !important;
-            letter-spacing: 1px;
-            transition: all 0.2s ease !important;
-        }
-        .theme-btn:hover {
-            background: #fa5e00 !important;
-            transform: translateY(-2px);
-        }
-        .link-themed {
-            color: #ff9500 !important;
-            text-decoration: none;
-            font-weight: 600;
-        }
-        .text-grey {
-            color: #888 !important;
-        }
-
-        /* Tabs */
-        .pay-tabs {
-            background: #111 !important;
-            border: 1px solid #333 !important;
-            padding: 2px !important;
-        }
-        .pay-tabs .btn {
-            padding: 5px 20px !important;
-            font-size: 12px !important;
-            color: #888 !important;
-            font-weight: 700;
-        }
-        .pay-tabs .btn.bg-warning {
-            background: #ff9500 !important;
-            color: #000 !important;
-        }
-
-        /* Country Summary */
-        .country-summary {
-            background: rgba(255, 149, 0, 0.1) !important;
-            border: 1px dashed #ff9500 !important;
-            border-radius: 12px !important;
-            padding: 15px !important;
-            margin-bottom: 25px !important;
-        }
-        .country-flag {
-            width: 35px;
-            height: 22px;
-            object-fit: cover;
-            border-radius: 3px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-        }
-        .country-info .value {
-            color: #ff9500 !important;
-        }
-
-        /* Mobile Optimization for Modals */
-        @media (max-width: 576px) {
-            .modal-dialog {
-                margin: 10px !important;
-                max-width: calc(100% - 20px) !important;
-            }
-            .modal-body {
-                padding: 20px 20px !important;
-            }
-            .input-field-row {
-                margin-bottom: 20px !important;
-            }
-            .modal-header {
-                padding: 20px 20px 0 !important;
-            }
-            .modal-footer-custom {
-                padding: 15px !important;
-            }
-            .country-summary {
-                padding: 10px !important;
-                margin-bottom: 20px !important;
-            }
-            .theme-btn {
-                padding: 12px !important;
-                font-size: 14px !important;
-            }
+            color: #ef4444;
+            font-size: 13px;
+            margin-top: 5px;
+            display: block;
         }
     </style>
+    @stack('style-lib')
+    @stack('style')
     @yield('css')
 </head>
 <body class="dark-bg-main">
 
 @include('include.header')
-@yield('content')
-
+<div class="main-container" style="min-height: 100vh;">
+    <div class="container-fluid px-3">
+        @yield('content')
+    </div>
+</div>
 @include('include.chat-sidebar')
 
 <input type="hidden" id="referral_code" value="">
@@ -245,55 +62,55 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header border-0 pb-0">
-                    <div class="w-100 text-center mt-2">
-                        <div class="pay-tabs d-inline-flex bg-dark p-1 rounded-pill" style="border: 1px solid #333;">
-                            <a href="javascript:void(0);" class="btn rounded-pill text-grey" onclick="switchModal('register')">REGISTER</a>
-                            <a href="javascript:void(0);" class="btn rounded-pill bg-warning text-black">LOGIN</a>
+                    <div class="w-100 text-center mt-3">
+                        <div class="auth-tabs-container">
+                            <button class="auth-tab-btn" onclick="switchModal('register')">Register</button>
+                            <button class="auth-tab-btn active">Login</button>
                         </div>
                     </div>
                     <button type="button" class="btn-close btn-close-white position-absolute end-0 top-0 m-3" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body p-4">
+                <div class="modal-body p-4 pt-0">
                     <div class="text-center mb-4">
-                        <h4 class="fw-800 text-white uppercase mb-1" style="letter-spacing: 1px;">Welcome Back</h4>
-                        <p class="text-grey small">Log in to your Kenyan account</p>
+                        <h3 class="fw-bold text-white mb-1">Welcome Back</h3>
+                        <p class="text-secondary small">Access your account to start playing</p>
                     </div>
 
                     <form class="login-form" method="post" action="#" name="loginForm" id="loginForm">
                         @csrf
-                        <div class="input-field-row">
-                            <span class="field-icon">
-                                <span class="material-symbols-outlined">person</span>
-                            </span>
-                            <input type="text" class="field-input" id="username" name="username" placeholder="Email or Mobile Number" required>
+                        <div class="auth-input-group">
+                            <div class="auth-input-wrapper">
+                                <span class="material-symbols-outlined auth-input-icon">person</span>
+                                <input type="text" class="auth-input-field" id="username" name="username" placeholder="Email or Mobile Number" required>
+                            </div>
                         </div>
 
-                        <div class="input-field-row">
-                            <span class="field-icon">
-                                <span class="material-symbols-outlined">lock</span>
-                            </span>
-                            <input type="password" class="field-input" id="password" name="password" placeholder="Password" required>
-                            <span class="material-symbols-outlined" id="view_password">visibility_off</span>
+                        <div class="auth-input-group">
+                            <div class="auth-input-wrapper">
+                                <span class="material-symbols-outlined auth-input-icon">lock</span>
+                                <input type="password" class="auth-input-field" id="password" name="password" placeholder="Password" required>
+                                <span class="material-symbols-outlined auth-visibility-toggle" id="view_password">visibility_off</span>
+                            </div>
                         </div>
 
                         <div class="mb-3">
-                            <label id="login-error" class="error" style="color: #ff4d4d; font-size: 13px;"></label>
+                            <label id="login-error" class="auth-error-msg"></label>
                         </div>
 
                         <div class="d-flex justify-content-between align-items-center mb-4">
                             <div class="form-check form-switch">
                                 <input class="form-check-input" type="checkbox" id="rememberme">
-                                <label class="form-check-label text-grey small" for="rememberme">Remember me</label>
+                                <label class="form-check-label text-secondary small" for="rememberme">Keep me logged in</label>
                             </div>
-                            <a href="javascript:void(0);" class="link-themed small" data-bs-toggle="modal" data-bs-target="#forgot-modal">Forgot Password?</a>
+                            <a href="javascript:void(0);" class="auth-link small" data-bs-toggle="modal" data-bs-target="#forgot-modal">Forgot Password?</a>
                         </div>
 
-                        <button class="theme-btn" id="loginSubmit">Sign In</button>
+                        <button class="auth-btn-primary" id="loginSubmit">Sign In</button>
                     </form>
                 </div>
-                <div class="modal-footer-custom">
-                    <span class="text-grey">Not registered yet?</span>
-                    <a href="javascript:void(0);" class="link-themed ms-2" onclick="switchModal('register')">Create Account</a>
+                <div class="text-center p-4 border-top border-secondary border-opacity-10">
+                    <span class="text-secondary small">New here?</span>
+                    <a href="javascript:void(0);" class="auth-link small ms-2" onclick="switchModal('register')">Create an Account</a>
                 </div>
             </div>
         </div>
@@ -305,24 +122,23 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header border-0 pb-0">
-                    <div class="w-100 text-center mt-2">
-                        <div class="pay-tabs d-inline-flex bg-dark p-1 rounded-pill" style="border: 1px solid #333;">
-                            <a href="javascript:void(0);" class="btn rounded-pill bg-warning text-black">REGISTER</a>
-                            <a href="javascript:void(0);" class="btn rounded-pill text-grey" onclick="switchModal('login')">LOGIN</a>
+                    <div class="w-100 text-center mt-3">
+                        <div class="auth-tabs-container">
+                            <button class="auth-tab-btn active">Register</button>
+                            <button class="auth-tab-btn" onclick="switchModal('login')">Login</button>
                         </div>
                     </div>
                     <button type="button" class="btn-close btn-close-white position-absolute end-0 top-0 m-3" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body p-4 pt-3">
-                    <!-- Country/Currency Summary -->
-                    <div class="country-summary">
-                        <img src="https://flagcdn.com/w80/ke.png" class="country-flag" alt="Kenya Flag">
-                        <div class="country-info">
-                            <span class="label">REGISTRATION COUNTRY</span>
-                            <span class="value">KENYA (KSh / KES)</span>
+                <div class="modal-body p-4 pt-0">
+                    <div class="auth-country-badge">
+                        <img src="https://flagcdn.com/w80/ke.png" style="width: 28px; height: 18px; border-radius: 2px;" alt="Kenya">
+                        <div class="auth-country-info">
+                            <span class="auth-country-label">Registering from</span>
+                            <span class="auth-country-value">KENYA (KSh / KES)</span>
                         </div>
                         <div class="ms-auto">
-                            <span class="material-symbols-outlined text-success" style="font-size: 24px;">verified_user</span>
+                            <span class="material-symbols-outlined text-success" style="font-size: 20px;">verified</span>
                         </div>
                     </div>
 
@@ -333,55 +149,55 @@
                         <input type="hidden" name="gender" value="male">
                         <input type="hidden" name="register_type" id="register_type" value="3">
 
-                        <div class="input-field-row">
-                            <span class="field-icon">
-                                <span class="material-symbols-outlined">badge</span>
-                            </span>
-                            <input type="text" class="field-input" id="name" name="name" placeholder="Full Name" required>
+                        <div class="auth-input-group">
+                            <div class="auth-input-wrapper">
+                                <span class="material-symbols-outlined auth-input-icon">badge</span>
+                                <input type="text" class="auth-input-field" id="name" name="name" placeholder="Full Name" required>
+                            </div>
                         </div>
 
-                        <div class="input-field-row">
-                            <span class="field-icon">
-                                <span class="material-symbols-outlined">smartphone</span>
-                            </span>
-                            <input type="tel" class="field-input" id="mobile" name="mobile" placeholder="Mobile (e.g. 2547XXXXXXXX)" required>
+                        <div class="auth-input-group">
+                            <div class="auth-input-wrapper">
+                                <span class="material-symbols-outlined auth-input-icon">smartphone</span>
+                                <input type="tel" class="auth-input-field" id="mobile" name="mobile" placeholder="Mobile Number" required>
+                            </div>
                         </div>
 
-                        <div class="input-field-row">
-                            <span class="field-icon">
-                                <span class="material-symbols-outlined">mail</span>
-                            </span>
-                            <input type="email" class="field-input" id="reg_email" name="email" placeholder="Email Address" required>
+                        <div class="auth-input-group">
+                            <div class="auth-input-wrapper">
+                                <span class="material-symbols-outlined auth-input-icon">mail</span>
+                                <input type="email" class="auth-input-field" id="reg_email" name="email" placeholder="Email Address" required>
+                            </div>
                         </div>
 
-                        <div class="input-field-row">
-                            <span class="field-icon">
-                                <span class="material-symbols-outlined">lock</span>
-                            </span>
-                            <input type="password" class="field-input" id="regpassword" name="password" placeholder="Password" required>
-                            <span class="material-symbols-outlined" id="view_password_register">visibility_off</span>
+                        <div class="auth-input-group">
+                            <div class="auth-input-wrapper">
+                                <span class="material-symbols-outlined auth-input-icon">lock</span>
+                                <input type="password" class="auth-input-field" id="regpassword" name="password" placeholder="Create Password" required>
+                                <span class="material-symbols-outlined auth-visibility-toggle" id="view_password_register">visibility_off</span>
+                            </div>
                         </div>
 
-                        <div class="input-field-row">
-                            <span class="field-icon">
-                                <span class="material-symbols-outlined">confirmation_number</span>
-                            </span>
-                            <input type="text" class="field-input" id="promo_code" name="promocode" placeholder="Promo Code (Optional)" value="{{isset($_GET['refer']) ? $_GET['refer'] : ''}}">
+                        <div class="auth-input-group">
+                            <div class="auth-input-wrapper">
+                                <span class="material-symbols-outlined auth-input-icon">confirmation_number</span>
+                                <input type="text" class="auth-input-field" id="promo_code" name="promocode" placeholder="Promo Code (Optional)" value="{{isset($_GET['refer']) ? $_GET['refer'] : ''}}">
+                            </div>
                         </div>
 
-                        <div class="form-check mb-3">
+                        <div class="form-check mb-4">
                             <input class="form-check-input" type="checkbox" id="email_policy" checked required>
-                            <label class="form-check-label text-grey small" for="email_policy">
-                                I confirm legal age & agree with <a href="#" class="link-themed">site rules</a>
+                            <label class="form-check-label text-secondary small" for="email_policy">
+                                I am 18+ and I agree to the <a href="#" class="auth-link">Terms of Service</a>
                             </label>
                         </div>
 
-                        <button type="submit" class="theme-btn" id="register_via_email">Create Account</button>
+                        <button type="submit" class="auth-btn-primary" id="register_via_email">Create Account</button>
                     </form>
                 </div>
-                <div class="modal-footer-custom">
-                    <span class="text-grey">Already have an account?</span>
-                    <a href="javascript:void(0);" class="link-themed ms-2" onclick="switchModal('login')">Login Here</a>
+                <div class="text-center p-4 border-top border-secondary border-opacity-10">
+                    <span class="text-secondary small">Already have an account?</span>
+                    <a href="javascript:void(0);" class="auth-link small ms-2" onclick="switchModal('login')">Login here</a>
                 </div>
             </div>
         </div>
@@ -426,6 +242,24 @@
     </div>
     <!--====== Forgot Modal End ======-->
 
+    <div class="win-loss-popup">
+        <div class="win-loss-popup__bg">
+            <div class="win-loss-popup__inner">
+                <div class="win-loss-popup__body">
+                    <img class="img-glow lose d-none"
+                        src="{{ asset('assets/xaxino/images/play/lose-message.png') }}"
+                        alt="lose message image">
+                    <img class="img-glow win d-none"
+                        src="{{ asset('assets/xaxino/images/play/win-message.png') }}" alt="win message image">
+                </div>
+                <div class="win-loss-popup__footer">
+                    <h2 class="result-text">@lang('The result is') <span class="data-result"></span></h2>
+                    <h5></h5>
+                </div>
+            </div>
+        </div>
+    </div>
+
 @include('include.footer')
 
 <script src="{{ asset('js/jquery.min.js') }}"></script>
@@ -446,6 +280,15 @@
 
 <script>
     window.APP_URL = "{{ url('/') }}";
+    
+    function notify(status, message) {
+        if (typeof message == 'string') {
+            toastr[status](message);
+        } else {
+            $.each(message, (i, val) => toastr[status](val));
+        }
+    }
+
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -521,28 +364,49 @@
     var hash_id = '{{ csrf_token() }}';
     var currency_id = '{{ user('currency') }}';
     var currency_symbol = '{{ user('currency') }}';
-    var wallet_balance = '{{ wallet(user('id')) }}';
+    var is_demo = '{{ @$isDemo }}' === 'demo';
+    var wallet_balance = is_demo ? '{{ user('demo_balance', user('id')) }}' : '{{ wallet(user('id')) }}';
     var freebet_balance = '{{ \App\Models\Wallet::where('userid', user('id'))->first()->freebet_amount ?? 0 }}';
     var member_id = '{{ user('id') }}';
     var current_wallet_type = 'money';
     
-    window.updateWalletBalance = function() {
+    window.updateWalletBalance = function(newBalance) {
+        if (newBalance !== undefined) {
+            if (current_wallet_type === 'freebet') {
+                freebet_balance = newBalance;
+            } else {
+                wallet_balance = newBalance;
+            }
+        }
         var balance = 0;
         if (current_wallet_type === 'freebet') {
             balance = parseFloat(freebet_balance) || 0;
         } else {
-            balance = parseFloat(wallet_balance) || 0;
+            // If it's a string with commas, remove them first
+            var clean_wallet_balance = typeof wallet_balance === 'string' ? wallet_balance.replace(/,/g, '') : wallet_balance;
+            balance = parseFloat(clean_wallet_balance) || 0;
         }
         var formattedBalance = balance.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-        $('#header_wallet_balance').html(currency_symbol + formattedBalance);
+        var display_prefix = is_demo ? '<small class="text-warning">DEMO</small> ' : '';
+        $('#header_wallet_balance').html(display_prefix + currency_symbol + formattedBalance);
     };
-    $(document).ready(function() { window.updateWalletBalance(); });
+    $(document).ready(function() { 
+        window.updateWalletBalance(); 
+        
+        $(document).on('click touchstart', function(e) {
+            if ($(e.target).closest('.win-loss-popup__inner').length === 0) {
+                $('.win-loss-popup').removeClass('active');
+            }
+        });
+    });
 </script>
 <script src="{{ asset('js/rain.js') }}"></script>
 <script src="{{ asset('js/chat.js') }}"></script>
 <script src="{{ asset('js/emoji-picker.js') }}"></script>
 @endif
 
+@stack('script-lib')
+@stack('script')
 @yield('js')
 </body>
 </html>

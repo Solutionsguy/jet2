@@ -19,5 +19,21 @@ class Wallet extends Model
         'amount' => 'decimal:2',
         'freebet_amount' => 'decimal:2',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'userid', 'id');
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::updated(function ($wallet) {
+            if ($wallet->isDirty('amount')) {
+                $wallet->user()->update(['balance' => $wallet->amount]);
+            }
+        });
+    }
 }
 

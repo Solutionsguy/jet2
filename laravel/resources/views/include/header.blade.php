@@ -1,15 +1,15 @@
 ﻿<!--====== Header Start ======-->
 <header>
     <div class="header-top">
-        <div class="header-left" onclick="window.location.href='/dashboard'">
-            <img src="images/logo.png" class="logo1" />
+        <div class="header-left" onclick="window.location.href='{{ url('/dashboard') }}'">
+            <img src="{{ asset('images/logo.png') }}" class="logo1" />
         </div>
         @if (session()->has('userlogin'))
             <div class="header-right d-flex align-items-center">
                 <!-- Admin Debug: isadmin={{ user('isadmin') ?? 'NULL' }}, type={{ gettype(user('isadmin')) }} -->
                 @if(user('isadmin') == '1' || user('isadmin') == 1)
                 <!-- ADMIN BUTTON SHOULD SHOW HERE -->
-                <a href="/admin">
+                <a href="{{ url('/admin') }}">
                     <button class="admin-shortcut-btn d-flex align-items-center me-2" title="Admin Panel">
                         <span class="material-symbols-outlined"> admin_panel_settings </span>
                     </button>
@@ -17,7 +17,7 @@
                 @else
                 <!-- ADMIN BUTTON HIDDEN: isadmin is {{ user('isadmin') ?? 'NULL' }} -->
                 @endif
-                <a href="/deposit">
+                <a href="{{ url('/deposit') }}">
                     <button class="deposite-btn d-flex align-items-center me-2">
                         <span class="material-symbols-outlined me-2"> account_balance_wallet </span>
                         <!-- <span>$</span> -->
@@ -36,7 +36,7 @@
                     <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark profile-dropdown p-0">
                         <li class="profile-head d-flex justify-content-between align-items-center">
                             <div class="d-flex align-items-center">
-                                <img src="images/avtar/av-1.png" class="avtar-ico" id="avatar_img">
+                                <img src="{{ asset('images/avtar/av-1.png') }}" class="avtar-ico" id="avatar_img">
                                 <div>
                                     <div class="profile-name mb-1">{{ user('email') }} </div>
                                     <div class="profile-name" id="username">{{ user('id') }}</div>
@@ -47,12 +47,12 @@
 
 
                         <li>
-                            <a href="/crash" class="f-12 justify-content-between">
+                            <a href="{{ url('/crash') }}" class="f-12 justify-content-between">
                                 <div class="d-flex align-items-center">
                                     <span class="material-symbols-outlined ico f-20">
                                         flight_takeoff
                                     </span>
-                                    <img src="../../images/logo.svg" class="side_logo">
+                                    <img src="{{ asset('images/logo.svg') }}" class="side_logo">
                                 </div>
                             </a>
                         </li>

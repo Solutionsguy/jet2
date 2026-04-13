@@ -16,6 +16,22 @@ class User extends Model
         return $this->belongsTo(Role::class);
     }
 
+    public function wallet()
+    {
+        return $this->hasOne(Wallet::class, 'userid', 'id');
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::updated(function ($user) {
+            if ($user->isDirty('balance')) {
+                $user->wallet()->update(['amount' => $user->balance]);
+            }
+        });
+    }
+
     /**
      * Check if the user has a specific permission.
      * 

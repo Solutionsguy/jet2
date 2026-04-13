@@ -85,6 +85,7 @@ class Authentication extends Controller
         $user->country = 'KE';
         $user->status = '1';
         $user->promocode = $promocode;
+        $user->demo_balance = setting('demo_balance') ?? 1000;
 
         if ($user->save()) {
             $wallet = new Wallet;

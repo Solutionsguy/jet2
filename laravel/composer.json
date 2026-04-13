@@ -28,7 +28,8 @@
             "Database\\Seeders\\": "database/seeders/"
         },
         "files" :[
-            "app/Helper.php"
+            "app/Helper.php",
+            "app/Http/Helpers/XaxinoHelpers.php"
         ]
     },
     "autoload-dev": {

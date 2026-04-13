@@ -7,10 +7,23 @@ use App\Models\Gameresult;
 use App\Models\Userbit;
 use App\Models\User;
 use App\Models\Bank_detail;
+use App\Models\Game;
+use App\Models\Category;
 use Carbon\Carbon;
 
 class Pages extends Controller
 {
+    public function welcome() {
+        $categories = Category::where('status', 1)->with(['games' => function($q) {
+            $q->where('status', 1);
+        }])->get();
+        
+        $uncategorizedGames = Game::active()->whereNull('category_id')->get();
+        $games = Game::active()->get(); // For backward compatibility if needed, though we'll use categories now
+        
+        return view('welcome', compact('categories', 'uncategorizedGames', 'games'));
+    }
+
     public function aviator() {
         $allresults = Gameresult::where('created_at', '>=', Carbon::today()->toDateString())->orderBy('id','desc')->get();
         $mybets = Userbit::where('userid',user('id'))->where('created_at', '>=', Carbon::today()->toDateString())->orderBy('id','desc')->get();
