@@ -651,6 +651,9 @@
                                 <div class="column-4">
                                     Cash out
                                 </div>
+                                <div class="column-5 text-center">
+                                    <i class="fas fa-shield-alt text-success" title="Provably Fair"></i>
+                                </div>
                             </div>
                             <div class="list-body scroll-div list-body0" id="all_bets"> </div>
 
@@ -673,7 +676,9 @@
                                 <div class="column-4">
                                     Cash out
                                 </div>
-                                <div class="ps-2"></div>
+                                <div class="column-5 text-center">
+                                    <i class="fas fa-shield-alt text-success" title="Provably Fair"></i>
+                                </div>
                             </div>
                             <div class="list-body scroll-div list-body1" id="my_bet_list">
                                 @foreach ($mybets as $item)
@@ -686,6 +691,7 @@
                                         } else {
                                             $myBetBadgeClass = 'bg2'; // Pink/Magenta - high multiplier
                                         }
+                                        $fairHash = hash('sha256', $item->id . $item->created_at);
                                     @endphp
                                     <div class="list-items">
                                         <div class="column-1 users fw-normal">
@@ -705,6 +711,10 @@
                                         </div>
                                         <div class="column-4 fw-normal">
                                             KSh {{ number_format($item->amount * $item->cashout_multiplier, 2) }}
+                                        </div>
+                                        <div class="column-5 text-center">
+                                            <i class="fas fa-shield-alt text-success" style="cursor: pointer; opacity: 0.7;" 
+                                               onclick="alert('Verification Hash: {{ $fairHash }}')"></i>
                                         </div>
                                     </div>
                                 @endforeach
@@ -1127,7 +1137,9 @@
                             <div class="column-4">
                                 Cash out
                             </div>
-                            <!-- <div class="ps-2 column-5"></div> -->
+                            <div class="column-5 text-center">
+                                <i class="fas fa-shield-alt text-success" title="Provably Fair"></i>
+                            </div>
                         </div>
                         <div class="list-body scroll-div list-body1" id="member_bet">
 

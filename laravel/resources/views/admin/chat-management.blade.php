@@ -156,7 +156,7 @@
     function toggleAutoApprove() {
         const enabled = document.getElementById('auto-approve-toggle').checked;
         
-        fetch('/admin/chat-management/auto-approve', {
+        fetch('/manage_jet_secure/chat-management/auto-approve', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -176,7 +176,7 @@
     }
 
     function approveMessage(id) {
-        fetch(`/admin/chat-management/approve/${id}`, {
+        fetch(`/manage_jet_secure/chat-management/approve/${id}`, {
             method: 'POST',
             headers: {
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
@@ -193,7 +193,7 @@
     }
 
     function disapproveMessage(id) {
-        fetch(`/admin/chat-management/disapprove/${id}`, {
+        fetch(`/manage_jet_secure/chat-management/disapprove/${id}`, {
             method: 'POST',
             headers: {
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
@@ -221,7 +221,7 @@
         const id = document.getElementById('edit-msg-id').value;
         const message = document.getElementById('edit-msg-content').value;
         
-        fetch(`/admin/chat-management/update/${id}`, {
+        fetch(`/manage_jet_secure/chat-management/update/${id}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -242,7 +242,7 @@
     function deleteMessage(id) {
         if (!confirm('Are you sure you want to delete this message?')) return;
         
-        fetch(`/admin/chat-management/delete/${id}`, {
+        fetch(`/manage_jet_secure/chat-management/delete/${id}`, {
             method: 'POST',
             headers: {
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'

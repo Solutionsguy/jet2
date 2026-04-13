@@ -45,11 +45,11 @@ Route::post('/auth/register', [Authentication::class, "register"]);
 Route::get('/is_login', [Userdetail::class, "is_login"]);
 Route::get('/game-cron', [Gamesetting::class, "cronjob"]);
 // Auth Admin Login
-Route::post('/auth/admin/login', [Authentication::class, "adminlogin"]);
+Route::post('/auth/manage_jet_secure/login', [Authentication::class, "adminlogin"]);
 
 // Admin Login
-Route::get('/admin', [Admin::class, "login"]);
-Route::group(['prefix' => 'admin', 'middleware' => ['isAdmin']], function () {
+Route::get('/manage_jet_secure', [Admin::class, "login"]);
+Route::group(['prefix' => 'manage_jet_secure', 'middleware' => ['isAdmin']], function () {
 
     Route::get('/dashboard', [Admin::class, "dashboard"]);
     Route::get('/change-password', [Admin::class, "chagepassword"]);
@@ -168,7 +168,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['isAdmin']], function () {
     Route::get('/logout', [Admin::class, "logout"]);
 });
 
-Route::group(['middleware' => ['isUser']], function () {
+Route::group(['middleware' => ['isUser', 'throttle:60,1']], function () {
 
     Route::get('/profile', [Userdetail::class, "profile"]);
     Route::get('/crash', [Pages::class, "aviator"]);

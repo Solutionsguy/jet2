@@ -47,7 +47,7 @@
                 <div class="card-body">
                     <h4 class="card-title">Create New Role</h4>
                     <p class="card-description"> Define a new role and assign specific permissions. </p>
-                    <form action="{{ url('admin/roles') }}" method="POST">
+                    <form action="{{ url('manage_jet_secure/roles') }}" method="POST">
                         @csrf
                         <div class="form-group">
                             <label for="roleName">Role Name</label>
@@ -121,7 +121,7 @@
                                                 <h5 class="modal-title">Edit Role: {{ $role->name }}</h5>
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                             </div>
-                                            <form action="{{ url('admin/roles/'.$role->id) }}" method="POST">
+                                            <form action="{{ url('manage_jet_secure/roles/'.$role->id) }}" method="POST">
                                                 @csrf
                                                 <div class="modal-body">
                                                     <div class="form-group">

@@ -51,7 +51,7 @@
         });
         $("#changepassword").validate({
             submitHandler: function(form) {
-                apex("POST", "{{url('admin/api/changepassword')}}", new FormData(form), form, "/admin/dashboard", "#");
+                apex("POST", "{{url('manage_jet_secure/api/changepassword')}}", new FormData(form), form, "/manage_jet_secure/dashboard", "#");
             }
         });
 </script>

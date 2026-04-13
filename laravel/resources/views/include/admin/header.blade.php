@@ -1,12 +1,12 @@
 <!-- partial:partials/_navbar.html -->
 <nav class="navbar default-layout-navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
     <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
-      <a class="navbar-brand brand-logo" href="/admin/dashboard" style="width: max-content;"><img src="/images/logo.png" alt="logo" style="    width: 190px;
+      <a class="navbar-brand brand-logo" href="/manage_jet_secure/dashboard" style="width: max-content;"><img src="/images/logo.png" alt="logo" style="    width: 190px;
         background-color: blue;
         padding: 1.1px;
         height: max-content;
         border-radius: 8px;" /></a>
-      <a class="navbar-brand brand-logo-mini" href="/admin/dashboard"><img src="/images/logo.png" alt="logo" style="    width: 190px;
+      <a class="navbar-brand brand-logo-mini" href="/manage_jet_secure/dashboard"><img src="/images/logo.png" alt="logo" style="    width: 190px;
         background-color: blue;
         padding: 1.1px;
         height: max-content;
@@ -38,10 +38,10 @@
             </div>
           </a>
           <div class="dropdown-menu navbar-dropdown" aria-labelledby="profileDropdown">
-            <a class="dropdown-item" href="/admin/change-password">
+            <a class="dropdown-item" href="/manage_jet_secure/change-password">
               <i class="mdi mdi-cached me-2 text-success"></i> Change Password </a>
             <div class="dropdown-divider"></div>
-            <a class="dropdown-item" href="/admin/logout">
+            <a class="dropdown-item" href="/manage_jet_secure/logout">
               <i class="mdi mdi-logout me-2 text-primary"></i> Signout </a>
           </div>
         </li>

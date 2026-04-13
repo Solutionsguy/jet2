@@ -197,6 +197,6 @@
 <!-- Participants Modal - Will add in next file -->
 @include('admin.modals.rain-participants-modal')
 
-<script src="/js/admin/rain-management.js"></script>
+<script src="/js/manage_jet_secure/rain-management.js"></script>
 
 @endsection

@@ -324,6 +324,7 @@ function displayBetInSidebar(bet) {
     // Add 'active' class if bet is already cashed out (green background)
     const activeClass = (status === 'cashed_out' && cashOutMultiplier) ? 'active' : '';
     
+    const fairHash = btoa(bet.betId + username).substring(0, 32);
     const betHtml = `
         <div class="list-items ${activeClass}" id="bet-${bet.betId}" data-bet-id="${bet.betId}" data-user-id="${bet.odapuId || bet.userId}">
             <div class="column-1 users fw-normal">
@@ -339,6 +340,10 @@ function displayBetInSidebar(bet) {
                 <div class="${statusClass} custom-badge mx-auto bet-status">${statusText}</div>
             </div>
             <div class="column-4 fw-normal bet-winnings">${winnings}</div>
+            <div class="column-5 text-center">
+                <i class="fas fa-shield-alt text-success" style="cursor: pointer; opacity: 0.7;" 
+                   onclick="alert('Verification Hash: ${fairHash}')"></i>
+            </div>
         </div>
     `;
     
@@ -1238,6 +1243,7 @@ function refreshBetHistory() {
             $("#my_bet_list").empty();
             for (let i = 0; i < data.length; i++) {
                 let date = new Date(data[i].created_at);
+                var fairHash = btoa(data[i].id + data[i].created_at).substring(0, 32);
                 $("#my_bet_list").append(`
                     <div class="list-items">
                         <div class="column-1 users fw-normal">
@@ -1255,6 +1261,10 @@ function refreshBetHistory() {
                         </div>
                         <div class="column-4 fw-normal">
                             ${Math.round(data[i].cashout_multiplier * data[i].amount)}KSh
+                        </div>
+                        <div class="column-5 text-center">
+                            <i class="fas fa-shield-alt text-success" style="cursor: pointer; opacity: 0.7;" 
+                               onclick="alert('Verification Hash: ${fairHash}')"></i>
                         </div>
                     </div>
                 `);

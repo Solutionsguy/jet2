@@ -54,7 +54,7 @@ function addFreebet() {
     }
     
     $.ajax({
-        url: '/admin/freebet/add',
+        url: '/manage_jet_secure/freebet/add',
         type: 'POST',
         data: {
             _token: $('meta[name="csrf-token"]').attr('content'),
@@ -154,7 +154,7 @@ function removeFreebet() {
     }, 3000);
     
     $.ajax({
-        url: '/admin/freebet/remove',
+        url: '/manage_jet_secure/freebet/remove',
         type: 'POST',
         data: {
             _token: $('meta[name="csrf-token"]').attr('content'),
@@ -299,7 +299,7 @@ function bulkAddFreebet() {
     }
     
     $.ajax({
-        url: '/admin/freebet/bulk',
+        url: '/manage_jet_secure/freebet/bulk',
         type: 'POST',
         data: ajaxData,
         success: function(response) {
@@ -364,7 +364,7 @@ function viewUserHistory(userId) {
     $('#userHistoryModal').modal('show');
     
     $.ajax({
-        url: '/admin/freebet/user/' + userId + '/history',
+        url: '/manage_jet_secure/freebet/user/' + userId + '/history',
         type: 'GET',
         success: function(response) {
             if (response.success) {
@@ -423,7 +423,7 @@ function loadStats() {
     container.innerHTML = '<p class="text-center"><i class="mdi mdi-loading mdi-spin"></i> Loading statistics...</p>';
     
     $.ajax({
-        url: '/admin/freebet/stats',
+        url: '/manage_jet_secure/freebet/stats',
         type: 'GET',
         success: function(response) {
             if (response.success) {

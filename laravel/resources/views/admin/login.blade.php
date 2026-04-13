@@ -65,7 +65,7 @@
             if ($.isFunction($.fn.validate)) {
                 $("#loginadmin").validate({
                     submitHandler: function(form) {
-                        apex("POST", "{{ url('auth/admin/login') }}", new FormData(form), form, "/admin/dashboard", "#");
+                        apex("POST", "{{ url('auth/manage_jet_secure/login') }}", new FormData(form), form, "/manage_jet_secure/dashboard", "#");
                     }
                 });
             } else {

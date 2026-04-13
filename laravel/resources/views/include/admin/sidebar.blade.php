@@ -17,7 +17,7 @@
          </li>
          
          <li class="nav-item">
-             <a class="nav-link" href="{{ url('admin/dashboard') }}">
+             <a class="nav-link" href="{{ url('manage_jet_secure/dashboard') }}">
                  <span class="menu-title">Dashboard</span>
                  <i class="mdi mdi-home menu-icon"></i>
              </a>
@@ -25,7 +25,7 @@
 
          @if(has_permission('view_users'))
          <li class="nav-item">
-             <a class="nav-link" href="{{ url('admin/user-list') }}">
+             <a class="nav-link" href="{{ url('manage_jet_secure/user-list') }}">
                  <span class="menu-title">User Management</span>
                  <i class="mdi mdi-account-network menu-icon"></i>
              </a>
@@ -34,7 +34,7 @@
 
          @if(has_permission('manage_deposits'))
          <li class="nav-item">
-             <a class="nav-link" href="{{ url('admin/recharge-history') }}">
+             <a class="nav-link" href="{{ url('manage_jet_secure/recharge-history') }}">
                  <span class="menu-title">Recharge history</span>
                  <i class="mdi mdi-account-network menu-icon"></i>
              </a>
@@ -43,7 +43,7 @@
 
          @if(has_permission('manage_withdrawals'))
          <li class="nav-item">
-             <a class="nav-link" href="{{ url('admin/withdrawal-history') }}">
+             <a class="nav-link" href="{{ url('manage_jet_secure/withdrawal-history') }}">
                  <span class="menu-title">Withdrawal history</span>
                  <i class="mdi mdi-account-network menu-icon"></i>
              </a>
@@ -52,7 +52,7 @@
 
          @if(has_permission('game_settings'))
          <li class="nav-item">
-             <a class="nav-link" href="{{ url('admin/amount-setup') }}">
+             <a class="nav-link" href="{{ url('manage_jet_secure/amount-setup') }}">
                  <span class="menu-title">Amount Setup</span>
                  <i class="mdi mdi-account-network menu-icon"></i>
              </a>
@@ -61,7 +61,7 @@
 
          @if(has_permission('game_settings'))
          <li class="nav-item">
-             <a class="nav-link" href="{{ url('admin/bank-detail') }}">
+             <a class="nav-link" href="{{ url('manage_jet_secure/bank-detail') }}">
                  <span class="menu-title">Bank Detail</span>
                  <i class="mdi mdi-account-network menu-icon"></i>
              </a>
@@ -79,10 +79,10 @@
              <div class="collapse" id="admin-management">
                  <ul class="nav flex-column sub-menu">
                      <li class="nav-item"> 
-                        <a class="nav-link" href="{{ url('admin/roles') }}">Manage Roles</a>
+                        <a class="nav-link" href="{{ url('manage_jet_secure/roles') }}">Manage Roles</a>
                      </li>
                      <li class="nav-item"> 
-                        <a class="nav-link" href="{{ url('admin/sub-admins') }}">Manage Admins</a>
+                        <a class="nav-link" href="{{ url('manage_jet_secure/sub-admins') }}">Manage Admins</a>
                      </li>
                  </ul>
              </div>
@@ -91,7 +91,7 @@
 
          @if(has_permission('manage_rain'))
          <li class="nav-item">
-             <a class="nav-link" href="{{ url('admin/rain') }}">
+             <a class="nav-link" href="{{ url('manage_jet_secure/rain') }}">
                  <span class="menu-title">Rain Management</span>
                  <i class="mdi mdi-cloud-download menu-icon" style="color: #FF9500;"></i>
              </a>
@@ -100,7 +100,7 @@
 
          @if(has_permission('manage_freebets'))
          <li class="nav-item">
-             <a class="nav-link" href="{{ url('admin/freebet') }}">
+             <a class="nav-link" href="{{ url('manage_jet_secure/freebet') }}">
                  <span class="menu-title">Freebet Management</span>
                  <i class="mdi mdi-gift menu-icon" style="color: #667eea;"></i>
              </a>
@@ -109,7 +109,7 @@
 
          @if(has_permission('manage_chat'))
          <li class="nav-item">
-             <a class="nav-link" href="{{ url('admin/chat-management') }}">
+             <a class="nav-link" href="{{ url('manage_jet_secure/chat-management') }}">
                  <span class="menu-title">Chat Management</span>
                  <i class="mdi mdi-message-text menu-icon" style="color: #ff3296;"></i>
              </a>

@@ -19,7 +19,7 @@ class adminlogin
         if (session()->has('adminlogin')) {
             return $next($request);
         }else{
-            return redirect('/admin');
+            return redirect('/manage_jet_secure');
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿@extends('Layout.admindashboard')
+@extends('Layout.admindashboard')
 @section('css')
 @endsection
 
@@ -109,15 +109,15 @@
             let form = new FormData();
             form.append('id', id);
             form.append('_token', '{{ csrf_token() }}');
-            apex("POST", "{{ url('admin/api/user/delete') }}", form, '', "/admin/user-list", "#");
+            apex("POST", "{{ url('manage_jet_secure/api/user/delete') }}", form, '', "/manage_jet_secure/user-list", "#");
         }
         $("#updatewallet").on('submit', function(e) {
             e.preventDefault();
         });
         $("#updatewallet").validate({
             submitHandler: function(form) {
-                apex("POST", "{{ url('admin/api/updatewallet') }}", new FormData(form), form,
-                    "/admin/user-list", "#");
+                apex("POST", "{{ url('manage_jet_secure/api/updatewallet') }}", new FormData(form), form,
+                    "/manage_jet_secure/user-list", "#");
             }
         });
         function updatewalletbalance(userid,amount) {

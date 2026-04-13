@@ -846,6 +846,9 @@ function update_bet_list(bets, target, appendType = '') {
             '<div class="column-2"> <button class="btn btn-transparent previous-history d-flex align-items-center mx-auto"> ' + bets[i].amount + currency_symbol + ' </button> </div>' +
             '<div class="column-3"> ' + multiplication + ' </div>' +
             '<div class="column-4"> ' + cashOut + ' </div>' +
+            '<div class="column-5 text-center">' +
+            '<i class="fas fa-shield-alt text-success" style="cursor: pointer; opacity: 0.7;" onclick="alert(\'Verification Hash: ' + btoa(bets[i].userid + bets[i].amount).substring(0, 32) + '\')"></i>' +
+            '</div>' +
             '</div>';
     }
     $(target).html(html);
@@ -853,11 +856,15 @@ function update_bet_list(bets, target, appendType = '') {
 
 function update_my_new_bet(bet_amount, section_no, target) {
     var html = '';
+    var fairHash = btoa(Date.now() + bet_amount).substring(0, 32);
     html += '<div class="list-items" id="my_bet_section_' + section_no + '">' +
         '<div class="column-1 users fw-normal"> ' + get_current_hour_minute() + ' </div>' +
         '<div class="column-2"> <button class="btn btn-transparent previous-history d-flex align-items-center mx-auto fw-normal">' + parseFloat(bet_amount).toFixed(2) + '' + currency_symbol + '</button> </div>' +
         '<div class="column-3"> - </div>' +
         '<div class="column-4 fw-normal"> - </div>' +
+        '<div class="column-5 text-center">' +
+        '<i class="fas fa-shield-alt text-success" style="cursor: pointer; opacity: 0.7;" onclick="alert(\'Verification Hash: ' + fairHash + '\')"></i>' +
+        '</div>' +
         '</div>';
     $(target).prepend(html);
 }
@@ -1354,6 +1361,10 @@ function loadData() {
                             </div>
                             <div class="column-4 fw-normal">
                                 ${result.data[i].cash_out_amount > 0 ? result.data[i].cash_out_amount + currency_symbol : '-'} 
+                            </div>
+                            <div class="column-5 text-center">
+                                <i class="fas fa-shield-alt text-success" style="cursor: pointer; opacity: 0.7;" 
+                                   onclick="alert('Verification Hash: ${btoa(result.data[i].id + result.data[i].date).substring(0, 32)}')"></i>
                             </div>
                         </div>
                     `);

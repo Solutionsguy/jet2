@@ -86,7 +86,7 @@
           </div>
           <div class="text-end">
             <h2 class="mb-0 text-warning">{{ $stats['p2p_pending'] }}</h2>
-            <a href="/admin/p2p/withdrawals" class="text-warning small text-decoration-none">View Details →</a>
+            <a href="/manage_jet_secure/p2p/withdrawals" class="text-warning small text-decoration-none">View Details →</a>
           </div>
         </div>
       </div>
@@ -175,7 +175,7 @@
                   </td>
                   <td> KSh {{ number_format($hr->total_bet, 2) }} </td>
                   <td>
-                    <a href="/admin/user/edit/{{ $hr->userid }}" class="btn btn-sm btn-outline-primary">View</a>
+                    <a href="/manage_jet_secure/user/edit/{{ $hr->userid }}" class="btn btn-sm btn-outline-primary">View</a>
                   </td>
                 </tr>
                 @endforeach
@@ -209,7 +209,7 @@
                   </td>
                   <td> KSh {{ number_format($td->total_deposited, 2) }} </td>
                   <td>
-                    <a href="/admin/user/edit/{{ $td->userid }}" class="btn btn-sm btn-outline-success">View</a>
+                    <a href="/manage_jet_secure/user/edit/{{ $td->userid }}" class="btn btn-sm btn-outline-success">View</a>
                   </td>
                 </tr>
                 @endforeach

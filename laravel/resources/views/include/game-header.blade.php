@@ -1,4 +1,4 @@
-﻿<!--====== Header Start ======-->
+<!--====== Header Start ======-->
 <style>
     /* Wagering Bar Mobile Styles */
     @media (max-width: 767px) {
@@ -65,7 +65,7 @@
             <!-- Admin Debug: isadmin={{ user('isadmin') ?? 'NULL' }}, type={{ gettype(user('isadmin')) }} -->
             @if(user('isadmin') == '1' || user('isadmin') == 1)
             <!-- ADMIN BUTTON SHOULD SHOW HERE -->
-            <a href="/admin">
+            <a href="/manage_jet_secure">
                 <button class="admin-shortcut-btn d-flex align-items-center me-2" title="Admin Panel">
                     <span class="material-symbols-outlined"> admin_panel_settings </span>
                 </button>
@@ -162,7 +162,7 @@
                         <!-- Debug: isadmin = {{ user('isadmin') ?? 'NULL' }} -->
                         @if(user('isadmin') == '1' || user('isadmin') == 1)
                         <li>
-                            <a href="/admin" class="f-12 justify-content-between" style="background: linear-gradient(90deg, #FF9500, #FFA500); color: #000; font-weight: 600;">
+                            <a href="/manage_jet_secure" class="f-12 justify-content-between" style="background: linear-gradient(90deg, #FF9500, #FFA500); color: #000; font-weight: 600;">
                                 <div class="d-flex align-items-center">
                                     <span class="material-symbols-outlined ico f-20">
                                         admin_panel_settings

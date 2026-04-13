@@ -198,24 +198,14 @@ class PaystackController extends Controller
             $transaction->remark = 'Paid via ' . ($result['channel'] ?? 'Paystack') . ' - Verified';
             $transaction->save();
             
-            // Credit user wallet
-            $wallet = Wallet::where('userid', $transaction->userid)->first();
+            // Credit user wallet using atomic helper
+            addwallet($transaction->userid, $transaction->amount, "+");
             
-            if ($wallet) {
-                $previousBalance = floatval($wallet->amount);
-                $newBalance = $previousBalance + $transaction->amount;
-                
-                $wallet->amount = $newBalance;
-                $wallet->save();
-                
-                Log::info('Paystack deposit successful', [
-                    'user_id' => $transaction->userid,
-                    'amount' => $transaction->amount,
-                    'previous_balance' => $previousBalance,
-                    'new_balance' => $newBalance,
-                    'reference' => $reference
-                ]);
-            }
+            Log::info('Paystack deposit successful', [
+                'user_id' => $transaction->userid,
+                'amount' => $transaction->amount,
+                'reference' => $reference
+            ]);
             
             DB::commit();
             
@@ -297,12 +287,8 @@ class PaystackController extends Controller
             $transaction->remark = 'Webhook: Payment confirmed';
             $transaction->save();
             
-            // Credit wallet
-            $wallet = Wallet::where('userid', $transaction->userid)->first();
-            if ($wallet) {
-                $wallet->amount += $transaction->amount;
-                $wallet->save();
-            }
+            // Credit wallet using atomic helper
+            addwallet($transaction->userid, $transaction->amount, "+");
             
             DB::commit();
             
@@ -360,12 +346,8 @@ class PaystackController extends Controller
             $transaction->remark = 'Webhook: Transfer failed - ' . ($data['message'] ?? 'Unknown error');
             $transaction->save();
             
-            // Refund user
-            $wallet = Wallet::where('userid', $transaction->userid)->first();
-            if ($wallet) {
-                $wallet->amount += $transaction->amount;
-                $wallet->save();
-            }
+            // Refund user using atomic helper
+            addwallet($transaction->userid, $transaction->amount, "+");
             
             DB::commit();
             
@@ -565,9 +547,10 @@ class PaystackController extends Controller
         DB::beginTransaction();
         
         try {
-            // Deduct from wallet
-            $wallet->amount -= $amount;
-            $wallet->save();
+            // Deduct from wallet using atomic helper
+            if (addwallet($userId, $amount, "-") === false) {
+                throw new \Exception('Insufficient balance');
+            }
             
             // Create transaction
             $reference = 'WITHDRAW_' . $userId . '_' . time();
@@ -661,9 +644,8 @@ class PaystackController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             
-            // Refund wallet
-            $wallet->amount += $amount;
-            $wallet->save();
+            // Refund wallet using atomic helper
+            addwallet($userId, $amount, "+");
             
             if (isset($transaction)) {
                 $transaction->status = 'failed';

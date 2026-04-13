@@ -24,7 +24,7 @@
                 <div class="card-body">
                     <h4 class="card-title">Add New Sub-Admin</h4>
                     <p class="card-description"> Create a new administrative account with a specific role. </p>
-                    <form action="{{ url('admin/sub-admins') }}" method="POST" class="forms-sample">
+                    <form action="{{ url('manage_jet_secure/sub-admins') }}" method="POST" class="forms-sample">
                         @csrf
                         <div class="row">
                             <div class="col-md-6">

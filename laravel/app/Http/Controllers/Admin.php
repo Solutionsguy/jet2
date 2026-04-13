@@ -149,6 +149,6 @@ class Admin extends Controller
         if (session()->has('adminlogin')) {
             session()->forget('adminlogin');
         }
-        return redirect('/admin');
+        return redirect('/manage_jet_secure');
     }
 }

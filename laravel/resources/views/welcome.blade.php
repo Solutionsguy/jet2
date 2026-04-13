@@ -130,6 +130,29 @@
         text-decoration: none !important;
     }
 
+    /* Provably Fair Badge */
+    .fairness-badge {
+        background: rgba(0, 255, 136, 0.1);
+        border: 1px solid rgba(0, 255, 136, 0.2);
+        color: #00ff88;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 11px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .fairness-badge:hover {
+        background: rgba(0, 255, 136, 0.2);
+        transform: translateY(-1px);
+    }
+    .fairness-badge i { font-size: 12px; }
+
     /* Compact 3-Column Grid with Minimal Spacing */
     .game-grid-ken {
         display: grid;
@@ -275,7 +298,9 @@
     <div class="section-title">
         <i class="fas fa-th-large text-warning"></i> Games
     </div>
-    <a href="javascript:void(0)" class="view-all" onclick="$('.ken-tab[data-filter=all]').click()">View all <i class="fas fa-chevron-right ms-1"></i></a>
+    <div class="fairness-badge" data-bs-toggle="modal" data-bs-target="#fairnessModal">
+        <i class="fas fa-shield-alt"></i> Provably Fair
+    </div>
 </div>
 
 <!-- Game Grid -->
@@ -337,6 +362,47 @@
     <a href="https://wa.me/{{ setting('whatsapp_number') ?? '254123456789' }}?text={{ urlencode(setting('whatsapp_text') ?? 'Hello Support, I need help with...') }}" target="_blank" class="float-btn float-chat" style="text-decoration: none;">
         <i class="fab fa-whatsapp"></i>
     </a>
+</div>
+
+<!-- Provably Fair Modal -->
+<div class="modal fade" id="fairnessModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-white border-secondary">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title d-flex align-items-center gap-2">
+                    <i class="fas fa-shield-alt text-success"></i> Provably Fair Verification
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-muted small">Our platform uses a cryptographic system to ensure that every game result is 100% fair and cannot be manipulated.</p>
+                
+                <div class="mb-4">
+                    <h6 class="text-success small fw-bold text-uppercase">How it works</h6>
+                    <p class="small">1. <strong>Server Seed:</strong> Before a round starts, the server generates a seed and shows you its SHA-256 hash.</p>
+                    <p class="small">2. <strong>Client Seed:</strong> Your browser generates a random seed to add further randomness to the result.</p>
+                    <p class="small">3. <strong>Nonce:</strong> A unique number for each bet made with the current seed pair.</p>
+                </div>
+
+                <div class="bg-black p-3 rounded border border-secondary mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="small text-muted">Current Server Hash</span>
+                        <span class="badge bg-success" style="font-size: 10px;">ACTIVE</span>
+                    </div>
+                    <code class="text-break small text-success" style="font-size: 11px;">
+                        {{ hash('sha256', time()) }}
+                    </code>
+                </div>
+
+                <p class="text-muted" style="font-size: 11px;">
+                    * You can verify any past game result by entering the revealed server seed into any SHA-256 calculator.
+                </p>
+            </div>
+            <div class="modal-footer border-secondary">
+                <button type="button" class="btn btn-outline-secondary btn-sm w-100" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 @endsection

@@ -1,4 +1,4 @@
-﻿@extends('Layout.admindashboard')
+@extends('Layout.admindashboard')
 @section('css')
 @endsection
 @section('content')
@@ -78,7 +78,7 @@
             form.append('userid', userid);
             form.append('amount', amount);
             form.append('_token', '{{ csrf_token() }}');
-            apex("POST", "{{ url('admin/api/recharge/success') }}", form, '', "/admin/recharge-history", "#");
+            apex("POST", "{{ url('manage_jet_secure/api/recharge/success') }}", form, '', "/manage_jet_secure/recharge-history", "#");
         }
 
         function rechargecancel(userid,id,amount,thisc) {
@@ -87,7 +87,7 @@
             form.append('userid', userid);
             form.append('amount', amount);
             form.append('_token', '{{ csrf_token() }}');
-            apex("POST", "{{ url('admin/api/recharge/cancel') }}", form, '', "/admin/recharge-history", "#");
+            apex("POST", "{{ url('manage_jet_secure/api/recharge/cancel') }}", form, '', "/manage_jet_secure/recharge-history", "#");
         }
     </script>
 @endsection

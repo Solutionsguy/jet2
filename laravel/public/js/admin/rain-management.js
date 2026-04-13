@@ -65,7 +65,7 @@ function createSupportRain() {
     }
     
     $.ajax({
-        url: '/admin/rain/create',
+        url: '/manage_jet_secure/rain/create',
         type: 'POST',
         data: {
             _token: getCsrfToken(),
@@ -123,7 +123,7 @@ function saveAutoRainSettings() {
     };
 
     $.ajax({
-        url: '/admin/rain/auto-settings',
+        url: '/manage_jet_secure/rain/auto-settings',
         type: 'POST',
         data: data,
         success: function(response) {
@@ -142,7 +142,7 @@ function triggerAutoRainNow() {
     if (!confirm('Drop an automated rain immediately?')) return;
 
     $.ajax({
-        url: '/admin/rain/auto-trigger',
+        url: '/manage_jet_secure/rain/auto-trigger',
         type: 'POST',
         data: { _token: getCsrfToken() },
         success: function(response) {
@@ -162,7 +162,7 @@ function viewParticipants(rainId) {
     $('#participantsModal').modal('show');
     
     $.ajax({
-        url: '/admin/rain/' + rainId + '/participants',
+        url: '/manage_jet_secure/rain/' + rainId + '/participants',
         type: 'GET',
         success: function(response) {
             if (response.success) {
@@ -214,7 +214,7 @@ function cancelRain(rainId) {
     }
     
     $.ajax({
-        url: '/admin/rain/' + rainId + '/cancel',
+        url: '/manage_jet_secure/rain/' + rainId + '/cancel',
         type: 'POST',
         data: {
             _token: getCsrfToken()
@@ -249,7 +249,7 @@ function loadRainHistory() {
     container.innerHTML = '<p class="text-center"><i class="fas fa-spinner fa-spin"></i> Loading...</p>';
     
     $.ajax({
-        url: '/admin/rain/history',
+        url: '/manage_jet_secure/rain/history',
         type: 'GET',
         data: {
             status: statusEl ? statusEl.value : 'all',
@@ -323,7 +323,7 @@ function loadAnalytics() {
     if (!container) return;
     
     $.ajax({
-        url: '/admin/rain/analytics',
+        url: '/manage_jet_secure/rain/analytics',
         type: 'GET',
         success: function(response) {
             if (response.success) {

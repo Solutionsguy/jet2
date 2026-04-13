@@ -189,6 +189,6 @@
 <!-- User History Modal -->
 @include('admin.modals.user-freebet-history-modal')
 
-<script src="/js/admin/freebet-management.js"></script>
+<script src="/js/manage_jet_secure/freebet-management.js"></script>
 
 @endsection

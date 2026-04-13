@@ -33,9 +33,17 @@ class Gamesetting extends Controller
     }
     public function new_game_generated(Request $r)
     {
+        $startTimeMs = round(microtime(true) * 1000);
+        
         $new = Setting::where('category', 'game_status')->update(['value' => '0']);
         $r->session()->put('gamegenerate','1');
+        
         $gameId = currentid();
+        
+        // Record the exact start time in the gameresults table
+        Gameresult::where('id', $gameId)->update([
+            'started_at_ms' => $startTimeMs
+        ]);
         
         // Broadcast to socket for synchronization
         $targetMultiplier = $r->input('targetMultiplier', rand(8, 11) / 10);
@@ -164,16 +172,21 @@ class Gamesetting extends Controller
             if ($bet_amount <= $available_balance) {
                 // FIRST deduct the bet amount from the appropriate wallet
                 if ($wallet_type === 'freebet') {
-                    // Deduct from freebet wallet
-                    $new_freebet_balance = $current_freebet_balance - $bet_amount;
-                    Wallet::where('userid', $userId)->update(['freebet_amount' => $new_freebet_balance]);
+                    // Deduct from freebet wallet using atomic helper
+                    $new_freebet_balance = addfreebet($userId, $bet_amount, "-");
                     $current_freebet_balance = $new_freebet_balance;
-                    $new_balance = $current_balance; // Keep money balance same
+                    $new_balance = $current_balance; 
                 } else {
-                    // Deduct from money wallet
+                    // Deduct from money wallet using atomic helper
                     $new_balance = addwallet($userId, $bet_amount, "-");
                     $current_balance = $new_balance;
-                    $new_freebet_balance = $current_freebet_balance; // Keep freebet balance same
+                    $new_freebet_balance = $current_freebet_balance;
+                }
+                
+                if ($new_balance === false || $new_freebet_balance === false) {
+                    $status = false;
+                    $message = "Insufficient funds!";
+                    break;
                 }
                 
                 // THEN save the bet record
@@ -210,7 +223,7 @@ class Gamesetting extends Controller
                 } else {
                     // If save failed, refund the deducted amount
                     if ($wallet_type === 'freebet') {
-                        Wallet::where('userid', $userId)->update(['freebet_amount' => $current_freebet_balance + $bet_amount]);
+                        addfreebet($userId, $bet_amount, "+");
                     } else {
                         addwallet($userId, $bet_amount, "+");
                     }
@@ -373,8 +386,32 @@ class Gamesetting extends Controller
             return response()->json($response);
         }
         
-        // SECURITY: Verify against socket server's current multiplier (if available)
-        // This prevents clients from claiming a higher multiplier than the game has reached
+        // SECURITY: Verify against mathematical truth (Server-Side Validation)
+        // Formula matches socket-server.js: 1.00 + (elapsedSeconds * 0.12)
+        if ($bet->gameid == $currentGameId) {
+            $gameRecord = Gameresult::find($currentGameId);
+            if ($gameRecord && $gameRecord->started_at_ms) {
+                $currentTimeMs = round(microtime(true) * 1000);
+                $elapsedMs = $currentTimeMs - $gameRecord->started_at_ms;
+                
+                // If game started less than 0ms ago, it's invalid (time sync issue)
+                if ($elapsedMs < 0) $elapsedMs = 0;
+                
+                $elapsedSeconds = $elapsedMs / 1000;
+                $theoreticalMultiplier = 1.00 + ($elapsedSeconds * 0.12);
+                
+                // Add a small buffer (200ms = 0.02x) for network latency
+                $maxAllowedMultiplier = round($theoreticalMultiplier + 0.02, 2);
+                
+                if ($win_multiplier > $maxAllowedMultiplier) {
+                    \Log::warning("CHEATING ATTEMPT: User {$userId} claimed {$win_multiplier}x but server calculated max {$maxAllowedMultiplier}x");
+                    $response = array("isSuccess" => false, "data" => array(), "message" => "Security Check: Invalid multiplier detected. Please try again.");
+                    return response()->json($response);
+                }
+            }
+        }
+        
+        // SECURITY: Verify against socket server's current multiplier (Secondary check)
         try {
             $socketState = @file_get_contents('http://localhost:3000/game-state');
             if ($socketState) {
@@ -422,9 +459,10 @@ class Gamesetting extends Controller
                     // Check for auto-conversion
                     if ($walletData->wagering_remaining == 0) {
                         $transferAmount = $walletData->freebet_amount;
-                        $walletData->amount += $transferAmount;
-                        $walletData->freebet_amount = 0;
-                        $walletData->save();
+                        
+                        // Atomic transfer from freebet to money
+                        addfreebet($userId, $transferAmount, "-");
+                        addwallet($userId, $transferAmount, "+");
                         
                         addtransaction($userId, 'Wagering', date("ydmhsi"), 'credit', $transferAmount, 'Freebet Unlocked', 'Success', '1');
                     }
@@ -550,9 +588,11 @@ class Gamesetting extends Controller
 
                     if ($walletData->wagering_remaining == 0) {
                         $transferAmount = $walletData->freebet_amount;
-                        $walletData->amount += $transferAmount;
-                        $walletData->freebet_amount = 0;
-                        $walletData->save();
+                        
+                        // Atomic transfer from freebet to money
+                        addfreebet($userId, $transferAmount, "-");
+                        addwallet($userId, $transferAmount, "+");
+                        
                         addtransaction($userId, 'Wagering', date("ydmhsi"), 'credit', $transferAmount, 'Freebet Unlocked (Auto)', 'Success', '1');
                     }
                 }

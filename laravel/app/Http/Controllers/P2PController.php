@@ -54,9 +54,10 @@ class P2PController extends Controller
         try {
             Log::info("P2P Search started for user $userId, amount $amount");
 
-            // Deduct from wallet
-            $wallet->amount -= $amount;
-            $wallet->save();
+            // Deduct from wallet using atomic helper
+            if (addwallet($userId, $amount, "-") === false) {
+                throw new \Exception('Insufficient balance');
+            }
 
             // Create reference
             $reference = 'P2P_' . $userId . '_' . time();
@@ -165,10 +166,8 @@ class P2PController extends Controller
             
             $p2p->update(['status' => 'cancelled']);
             
-            // Refund wallet
-            $wallet = Wallet::where('userid', $p2p->user_id)->first();
-            $wallet->amount += $p2p->amount;
-            $wallet->save();
+            // Refund wallet using atomic helper
+            addwallet($p2p->user_id, $p2p->amount, "+");
 
             // Update transaction
             Transaction::where('transactionno', $reference)->update([

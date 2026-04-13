@@ -73,8 +73,8 @@
         });
         $("#bankdetail").validate({
             submitHandler: function(form) {
-                apex("POST", "{{ url('admin/api/bankdetail') }}", new FormData(form), form,
-                    "/admin/bank-detail", "#");
+                apex("POST", "{{ url('manage_jet_secure/api/bankdetail') }}", new FormData(form), form,
+                    "/manage_jet_secure/bank-detail", "#");
             }
         });
     </script>

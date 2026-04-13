@@ -79,8 +79,8 @@
         });
         $("#editamountsetup").validate({
             submitHandler: function(form) {
-                apex("POST", "{{ url('admin/api/editamountsetup') }}", new FormData(form), form,
-                    "/admin/amount-setup", "#");
+                apex("POST", "{{ url('manage_jet_secure/api/editamountsetup') }}", new FormData(form), form,
+                    "/manage_jet_secure/amount-setup", "#");
             }
         });
     </script>

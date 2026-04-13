@@ -144,58 +144,48 @@ function userbetdetail($id,$parameter)
 }
 function addwallet($id, $amount, $symbol = "+")
 {
-    $wallet = Wallet::where('userid', $id)->first();
-    if ($wallet) {
-        $currentBalance = floatval($wallet->amount);
-        
-        if ($symbol == "+") {
-            $newBalance = $currentBalance + floatval($amount);
-        } elseif ($symbol == "-") {
-            $newBalance = $currentBalance - floatval($amount);
-        } else {
-            return $currentBalance;
+    return Illuminate\Support\Facades\DB::transaction(function () use ($id, $amount, $symbol) {
+        $wallet = Wallet::where('userid', $id)->lockForUpdate()->first();
+        if ($wallet) {
+            $amount = floatval($amount);
+            if ($symbol == "+") {
+                $wallet->increment('amount', $amount);
+            } elseif ($symbol == "-") {
+                // Prevent negative balance
+                if ($wallet->amount < $amount) {
+                    return false;
+                }
+                $wallet->decrement('amount', $amount);
+            }
+            return floatval($wallet->fresh()->amount);
         }
-        
-        // Update the wallet with the new balance
-        Wallet::where('userid', $id)->update([
-            "amount" => $newBalance,
-        ]);
-        
-        return $newBalance;
-    }
-    return 0;
+        return 0;
+    });
 }
 
 function addfreebet($id, $amount, $symbol = "+")
 {
-    $wallet = Wallet::where('userid', $id)->first();
-    if ($wallet) {
-        $currentFreebet = floatval($wallet->freebet_amount);
-        $addedAmount = floatval($amount);
-        
-        if ($symbol == "+") {
-            $newFreebet = $currentFreebet + $addedAmount;
-            
-            // Wagering logic: Only increase wagering when adding freebet
-            $multiplier = floatval(setting('freebet_wagering_multiplier') ?? 10);
-            $extraWagering = $addedAmount * $multiplier;
-            
-            $wallet->freebet_amount = $newFreebet;
-            $wallet->wagering_remaining += $extraWagering;
-            $wallet->initial_wagering_target += $extraWagering;
-            $wallet->save();
-            
-        } elseif ($symbol == "-") {
-            $newFreebet = max(0, $currentFreebet - $addedAmount);
-            $wallet->freebet_amount = $newFreebet;
-            $wallet->save();
-        } else {
-            return $currentFreebet;
+    return Illuminate\Support\Facades\DB::transaction(function () use ($id, $amount, $symbol) {
+        $wallet = Wallet::where('userid', $id)->lockForUpdate()->first();
+        if ($wallet) {
+            $amount = floatval($amount);
+            if ($symbol == "+") {
+                $multiplier = floatval(setting('freebet_wagering_multiplier') ?? 10);
+                $extraWagering = $amount * $multiplier;
+                
+                $wallet->increment('freebet_amount', $amount);
+                $wallet->increment('wagering_remaining', $extraWagering);
+                $wallet->increment('initial_wagering_target', $extraWagering);
+            } elseif ($symbol == "-") {
+                if ($wallet->freebet_amount < $amount) {
+                    $amount = $wallet->freebet_amount;
+                }
+                $wallet->decrement('freebet_amount', $amount);
+            }
+            return floatval($wallet->fresh()->freebet_amount);
         }
-        
-        return $newFreebet;
-    }
-    return 0;
+        return 0;
+    });
 }
 function appvalidate($input)
 {

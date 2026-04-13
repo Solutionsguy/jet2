@@ -132,12 +132,8 @@ class AdminP2PController extends Controller
         try {
             $p2p->update(['status' => 'failed']);
 
-            // Refund user wallet
-            $wallet = \App\Models\Wallet::where('userid', $p2p->user_id)->first();
-            if ($wallet) {
-                $wallet->amount += $p2p->amount;
-                $wallet->save();
-            }
+            // Refund user wallet using atomic helper
+            addwallet($p2p->user_id, $p2p->amount, "+");
 
             // Update main transaction
             \App\Models\Transaction::where('transactionno', $p2p->reference)->update([

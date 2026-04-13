@@ -182,7 +182,7 @@ class Adminapi extends Controller
         $exist = Bankdetail::where('id', '1')->first();
         if ($exist) {
             if ($r->file('barcode') != '') {
-                $barcode = imageupload($r->file('barcode'), 'barcode', 'admin/bankdetail/')['filePath'];
+                $barcode = imageupload($r->file('barcode'), 'barcode', 'manage_jet_secure/bankdetail/')['filePath'];
             } else {
                 $barcode = $exist->barcode;
             }
@@ -205,11 +205,14 @@ class Adminapi extends Controller
     {
         $userid = $r->userid;
         $amount = $r->amount;
-        $response = array('status' => 0, 'title' => "Error!!", 'message' => "Something wents wrong!");
-        $update = Wallet::where('userid', $userid)->update([
-            "amount" => $amount,
-        ]);
-        if ($update) {
+        $response = array('status' => 0, 'title' => "Error!!", 'message' => "Something went wrong!");
+        
+        // Use atomic helper instead of direct update
+        $new_balance = addwallet($userid, $amount, "+");
+        
+        if ($new_balance !== false) {
+            // Add a transaction record for audit
+            addtransaction($userid, "Admin", date("ydmhsi"), "credit", $amount, "Manual", "Updated by admin", "1");
             $response = array('status' => 1, 'title' => "Success!!", 'message' => "User Wallet successfully Updated!");
         }
         return response()->json($response);
