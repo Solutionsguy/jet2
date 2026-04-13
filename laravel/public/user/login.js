@@ -101,8 +101,10 @@ $( "#forgotPassword" ).on('click', function(){
 $("#forgotPasswordForm").on('submit', function(e) {
     e.preventDefault(); 
     $("#processSubmit").prop('disabled', true);
+    $("#otp_error").hide();
+
     $.ajax({
-        url: '/laravel/public/forgot_password_post',
+        url: '/forgot_password_post',
         data: $(this).serialize(),
         type: "POST",
         dataType: "json",
@@ -111,33 +113,36 @@ $("#forgotPasswordForm").on('submit', function(e) {
             if (result.isSuccess) {
                 $("#user_name_div").hide();
                 $("#otp_div").show();
-                $("#otp_id").val(result.data.id);
+                $("#reset_email").val(result.data.email);
+                notify('success', result.message);
             } else {
                 $("#otp_error").text(result.message).fadeIn();
             }
+        },
+        error: function() {
+            $("#processSubmit").prop('disabled', false);
+            notify('error', 'Failed to request reset. Try again.');
         }
     });
 })
 
 $("#otp").on('input', function() {
     var otp = $(this).val();
-    var otp_id = $("#otp_id").val();
-    var username = $("#user_name").val();
-    if(otp.length == 4) {
+    var email = $("#reset_email").val();
+    if(otp.length == 6) {
         $(this).prop('disabled', true);
         $.ajax({
-            url  : '/laravel/public/verify_otp',
+            url  : '/verify_otp',
             type : 'post',
             data :  {
                 'otp' : otp,
-                'otp_id' : otp_id,
-                'username' : username,
+                'email' : email
             },
             success : function(result) {
                 if(result.isSuccess) {
                     $('#forgot-modal').modal('hide');
                     $('#reset-password-modal').modal('show');
-                    $("#reset_username").val(result.data.username);
+                    $("#reset_otp").val(otp);
                     $("#otp_error").hide();
                 } else {
                     $("#otp").prop('disabled', false);
@@ -147,6 +152,33 @@ $("#otp").on('input', function() {
         })
     }
 })
+
+$('#resetPasswordForm').on('submit', function(e) {
+    e.preventDefault();
+    $("#resetSubmit").prop('disabled', true);
+    $("#reset_error").hide();
+
+    $.ajax({
+        url: '/reset_password_post',
+        data: $(this).serialize(),
+        type: "POST",
+        dataType: "json",
+        success: function(result) {
+            $("#resetSubmit").prop('disabled', false);
+            if (result.isSuccess) {
+                $('#reset-password-modal').modal('hide');
+                notify('success', result.message);
+                setTimeout(() => { $('#login-modal').modal('show'); }, 1500);
+            } else {
+                $("#reset_error").text(result.message).fadeIn();
+            }
+        },
+        error: function() {
+            $("#resetSubmit").prop('disabled', false);
+            notify('error', 'Failed to reset password.');
+        }
+    });
+});
 
 $('#registerViaEmailForm').validate({
     errorPlacement: function(error, element) {
@@ -164,6 +196,10 @@ $('#registerViaEmailForm').validate({
     },
     submitHandler: function(form) {
         $("#register_via_email").prop('disabled', true);
+        // Clear previous errors
+        $('.server-error').remove();
+        $('.auth-input-field').removeClass('is-invalid');
+
         $.ajax({
             url: $(form).attr('action'),
             data: $(form).serialize(),
@@ -180,8 +216,21 @@ $('#registerViaEmailForm').validate({
                     }
                     login_ajax(data,'/crash')
                 } else {
-                    notify('error', result.message);
+                    if (result.errors) {
+                        // Show specific errors under each field
+                        $.each(result.errors, function(field, messages) {
+                            let input = $('[name="' + field + '"]');
+                            input.addClass('is-invalid');
+                            input.closest('.auth-input-wrapper').after('<div class="server-error text-danger small mt-1" style="font-size: 11px;">' + messages[0] + '</div>');
+                        });
+                    } else {
+                        notify('error', result.message);
+                    }
                 }
+            },
+            error: function() {
+                $("#register_via_email").prop('disabled', false);
+                notify('error', 'Something went wrong. Please try again.');
             }
         });
     }

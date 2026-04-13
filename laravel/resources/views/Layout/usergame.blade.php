@@ -242,6 +242,45 @@
     </div>
     <!--====== Forgot Modal End ======-->
 
+    <!--====== Reset Password Modal Start ======-->
+    <div class="modal fade l-modal" id="reset-password-modal" tabindex="-1" aria-labelledby="reset-password-modal" aria-hidden="false">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title" style="font-size: 18px;">Set New Password</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form class="login-form" method="post" id="resetPasswordForm">
+                        <input type="hidden" name="email" id="reset_email">
+                        <input type="hidden" name="otp" id="reset_otp">
+                        
+                        <div class="auth-input-group mb-3">
+                            <div class="auth-input-wrapper">
+                                <span class="material-symbols-outlined auth-input-icon">lock</span>
+                                <input type="password" class="auth-input-field" id="reset_password" name="password" placeholder="New Password" required>
+                            </div>
+                        </div>
+
+                        <div class="auth-input-group mb-4">
+                            <div class="auth-input-wrapper">
+                                <span class="material-symbols-outlined auth-input-icon">lock_reset</span>
+                                <input type="password" class="auth-input-field" id="reset_password_confirmation" name="password_confirmation" placeholder="Confirm Password" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label id="reset_error" class="error text-danger small"></label>
+                        </div>
+                        
+                        <button type="submit" class="auth-btn-primary" id="resetSubmit">Reset Password</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--====== Reset Password Modal End ======-->
+
     <div class="win-loss-popup">
         <div class="win-loss-popup__bg">
             <div class="win-loss-popup__inner">

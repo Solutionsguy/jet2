@@ -44,6 +44,12 @@ Route::post('/auth/login', [Authentication::class, "login"]);
 Route::post('/auth/register', [Authentication::class, "register"]);
 Route::get('/is_login', [Userdetail::class, "is_login"]);
 Route::get('/game-cron', [Gamesetting::class, "cronjob"]);
+
+// Password Reset Routes
+Route::post('/forgot_password_post', [Authentication::class, "forgotPassword"]);
+Route::post('/verify_otp', [Authentication::class, "verifyOtp"]);
+Route::post('/reset_password_post', [Authentication::class, "resetPassword"]);
+
 // Auth Admin Login
 Route::post('/auth/manage_jet_secure/login', [Authentication::class, "adminlogin"]);
 

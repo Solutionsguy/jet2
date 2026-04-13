@@ -15,39 +15,79 @@ class Adminapi extends Controller
 {
     public function changepassword(Request $r)
     {
-        $response = array('status' => 0, 'title' => "Oops!!", 'message' => "Invalid Credential!");
-        $validated = $r->validate([
-            'userid' => 'required',
-            'newpassword' => 'required',
-            'renewpassword' => 'required',
+        $validator = \Illuminate\Support\Facades\Validator::make($r->all(), [
+            'userid' => 'required|exists:users,id',
+            'newpassword' => 'required|string|min:6',
+            'renewpassword' => 'required|same:newpassword',
+        ], [
+            'renewpassword.same' => 'The password confirmation does not match.',
+            'newpassword.min' => 'Password must be at least 6 characters.'
         ]);
-        if ($r->newpassword == $r->renewpassword) {
-            User::where('id', $r->userid)->where('isadmin', '1')->update([
-                "password" => Hash::make($r->newpassword),
-            ]);
-            $response = array('status' => 1, 'title' => "Success!!", 'message' => "Password successfully updated!");
-        } else {
-            $response = array('status' => 0, 'title' => "Oops!!", 'message' => "Password not match!");
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 0,
+                'title' => 'Validation Error',
+                'message' => $validator->errors()->first(),
+                'errors' => $validator->errors()
+            ], 422);
         }
-        return response()->json($response);
+
+        $update = User::where('id', $r->userid)->update([
+            "password" => Hash::make($r->newpassword),
+        ]);
+
+        if ($update) {
+            return response()->json([
+                'status' => 1,
+                'title' => "Success!!",
+                'message' => "Password successfully updated!"
+            ]);
+        }
+
+        return response()->json([
+            'status' => 0,
+            'title' => "Error!!",
+            'message' => "Something went wrong while updating password!"
+        ]);
     }
     public function edituser(Request $r)
     {
-        $response = array('status' => 0, 'title' => "Oops!!", 'message' => "Invalid Credential!");
-        $validated = $r->validate([
-            'userid' => 'required',
-            'newpassword' => 'required',
-            'renewpassword' => 'required',
+        $validator = \Illuminate\Support\Facades\Validator::make($r->all(), [
+            'userid' => 'required|exists:users,id',
+            'newpassword' => 'required|string|min:6',
+            'renewpassword' => 'required|same:newpassword',
+        ], [
+            'renewpassword.same' => 'The password confirmation does not match.',
+            'newpassword.min' => 'Password must be at least 6 characters.'
         ]);
-        if ($r->newpassword == $r->renewpassword) {
-            User::where('id', $r->userid)->where('isadmin', '1')->update([
-                "password" => Hash::make($r->newpassword),
-            ]);
-            $response = array('status' => 1, 'title' => "Success!!", 'message' => "Password successfully updated!");
-        } else {
-            $response = array('status' => 0, 'title' => "Oops!!", 'message' => "Password not match!");
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 0,
+                'title' => 'Validation Error',
+                'message' => $validator->errors()->first(),
+                'errors' => $validator->errors()
+            ], 422);
         }
-        return response()->json($response);
+
+        $update = User::where('id', $r->userid)->update([
+            "password" => Hash::make($r->newpassword),
+        ]);
+
+        if ($update) {
+            return response()->json([
+                'status' => 1,
+                'title' => "Success!!",
+                'message' => "User password updated successfully!"
+            ]);
+        }
+
+        return response()->json([
+            'status' => 0,
+            'title' => "Error!!",
+            'message' => "Something went wrong while updating user password!"
+        ]);
     }
     public function rechargeapproval($event, Request $r)
     {
@@ -164,29 +204,77 @@ class Adminapi extends Controller
 
     public function editamountsetup(Request $r)
     {
-        $response = array('status' => 0, 'title' => "Error!!", 'message' => "Something wents wrong!");
+        $validator = \Illuminate\Support\Facades\Validator::make($r->all(), [
+            'id' => 'required|exists:settings,id',
+            'settingname' => 'required|string|max:255',
+            'value' => 'required|string|max:255',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 0,
+                'title' => 'Validation Error',
+                'message' => $validator->errors()->first(),
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
         $update = Setting::where('id', $r->id)->update([
             "category" => $r->settingname,
             "value" => $r->value,
         ]);
+        
         if ($update) {
-            $response = array('status' => 1, 'title' => "Success!!", 'message' => "User successfully Deleted!");
+            return response()->json([
+                'status' => 1,
+                'title' => "Success!!",
+                'message' => "Setting updated successfully!"
+            ]);
         }
-        return response()->json($response);
+        
+        return response()->json([
+            'status' => 0,
+            'title' => "Error!!",
+            'message' => "Something went wrong while updating!"
+        ]);
     }
 
     public function editbankdetail(Request $r)
     {
-        // return $r->all();
-        $response = array('status' => 0, 'title' => "Error!!", 'message' => "Something wents wrong!");
+        $validator = \Illuminate\Support\Facades\Validator::make($r->all(), [
+            'holdername' => 'required|string|max:255',
+            'mobile_no' => 'required|string|max:20',
+            'upi_id' => 'required|string|max:255',
+            'account_no' => 'required|string|max:50',
+            'ifsccode' => 'required|string|max:20',
+            'bank_name' => 'required|string|max:255',
+            'barcode' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 0,
+                'title' => 'Validation Error',
+                'message' => $validator->errors()->first(),
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
         $exist = Bankdetail::where('id', '1')->first();
         if ($exist) {
-            if ($r->file('barcode') != '') {
+            if ($r->hasFile('barcode')) {
                 $barcode = imageupload($r->file('barcode'), 'barcode', 'manage_jet_secure/bankdetail/')['filePath'];
             } else {
                 $barcode = $exist->barcode;
             }
+        } else {
+            return response()->json([
+                'status' => 0,
+                'title' => 'Error!!',
+                'message' => 'Bank detail record not found!'
+            ]);
         }
+
         $update = Bankdetail::where('id', '1')->update([
             "account_holder_name" => $r->holdername,
             "mobile_no" => $r->mobile_no,
@@ -196,16 +284,42 @@ class Adminapi extends Controller
             "bank_name" => $r->bank_name,
             "barcode" => $barcode,
         ]);
+
         if ($update) {
-            $response = array('status' => 1, 'title' => "Success!!", 'message' => "User successfully Deleted!");
+            return response()->json([
+                'status' => 1,
+                'title' => "Success!!",
+                'message' => "Bank details updated successfully!"
+            ]);
         }
-        return response()->json($response);
+
+        return response()->json([
+            'status' => 0,
+            'title' => "Error!!",
+            'message' => "Something went wrong while updating!"
+        ]);
     }
     public function updatewallet(Request $r)
     {
+        $validator = \Illuminate\Support\Facades\Validator::make($r->all(), [
+            'userid' => 'required|exists:users,id',
+            'amount' => 'required|numeric|min:0',
+        ], [
+            'amount.numeric' => 'Please enter a valid numeric amount.',
+            'amount.min' => 'Amount must be at least 0.'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 0,
+                'title' => 'Validation Error',
+                'message' => $validator->errors()->first(),
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
         $userid = $r->userid;
         $amount = $r->amount;
-        $response = array('status' => 0, 'title' => "Error!!", 'message' => "Something went wrong!");
         
         // Use atomic helper instead of direct update
         $new_balance = addwallet($userid, $amount, "+");
@@ -213,9 +327,18 @@ class Adminapi extends Controller
         if ($new_balance !== false) {
             // Add a transaction record for audit
             addtransaction($userid, "Admin", date("ydmhsi"), "credit", $amount, "Manual", "Updated by admin", "1");
-            $response = array('status' => 1, 'title' => "Success!!", 'message' => "User Wallet successfully Updated!");
+            return response()->json([
+                'status' => 1,
+                'title' => "Success!!",
+                'message' => "User Wallet successfully Updated!"
+            ]);
         }
-        return response()->json($response);
+
+        return response()->json([
+            'status' => 0,
+            'title' => "Error!!",
+            'message' => "Something went wrong while updating wallet!"
+        ]);
     }
 
     public function depositNow(Request $r)

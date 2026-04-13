@@ -80,12 +80,28 @@ function apex(method, url, data, form, success = null, error = null, reset = fal
                 console.log(e);
                 $(form).find('button[type=submit]').attr('disable', false);
                 $(form).find('button[type=submit]').html('Retry');
+                
+                // Clear previous errors
+                $(form).find('.is-invalid').removeClass('is-invalid');
+                $(form).find('.invalid-feedback').remove();
+
                 if (e.status == 422) {
+                    let response = e.responseJSON;
                     message({
                         'title': 'Oops!',
-                        'message': e.responseJSON.message,
+                        'message': response.message,
                         'type': 0
                     });
+
+                    // If we have detailed field errors, show them
+                    if (response.errors) {
+                        $.each(response.errors, function(field, messages) {
+                            let input = $(form).find('[name="' + field + '"]');
+                            input.addClass('is-invalid');
+                            // Add bootstrap invalid-feedback div
+                            input.after('<div class="invalid-feedback d-block" style="font-size: 11px;">' + messages[0] + '</div>');
+                        });
+                    }
                 } else {
                     $(form).find('button[type=submit]').attr('disable', false);
                     message({
