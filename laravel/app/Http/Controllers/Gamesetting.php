@@ -317,7 +317,7 @@ class Gamesetting extends Controller
     }
     public function my_bets_history(){
         $userid = user('id');
-        $userbets = Userbit::where("userid", $userid)->where('status',1)->where('created_at', '>=', Carbon::today()->toDateString())->orderBy('id','desc')->get();
+        $userbets = Userbit::where("userid", $userid)->where('status',1)->orderBy('id','desc')->limit(50)->get();
         return response()->json($userbets);
     }
 	public function cashout(Request $r){

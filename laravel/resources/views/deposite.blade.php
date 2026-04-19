@@ -297,6 +297,7 @@
     <script src="{{ url('user/mpesa-deposit.js') }}"></script>
     <script src="{{ url('user/paystack-deposit.js') }}"></script>
     <script>
+        window.BASE_URL = "{{ url('/') }}/";
         function switchDeposit(type) {
             $('.deposit-section').hide();
             $('.method-btn').removeClass('active');

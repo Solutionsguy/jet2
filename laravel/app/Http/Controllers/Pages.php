@@ -25,8 +25,8 @@ class Pages extends Controller
     }
 
     public function aviator() {
-        $allresults = Gameresult::where('created_at', '>=', Carbon::today()->toDateString())->orderBy('id','desc')->get();
-        $mybets = Userbit::where('userid',user('id'))->where('created_at', '>=', Carbon::today()->toDateString())->orderBy('id','desc')->get();
+        $allresults = Gameresult::where('result', '!=', 'pending')->orderBy('id','desc')->limit(50)->get();
+        $mybets = Userbit::where('userid',user('id'))->orderBy('id','desc')->limit(50)->get();
         // return $allresults;
         return view('crash',compact("allresults","mybets"));
     }

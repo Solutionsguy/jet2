@@ -205,14 +205,14 @@ function lastrecharge($id, $parameter)
 }
 function status($code, $type)
 {
-    if ($type == 'recharge') {
-        if ($code == 0) {
+    if ($type == 'recharge' || $type == 'deposit' || $type == 'withdraw') {
+        if ($code == '0' || $code == 'pending' || $code === 0) {
             return array('color' => 'warning', 'name' => 'Pending');
         }
-        if ($code == 1) {
+        if ($code == '1' || $code == 'success' || $code == 'paid' || $code === 1) {
             return array('color' => 'success', 'name' => 'Approved');
         }
-        if ($code == 2) {
+        if ($code == '2' || $code == 'failed' || $code == 'cancelled' || $code === 2) {
             return array('color' => 'danger', 'name' => 'Cancel');
         }
         return array('color' => 'secondary', 'name' => 'Unknown');

@@ -18,7 +18,7 @@ $(document).ready(function() {
  */
 function loadPaystackConfig() {
     $.ajax({
-        url: '/paystack/config',
+        url: (window.BASE_URL || '/') + 'paystack/config',
         method: 'GET',
         success: function(response) {
             paystackPublicKey = response.public_key;
@@ -33,7 +33,7 @@ function loadPaystackConfig() {
     
     // Load min deposit
     $.ajax({
-        url: '/paystack/availability',
+        url: (window.BASE_URL || '/') + 'paystack/availability',
         method: 'GET',
         success: function(response) {
             if (response.available) {
@@ -108,7 +108,7 @@ function initiatePaystackDeposit() {
     
     // Initialize payment
     $.ajax({
-        url: '/paystack/initialize',
+        url: (window.BASE_URL || '/') + 'paystack/initialize',
         method: 'POST',
         data: {
             _token: csrfToken,
@@ -204,7 +204,7 @@ function payWithPaystackPopup() {
  * Verify payment on server
  */
 function verifyPaystackPayment(reference) {
-    window.location.href = '/paystack/callback?reference=' + reference;
+    window.location.href = (window.BASE_URL || '/') + 'paystack/callback?reference=' + reference;
 }
 
 /**

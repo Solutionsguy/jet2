@@ -32,7 +32,6 @@ class PaystackController extends Controller
             'email' => 'required|email'
         ]);
 
-        // Use ViserMart Proxy if configured, otherwise fallback to direct Paystack
         $useProxy = !empty(env('VISERMART_BASE_URL'));
 
         if (!$useProxy && !$this->paystack->isConfigured()) {
@@ -45,39 +44,29 @@ class PaystackController extends Controller
         $userId = user('id');
         $amount = floatval($request->amount);
         $email = $request->email;
-
-        // Generate unique reference
         $reference = 'DEP_' . $userId . '_' . time();
 
-        // Create pending transaction record
         try {
             $transaction = new Transaction();
             $transaction->userid = $userId;
             $transaction->amount = $amount;
-            $transaction->category = 'deposit';
+            $transaction->category = 'recharge'; // Using 'recharge' to match Adminapi
             $transaction->platform = $useProxy ? 'ViserMart Proxy' : 'Paystack';
             $transaction->transactionno = $reference;
             $transaction->status = 'pending';
-            $transaction->remark = ($useProxy ? 'Proxy' : 'Paystack') . ' deposit initiated - ' . $email;
+            $transaction->remark = ($useProxy ? 'Proxy' : 'Paystack') . ' deposit initiated';
             $transaction->save();
 
             if ($useProxy) {
-                // Initialize via ViserMart Proxy
                 $result = $this->viserMart->initiatePayment([
                     'amount' => $amount,
                     'reference' => $reference,
                     'email' => $email,
                     'currency' => config('paystack.currency', 'KES'),
-                    'return_url' => url('/deposit?msg=Success'),
+                    'return_url' => route('paystack.callback') . '?reference=' . $reference,
                 ]);
 
                 if (isset($result['status']) && $result['status'] === 'success') {
-                    Log::info('ViserMart Proxy deposit initiated', [
-                        'user_id' => $userId,
-                        'amount' => $amount,
-                        'reference' => $reference
-                    ]);
-
                     return response()->json([
                         'isSuccess' => true,
                         'message' => 'Redirecting to payment page...',
@@ -85,27 +74,14 @@ class PaystackController extends Controller
                         'reference' => $reference
                     ]);
                 }
-
                 $errorMessage = $result['error'] ?? 'ViserMart initiation failed';
             } else {
-                // Initialize direct Paystack payment
-                $result = $this->paystack->initializeTransaction(
-                    $amount,
-                    $email,
-                    $reference,
-                    [
-                        'user_id' => $userId,
-                        'transaction_id' => $transaction->id,
-                    ]
-                );
+                $result = $this->paystack->initializeTransaction($amount, $email, $reference, [
+                    'user_id' => $userId,
+                    'transaction_id' => $transaction->id,
+                ]);
 
                 if ($result['success']) {
-                    Log::info('Paystack deposit initialized', [
-                        'user_id' => $userId,
-                        'amount' => $amount,
-                        'reference' => $reference
-                    ]);
-
                     return response()->json([
                         'isSuccess' => true,
                         'message' => 'Redirecting to payment page...',
@@ -113,260 +89,124 @@ class PaystackController extends Controller
                         'reference' => $result['reference']
                     ]);
                 }
-                
                 $errorMessage = $result['message'];
             }
 
-            // Failed to initialize
-            $transaction->status = 'failed';
+            $transaction->status = 'failed'; // 2 = Failed
             $transaction->remark = 'Initialization failed: ' . $errorMessage;
             $transaction->save();
 
-            return response()->json([
-                'isSuccess' => false,
-                'message' => $errorMessage
-            ], 400);
+            return response()->json(['isSuccess' => false, 'message' => $errorMessage], 400);
 
         } catch (\Exception $e) {
-            Log::error('Deposit initialization error', [
-                'user_id' => $userId,
-                'error' => $e->getMessage()
-            ]);
-
-            return response()->json([
-                'isSuccess' => false,
-                'message' => 'Failed to initialize payment: ' . $e->getMessage()
-            ], 500);
+            Log::error('Deposit initialization error: ' . $e->getMessage());
+            return response()->json(['isSuccess' => false, 'message' => 'Internal Error'], 500);
         }
     }
     
-    /**
-     * Handle Paystack callback after payment
-     */
     public function handleCallback(Request $request)
     {
         $reference = $request->query('reference');
-        
-        if (!$reference) {
-            return redirect('/deposit?msg=Error&details=No reference provided');
-        }
-        
-        // Verify the transaction
-        $result = $this->paystack->verifyTransaction($reference);
-        
-        if (!$result['success']) {
-            Log::error('Paystack verification failed', [
-                'reference' => $reference,
-                'message' => $result['message']
-            ]);
+        if (!$reference) return redirect('/deposit?msg=Error&details=No reference');
+
+        $useProxy = !empty(env('VISERMART_BASE_URL'));
+        $isPaid = false;
+        $channel = 'Unknown';
+
+        if ($useProxy) {
+            $result = $this->viserMart->verifyPayment($reference);
+            Log::info('ViserMart Callback Verify:', ['res' => $result]);
             
-            return redirect('/deposit?msg=Error&details=' . urlencode($result['message']));
-        }
-        
-        // Check transaction status
-        if ($result['status'] !== 'success') {
-            Log::warning('Paystack transaction not successful', [
-                'reference' => $reference,
-                'status' => $result['status']
-            ]);
+            $isPaid = isset($result['status']) && 
+                      $result['status'] === 'success' && 
+                      isset($result['transaction']['status']) && 
+                      $result['transaction']['status'] === 'paid';
+            $channel = 'ViserMart Proxy';
+        } else {
+            $result = $this->paystack->verifyTransaction($reference);
+            Log::info('Paystack Callback Verify:', ['res' => $result]);
             
-            return redirect('/deposit?msg=Failed&details=Payment was not completed');
+            $isPaid = $result['success'] && isset($result['status']) && $result['status'] === 'success';
+            $channel = $result['channel'] ?? 'Paystack';
         }
-        
-        // Find the transaction
+
+        if (!$isPaid) {
+            Log::warning('Payment verification failed or cancelled', ['ref' => $reference]);
+            // Update transaction to failed if it's still pending
+            Transaction::where('transactionno', $reference)->where('status', '0')->update([
+                'status' => '2',
+                'remark' => 'Verification failed or cancelled'
+            ]);
+            return redirect('/deposit?msg=Failed&details=Payment was not successful');
+        }
+
         $transaction = Transaction::where('transactionno', $reference)->first();
+        if (!$transaction) return redirect('/deposit?msg=Error&details=Not found');
         
-        if (!$transaction) {
-            Log::error('Paystack: Transaction not found', [
-                'reference' => $reference
-            ]);
-            
-            return redirect('/deposit?msg=Error&details=Transaction not found');
+        // Check for success
+        if ($transaction->status === '1' || $transaction->status === 'success') {
+            return redirect('/deposit?msg=Success&details=Already processed');
         }
-        
-        // Check if already processed
-        if ($transaction->status === 'success') {
-            return redirect('/deposit?msg=Success&details=Payment already processed');
-        }
-        
-        // Process the successful payment
+
         DB::beginTransaction();
-        
         try {
-            // Update transaction
             $transaction->status = 'success';
-            $transaction->remark = 'Paid via ' . ($result['channel'] ?? 'Paystack') . ' - Verified';
+            $transaction->remark = 'Paid via ' . $channel . ' - Verified';
             $transaction->save();
             
-            // Credit user wallet using atomic helper
             addwallet($transaction->userid, $transaction->amount, "+");
             
-            Log::info('Paystack deposit successful', [
-                'user_id' => $transaction->userid,
-                'amount' => $transaction->amount,
-                'reference' => $reference
-            ]);
-            
             DB::commit();
-            
+            Log::info('Deposit confirmed:', ['ref' => $reference, 'user' => $transaction->userid]);
             return redirect('/deposit?msg=Success');
             
         } catch (\Exception $e) {
             DB::rollBack();
-            
-            Log::error('Paystack deposit processing error', [
-                'reference' => $reference,
-                'error' => $e->getMessage()
-            ]);
-            
+            Log::error('Deposit processing error: ' . $e->getMessage());
             return redirect('/deposit?msg=Error&details=' . urlencode($e->getMessage()));
         }
     }
     
-    /**
-     * Handle Paystack webhook (for server-to-server notifications)
-     */
     public function handleWebhook(Request $request)
     {
-        // Verify webhook signature
         $signature = $request->header('x-paystack-signature');
         $payload = $request->getContent();
+        $secret = config('paystack.secret_key');
         
-        $computedSignature = hash_hmac('sha512', $payload, config('paystack.secret_key'));
-        
-        if ($signature !== $computedSignature) {
-            Log::warning('Invalid Paystack webhook signature');
+        if (!$secret || $signature !== hash_hmac('sha512', $payload, $secret)) {
             return response()->json(['message' => 'Invalid signature'], 400);
         }
         
         $event = $request->input('event');
         $data = $request->input('data');
         
-        Log::info('Paystack webhook received', [
-            'event' => $event,
-            'reference' => $data['reference'] ?? 'N/A'
-        ]);
-        
-        // Handle different event types
-        switch ($event) {
-            case 'charge.success':
-                $this->handleSuccessfulCharge($data);
-                break;
-                
-            case 'transfer.success':
-                $this->handleSuccessfulTransfer($data);
-                break;
-                
-            case 'transfer.failed':
-                $this->handleFailedTransfer($data);
-                break;
-                
-            default:
-                Log::info('Unhandled Paystack webhook event', ['event' => $event]);
+        if ($event === 'charge.success' && isset($data['status']) && $data['status'] === 'success') {
+            $this->handleSuccessfulCharge($data);
         }
         
         return response()->json(['message' => 'Webhook received'], 200);
     }
     
-    /**
-     * Handle successful charge webhook
-     */
     protected function handleSuccessfulCharge($data)
     {
         $reference = $data['reference'];
         $transaction = Transaction::where('transactionno', $reference)->first();
         
-        if (!$transaction || $transaction->status === 'success') {
-            return; // Already processed
-        }
+        if (!$transaction || $transaction->status === '1' || $transaction->status === 'success') return;
         
         DB::beginTransaction();
-        
         try {
             $transaction->status = 'success';
             $transaction->remark = 'Webhook: Payment confirmed';
             $transaction->save();
-            
-            // Credit wallet using atomic helper
             addwallet($transaction->userid, $transaction->amount, "+");
-            
             DB::commit();
-            
-            Log::info('Paystack webhook: Deposit processed', [
-                'reference' => $reference,
-                'amount' => $transaction->amount
-            ]);
-            
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Paystack webhook processing error', [
-                'reference' => $reference,
-                'error' => $e->getMessage()
-            ]);
+            Log::error('Webhook processing error: ' . $e->getMessage());
         }
     }
     
-    /**
-     * Handle successful transfer webhook
-     */
-    protected function handleSuccessfulTransfer($data)
-    {
-        $reference = $data['reference'];
-        $transaction = Transaction::where('transactionno', $reference)->first();
-        
-        if (!$transaction) {
-            return;
-        }
-        
-        $transaction->status = 'success';
-        $transaction->remark = 'Webhook: Transfer successful';
-        $transaction->save();
-        
-        Log::info('Paystack webhook: Transfer successful', [
-            'reference' => $reference
-        ]);
-    }
-    
-    /**
-     * Handle failed transfer webhook
-     */
-    protected function handleFailedTransfer($data)
-    {
-        $reference = $data['reference'];
-        $transaction = Transaction::where('transactionno', $reference)->first();
-        
-        if (!$transaction) {
-            return;
-        }
-        
-        DB::beginTransaction();
-        
-        try {
-            $transaction->status = 'failed';
-            $transaction->remark = 'Webhook: Transfer failed - ' . ($data['message'] ?? 'Unknown error');
-            $transaction->save();
-            
-            // Refund user using atomic helper
-            addwallet($transaction->userid, $transaction->amount, "+");
-            
-            DB::commit();
-            
-            Log::info('Paystack webhook: Transfer failed, user refunded', [
-                'reference' => $reference
-            ]);
-            
-        } catch (\Exception $e) {
-            DB::rollBack();
-            Log::error('Paystack failed transfer handling error', [
-                'reference' => $reference,
-                'error' => $e->getMessage()
-            ]);
-        }
-    }
-    
-    /**
-     * Get Paystack public key for frontend
-     */
     public function getPublicKey()
     {
         return response()->json([
@@ -376,9 +216,6 @@ class PaystackController extends Controller
         ]);
     }
     
-    /**
-     * Check if Paystack is available
-     */
     public function checkAvailability()
     {
         return response()->json([
@@ -388,9 +225,6 @@ class PaystackController extends Controller
         ]);
     }
     
-    /**
-     * Initialize M-Pesa deposit via Paystack
-     */
     public function initializeMpesaDeposit(Request $request)
     {
         $request->validate([
@@ -400,120 +234,75 @@ class PaystackController extends Controller
         ]);
         
         $useProxy = !empty(env('VISERMART_BASE_URL'));
-
         if (!$useProxy && !$this->paystack->isConfigured()) {
-            return response()->json([
-                'isSuccess' => false,
-                'message' => 'Paystack is not configured. Please contact support.'
-            ], 503);
+            return response()->json(['isSuccess' => false, 'message' => 'Paystack not configured'], 503);
         }
         
         $userId = user('id');
         $phone = $request->phone;
         $amount = floatval($request->amount);
         $email = $request->email;
-        
-        // Generate unique reference
         $reference = 'MPESA_' . $userId . '_' . time();
         
-        // Create pending transaction record
         try {
             $transaction = new Transaction();
             $transaction->userid = $userId;
             $transaction->amount = $amount;
-            $transaction->category = 'deposit';
+            $transaction->category = 'recharge';
             $transaction->platform = $useProxy ? 'ViserMart Proxy (M-Pesa)' : 'Paystack M-Pesa';
             $transaction->transactionno = $reference;
             $transaction->status = 'pending';
-            $transaction->remark = 'M-Pesa deposit via ' . ($useProxy ? 'Proxy' : 'Paystack') . ' - ' . $phone;
+            $transaction->remark = 'M-Pesa deposit via ' . ($useProxy ? 'Proxy' : 'Paystack');
             $transaction->save();
             
             if ($useProxy) {
-                // Initialize via ViserMart Proxy
                 $result = $this->viserMart->initiatePayment([
                     'amount' => $amount,
                     'reference' => $reference,
                     'email' => $email,
                     'currency' => 'KES',
                     'channels' => ['mobile_money'],
-                    'return_url' => url('/deposit?msg=Success'),
-                    'metadata' => [
-                        'phone_number' => $phone,
-                        'payment_method' => 'mpesa'
-                    ]
+                    'return_url' => route('paystack.callback') . '?reference=' . $reference,
+                    'metadata' => ['phone_number' => $phone, 'payment_method' => 'mpesa']
                 ]);
 
                 if (isset($result['status']) && $result['status'] === 'success') {
-                    Log::info('ViserMart Proxy M-Pesa deposit initiated', [
-                        'user_id' => $userId,
-                        'phone' => $phone,
-                        'amount' => $amount,
-                        'reference' => $reference
-                    ]);
-
                     return response()->json([
                         'isSuccess' => true,
-                        'message' => 'Redirecting to payment page...',
+                        'message' => 'Redirecting...',
                         'authorization_url' => $result['checkout_url'],
                         'reference' => $reference
                     ]);
                 }
-
-                $errorMessage = $result['error'] ?? 'ViserMart initiation failed';
+                $errorMessage = $result['error'] ?? 'ViserMart failed';
             } else {
-                // Initialize direct Paystack mobile money payment
-                $result = $this->paystack->initializeMobileMoney(
-                    $amount,
-                    $phone,
-                    $email,
-                    $reference
-                );
-                
+                $result = $this->paystack->initializeMobileMoney($amount, $phone, $email, $reference);
                 if ($result['success']) {
-                    Log::info('Paystack M-Pesa deposit initialized', [
-                        'user_id' => $userId,
-                        'phone' => $phone,
-                        'amount' => $amount,
-                        'reference' => $reference
-                    ]);
-                    
                     return response()->json([
                         'isSuccess' => true,
-                        'message' => 'Redirecting to M-Pesa payment...',
+                        'message' => 'Redirecting...',
                         'authorization_url' => $result['authorization_url'],
                         'reference' => $result['reference']
                     ]);
                 }
-                
                 $errorMessage = $result['message'];
             }
             
-            // Failed to initialize
             $transaction->status = 'failed';
-            $transaction->remark = 'Initialization failed: ' . $errorMessage;
+            $transaction->remark = 'Failed: ' . $errorMessage;
             $transaction->save();
-            
-            return response()->json([
-                'isSuccess' => false,
-                'message' => $errorMessage
-            ], 400);
+            return response()->json(['isSuccess' => false, 'message' => $errorMessage], 400);
             
         } catch (\Exception $e) {
-            Log::error('Paystack M-Pesa deposit initialization error', [
+            Log::error('M-Pesa deposit initialization error', [
                 'user_id' => $userId,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
             ]);
-            
-            return response()->json([
-                'isSuccess' => false,
-                'message' => 'Failed to initialize payment: ' . $e->getMessage()
-            ], 500);
+            return response()->json(['isSuccess' => false, 'message' => 'Internal Error: ' . $e->getMessage()], 500);
         }
     }
     
-    /**
-     * Initialize M-Pesa withdrawal via Paystack
-     */
     public function initializeMpesaWithdrawal(Request $request)
     {
         $request->validate([
@@ -522,12 +311,8 @@ class PaystackController extends Controller
         ]);
         
         $useProxy = !empty(env('VISERMART_BASE_URL'));
-
         if (!$useProxy && !$this->paystack->isConfigured()) {
-            return response()->json([
-                'isSuccess' => false,
-                'message' => 'Paystack is not configured. Please contact support.'
-            ], 503);
+            return response()->json(['isSuccess' => false, 'message' => 'Not configured'], 503);
         }
         
         $userId = user('id');
@@ -535,134 +320,60 @@ class PaystackController extends Controller
         $amount = floatval($request->amount);
         $userName = user('name');
         
-        // Check wallet balance
         $wallet = Wallet::where('userid', $userId)->first();
         if (!$wallet || $wallet->amount < $amount) {
-            return response()->json([
-                'isSuccess' => false,
-                'message' => 'Insufficient balance. Your balance: KSh ' . ($wallet->amount ?? 0)
-            ], 400);
+            return response()->json(['isSuccess' => false, 'message' => 'Insufficient balance'], 400);
         }
         
         DB::beginTransaction();
-        
         try {
-            // Deduct from wallet using atomic helper
-            if (addwallet($userId, $amount, "-") === false) {
-                throw new \Exception('Insufficient balance');
-            }
+            if (addwallet($userId, $amount, "-") === false) throw new \Exception('Insufficient balance');
             
-            // Create transaction
             $reference = 'WITHDRAW_' . $userId . '_' . time();
             $transaction = new Transaction();
             $transaction->userid = $userId;
             $transaction->amount = $amount;
-            $transaction->category = 'withdrawal';
+            $transaction->category = 'withdraw';
             $transaction->platform = $useProxy ? 'ViserMart Proxy (M-Pesa)' : 'Paystack M-Pesa';
             $transaction->transactionno = $reference;
             $transaction->status = 'pending';
-            $transaction->remark = 'M-Pesa withdrawal via ' . ($useProxy ? 'Proxy' : 'Paystack') . ' - ' . $phone;
+            $transaction->remark = 'M-Pesa withdrawal initiated';
             $transaction->save();
             
             if ($useProxy) {
-                // Initiate via ViserMart Proxy
                 $result = $this->viserMart->initiateTransfer([
-                    'amount' => $amount,
-                    'reference' => $reference,
-                    'phone' => $phone,
-                    'name' => $userName,
-                    'currency' => 'KES',
-                    'email' => user('email')
+                    'amount' => $amount, 'reference' => $reference, 'phone' => $phone, 'name' => $userName, 'currency' => 'KES', 'email' => user('email')
                 ]);
 
                 if (isset($result['status']) && $result['status'] === 'success') {
-                    // For transfers, we might mark it as success immediately if Paystack says so, 
-                    // but usually it's better to wait for webhook. 
-                    // However, initializeMpesaWithdrawal was marking it as success immediately.
                     $transaction->status = 'success';
-                    $transaction->remark = 'M-Pesa withdrawal initiated via Proxy - ' . $phone;
                     $transaction->save();
-                    
                     DB::commit();
-                    
-                    Log::info('ViserMart Proxy M-Pesa withdrawal initiated', [
-                        'user_id' => $userId,
-                        'phone' => $phone,
-                        'amount' => $amount,
-                        'reference' => $reference
-                    ]);
-                    
-                    return response()->json([
-                        'isSuccess' => true,
-                        'message' => 'Withdrawal initiated! Funds will be sent to your M-Pesa number: ' . $phone
-                    ]);
+                    return response()->json(['isSuccess' => true, 'message' => 'Withdrawal initiated!']);
                 }
-
-                throw new \Exception($result['error'] ?? 'ViserMart transfer failed');
-
+                throw new \Exception($result['error'] ?? 'Transfer failed');
             } else {
-                // Create M-Pesa recipient
                 $recipientResult = $this->paystack->createMpesaRecipient($phone, $userName);
+                if (!$recipientResult['success']) throw new \Exception($recipientResult['message']);
                 
-                if (!$recipientResult['success']) {
-                    throw new \Exception($recipientResult['message']);
-                }
-                
-                $recipientCode = $recipientResult['recipient_code'];
-                
-                // Initiate transfer
-                $transferResult = $this->paystack->initiateTransfer(
-                    $recipientCode,
-                    $amount,
-                    'Withdrawal to M-Pesa',
-                    $reference
-                );
-                
+                $transferResult = $this->paystack->initiateTransfer($recipientResult['recipient_code'], $amount, 'Withdrawal', $reference);
                 if ($transferResult['success']) {
                     $transaction->status = 'success';
-                    $transaction->remark = 'M-Pesa withdrawal successful - ' . $phone;
                     $transaction->save();
-                    
                     DB::commit();
-                    
-                    Log::info('Paystack M-Pesa withdrawal successful', [
-                        'user_id' => $userId,
-                        'phone' => $phone,
-                        'amount' => $amount,
-                        'reference' => $reference
-                    ]);
-                    
-                    return response()->json([
-                        'isSuccess' => true,
-                        'message' => 'Withdrawal successful! Funds sent to your M-Pesa number: ' . $phone
-                    ]);
+                    return response()->json(['isSuccess' => true, 'message' => 'Withdrawal successful!']);
                 }
-                
                 throw new \Exception($transferResult['message'] ?? 'Transfer failed');
             }
-            
         } catch (\Exception $e) {
             DB::rollBack();
-            
-            // Refund wallet using atomic helper
             addwallet($userId, $amount, "+");
-            
             if (isset($transaction)) {
                 $transaction->status = 'failed';
                 $transaction->remark = 'Failed: ' . $e->getMessage();
                 $transaction->save();
             }
-            
-            Log::error('M-Pesa withdrawal error', [
-                'user_id' => $userId,
-                'phone' => $phone,
-                'error' => $e->getMessage()
-            ]);
-            
-            return response()->json([
-                'isSuccess' => false,
-                'message' => 'Withdrawal failed: ' . $e->getMessage()
-            ], 500);
+            return response()->json(['isSuccess' => false, 'message' => 'Withdrawal failed: ' . $e->getMessage()], 500);
         }
     }
 }

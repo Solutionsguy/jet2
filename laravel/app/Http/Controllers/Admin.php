@@ -27,11 +27,11 @@ class Admin extends Controller
             'new_users_today' => User::whereDate('created_at', $today)->count(),
             'online_users' => User::where('last_seen', '>=', $fiveMinsAgo)->count(),
             'deposits_today' => Transaction::where('category', 'recharge')
-                ->where('status', '1')
+                ->whereIn('status', ['1', 'success'])
                 ->whereDate('created_at', $today)
                 ->sum('amount'),
             'withdrawals_today' => Transaction::where('category', 'withdraw')
-                ->where('status', '1')
+                ->whereIn('status', ['1', 'success'])
                 ->whereDate('created_at', $today)
                 ->sum('amount'),
             'total_bets_today' => \App\Models\Userbit::whereDate('created_at', $today)->sum('amount'),
@@ -52,11 +52,11 @@ class Admin extends Controller
             
             $chartData['labels'][] = $dateString;
             $chartData['deposits'][] = Transaction::where('category', 'recharge')
-                ->where('status', '1')
+                ->whereIn('status', ['1', 'success'])
                 ->whereDate('created_at', $date)
                 ->sum('amount');
             $chartData['withdrawals'][] = Transaction::where('category', 'withdraw')
-                ->where('status', '1')
+                ->whereIn('status', ['1', 'success'])
                 ->whereDate('created_at', $date)
                 ->sum('amount');
             $chartData['users'][] = User::whereDate('created_at', $date)->count();
@@ -64,7 +64,7 @@ class Admin extends Controller
 
         // Leaderboards (Top 10)
         $topDepositors = Transaction::where('category', 'recharge')
-            ->where('status', '1')
+            ->whereIn('status', ['1', 'success'])
             ->select('userid', DB::raw('SUM(amount) as total_deposited'))
             ->groupBy('userid')
             ->orderBy('total_deposited', 'desc')

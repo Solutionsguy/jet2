@@ -18,7 +18,7 @@ $(document).ready(function() {
 
 function checkMpesaB2CAvailability() {
     $.ajax({
-        url: '/mpesa/b2c-available',
+        url: (window.BASE_URL || '/') + 'mpesa/b2c-available',
         method: 'GET',
         success: function(response) {
             mpesaB2CAvailable = response.b2c_available;
@@ -87,7 +87,7 @@ function initiateMpesaWithdraw() {
 
     // Send Paystack M-Pesa withdrawal request
     $.ajax({
-        url: '/paystack/mpesa/withdraw',
+        url: (window.BASE_URL || '/') + 'paystack/mpesa/withdraw',
         method: 'POST',
         data: {
             _token: csrfToken,

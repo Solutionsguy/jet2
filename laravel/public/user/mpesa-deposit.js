@@ -64,7 +64,7 @@ function initiateMpesaDeposit() {
 
     // Initialize Paystack M-Pesa payment
     $.ajax({
-        url: '/paystack/mpesa/initialize',
+        url: (window.BASE_URL || '/') + 'paystack/mpesa/initialize',
         method: 'POST',
         data: {
             _token: csrfToken,

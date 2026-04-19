@@ -199,12 +199,9 @@ Route::group(['middleware' => ['isUser', 'throttle:60,1']], function () {
         Route::post('/mpesa/initialize', [\App\Http\Controllers\PaystackController::class, 'initializeMpesaDeposit']);
         Route::post('/mpesa/withdraw', [\App\Http\Controllers\PaystackController::class, 'initializeMpesaWithdrawal']);
         Route::post('/initialize', [\App\Http\Controllers\PaystackController::class, 'initializeDeposit']);
-        Route::get('/callback', [\App\Http\Controllers\PaystackController::class, 'handleCallback']);
-        Route::post('/webhook', [\App\Http\Controllers\PaystackController::class, 'handleWebhook']);
-        Route::get('/config', [\App\Http\Controllers\PaystackController::class, 'getPublicKey']);
-        Route::get('/availability', [\App\Http\Controllers\PaystackController::class, 'checkAvailability']);
+        Route::get('/callback', [\App\Http\Controllers\PaystackController::class, 'handleCallback'])->name('paystack.callback');
     });
-    // P2P Withdrawal Routes
+
     Route::prefix('p2p')->group(function () {
         Route::post('/search', [\App\Http\Controllers\P2PController::class, 'startSearch']);
         Route::get('/status/{reference}', [\App\Http\Controllers\P2PController::class, 'getMatchStatus']);
@@ -256,3 +253,7 @@ Route::post('/cash_out', [Gamesetting::class, "cashout"]);
         Route::post('/play/end/{alias}/{type?}', 'gameEnd')->name('game.end');
     });
 });
+
+// Paystack Webhook (No middleware, has its own signature verification)
+Route::post('paystack/webhook', [\App\Http\Controllers\PaystackController::class, 'handleWebhook']);
+
