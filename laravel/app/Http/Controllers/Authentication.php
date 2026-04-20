@@ -180,11 +180,15 @@ class Authentication extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json([
-                "isSuccess" => false, 
-                "message" => $validator->errors()->first(),
-                "errors" => $validator->errors()
-            ]);
+            if ($r->ajax() || $r->wantsJson()) {
+                return response()->json([
+                    "isSuccess" => false, 
+                    "message" => $validator->errors()->first(),
+                    "errors" => $validator->errors()
+                ]);
+            } else {
+                return redirect()->back()->withErrors($validator)->withInput();
+            }
         }
 
         $data = "";
@@ -201,10 +205,13 @@ class Authentication extends Controller
         $user->gender = $r->gender;
         $user->country = 'KE';
         $user->status = '1';
-        $user->promocode = $promocode;
+        $user->promocode = $r->promocode;
         $user->demo_balance = setting('demo_balance') ?? 1000;
 
         if ($user->save()) {
+            // Log the user in after registration
+            $r->session()->put('userlogin', $user);
+
             $wallet = new Wallet;
             $wallet->userid = $user->id;
             $wallet->amount = setting('initial_bonus') ?? 0;
@@ -215,13 +222,24 @@ class Authentication extends Controller
                 addfreebet($user->id, $freebetBonus, "+");
             }
 
-            $data = array("username" => $user->email, "password" => $r->password, "token" => csrf_token());
             $isSuccess = true;
             $message = "Registration successful!";
+            $data = array("username" => $user->email, "password" => $r->password, "token" => csrf_token());
+            
+            if ($r->ajax() || $r->wantsJson()) {
+                $res = array("data" => $data, "isSuccess" => $isSuccess, "message" => $message);
+                return response()->json($res);
+            } else {
+                return redirect('/crash');
+            }
         }
 
-        $res = array("data" => $data, "isSuccess" => $isSuccess, "message" => $message);
-        return response()->json($res);
+        if ($r->ajax() || $r->wantsJson()) {
+            $res = array("data" => $data, "isSuccess" => $isSuccess, "message" => $message);
+            return response()->json($res);
+        } else {
+            return redirect('/')->with('error', $message);
+        }
     }
 
     public function adminlogin(Request $r)

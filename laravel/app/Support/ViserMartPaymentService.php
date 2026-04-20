@@ -41,28 +41,83 @@ class ViserMartPaymentService
                 $payload['channels'] = $data['channels'];
             }
 
-            $response = Http::withHeaders([
+            $request = Http::withHeaders([
                 'X-Aetheric-Key' => $this->apiKey,
                 'Content-Type' => 'application/json',
                 'Accept' => 'application/json',
-            ])->post($this->baseUrl . '/api/external/payment/initiate', $payload);
+            ]);
+
+            // Only bypass SSL for local/proxy domains to maintain security for true live environments
+            // If we're on local XAMPP connecting to docuworld.store, we usually need to bypass
+            if (str_contains($this->baseUrl, 'localhost') || 
+                str_contains($this->baseUrl, '127.0.0.1') || 
+                str_contains($this->baseUrl, 'docuworld.store')) {
+                $request->withoutVerifying();
+            }
+
+            $response = $request->post($this->baseUrl . '/api/external/payment/initiate', $payload);
 
             if ($response->successful()) {
                 return $response->json();
             }
 
+            $errorBody = $response->body();
             Log::error('ViserMart payment initiation failed', [
                 'status' => $response->status(),
-                'body' => $response->body(),
+                'body' => $errorBody,
+                'url' => $this->baseUrl . '/api/external/payment/initiate',
                 'data' => $data
             ]);
 
-            return ['error' => 'Could not initiate payment with ViserMart'];
+            return ['error' => 'Could not initiate payment with ViserMart. Status: ' . $response->status() . ' Response: ' . $errorBody];
         } catch (\Exception $e) {
             Log::error('Exception during ViserMart payment initiation', [
+                'message' => $e->getMessage(),
+                'url' => $this->baseUrl . '/api/external/payment/initiate',
+                'trace' => $e->getTraceAsString()
+            ]);
+            return ['error' => 'Payment service connection error: ' . $e->getMessage()];
+        }
+    }
+
+    /**
+     * Verify payment on ViserMart
+     */
+    public function verifyPayment($reference)
+    {
+        try {
+            $request = Http::withHeaders([
+                'X-Aetheric-Key' => $this->apiKey,
+                'Content-Type' => 'application/json',
+                'Accept' => 'application/json',
+            ]);
+
+            if (str_contains($this->baseUrl, 'localhost') || 
+                str_contains($this->baseUrl, '127.0.0.1') || 
+                str_contains($this->baseUrl, 'docuworld.store')) {
+                $request->withoutVerifying();
+            }
+
+            $response = $request->post($this->baseUrl . '/api/external/payment/verify', [
+                'external_reference' => $reference
+            ]);
+
+            if ($response->successful()) {
+                return $response->json();
+            }
+
+            Log::error('ViserMart payment verification failed', [
+                'status' => $response->status(),
+                'body' => $response->body(),
+                'reference' => $reference
+            ]);
+
+            return ['status' => 'error', 'message' => 'Verification failed'];
+        } catch (\Exception $e) {
+            Log::error('Exception during ViserMart payment verification', [
                 'message' => $e->getMessage()
             ]);
-            return ['error' => 'Payment service connection error'];
+            return ['status' => 'error', 'message' => $e->getMessage()];
         }
     }
 
@@ -72,11 +127,19 @@ class ViserMartPaymentService
     public function initiateTransfer($data)
     {
         try {
-            $response = Http::withHeaders([
+            $request = Http::withHeaders([
                 'X-Aetheric-Key' => $this->apiKey,
                 'Content-Type' => 'application/json',
                 'Accept' => 'application/json',
-            ])->post($this->baseUrl . '/api/external/payment/transfer', [
+            ]);
+
+            if (str_contains($this->baseUrl, 'localhost') || 
+                str_contains($this->baseUrl, '127.0.0.1') || 
+                str_contains($this->baseUrl, 'docuworld.store')) {
+                $request->withoutVerifying();
+            }
+
+            $response = $request->post($this->baseUrl . '/api/external/payment/transfer', [
                 'external_reference' => $data['reference'],
                 'amount' => $data['amount'],
                 'currency' => $data['currency'] ?? 'KES',

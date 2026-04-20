@@ -43,19 +43,44 @@ class AutoRainCommand extends Command
         // 2. Interval Check (unless forced)
         if (!$this->option('force')) {
             $interval = setting('auto_rain_interval') ?? 'hourly';
+            $now = Carbon::now();
+            
+            // "Top of the hour" check for certain intervals
+            $isAligned = false;
+            
+            switch ($interval) {
+                case 'every_30_mins':
+                    // Check if current minute is 0 or 30
+                    if ($now->minute === 0 || $now->minute === 30) $isAligned = true;
+                    break;
+                case 'hourly':
+                    // Check if current minute is 0 (Top of the hour)
+                    if ($now->minute === 0) $isAligned = true;
+                    break;
+                case 'every_2_hours':
+                    if ($now->hour % 2 === 0 && $now->minute === 0) $isAligned = true;
+                    break;
+                case 'every_6_hours':
+                    if ($now->hour % 6 === 0 && $now->minute === 0) $isAligned = true;
+                    break;
+                case 'every_12_hours':
+                    if ($now->hour % 12 === 0 && $now->minute === 0) $isAligned = true;
+                    break;
+                case 'daily':
+                    if ($now->hour === 0 && $now->minute === 0) $isAligned = true;
+                    break;
+            }
+
+            if (!$isAligned) {
+                return 0; // Not a trigger minute
+            }
+
+            // Also ensure we haven't already dropped a rain in THIS specific trigger minute
             $lastRainAt = setting('last_auto_rain_at');
-            
-            $requiredMinutes = $this->getIntervalMinutes($interval);
-            
             if ($lastRainAt) {
                 $lastTime = Carbon::parse($lastRainAt);
-                $now = Carbon::now();
-                
-                $minutesDiff = $now->diffInMinutes($lastTime);
-                
-                // If the diff is negative (clock issue) or less than required, skip
-                if ($minutesDiff < $requiredMinutes && $now->greaterThan($lastTime)) {
-                    // Not enough time passed
+                // If last rain was less than 5 minutes ago, skip (prevents double drops in same minute)
+                if ($now->diffInMinutes($lastTime) < 5) {
                     return 0;
                 }
             }

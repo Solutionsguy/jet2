@@ -269,7 +269,98 @@
 <body class="dark-bg-main">
     @include('include.header')
     @yield('content')
-    
+
+    @php
+        $isGameInterface = Request::is('play/*') || Request::is('crash') || Request::is('aviator');
+    @endphp
+
+    @if($isGameInterface)
+    <!--====== Mobile Bottom Navbar ======-->
+    <nav class="mobile-bottom-nav d-md-none">
+        <div class="nav-item" onclick="window.location.href='{{ url('/dashboard') }}'">
+            <span class="material-symbols-outlined">sports_esports</span>
+            <span class="nav-label">Games</span>
+        </div>
+        <div class="nav-item {{ Request::is('deposit') ? 'active' : '' }}" onclick="window.location.href='{{ url('/deposit') }}'">
+            <div class="deposit-icon-wrapper">
+                <span class="material-symbols-outlined">add_circle</span>
+            </div>
+            <span class="nav-label">Deposit</span>
+        </div>
+        <div class="nav-item {{ Request::is('deposit_withdrawals') ? 'active' : '' }}" onclick="window.location.href='{{ url('/deposit_withdrawals') }}'">
+            <span class="material-symbols-outlined">history</span>
+            <span class="nav-label">My Bets</span>
+        </div>
+    </nav>
+
+    <style>
+        .mobile-bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background: rgba(17, 18, 19, 0.98);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 10000;
+            border-top: 1px solid rgba(255, 149, 0, 0.2);
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+        .mobile-bottom-nav .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #888;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+        }
+        .mobile-bottom-nav .nav-item.active {
+            color: #ff9500;
+        }
+        .mobile-bottom-nav .nav-item .material-symbols-outlined {
+            font-size: 26px;
+            margin-bottom: 4px;
+        }
+        .mobile-bottom-nav .nav-label {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .deposit-icon-wrapper {
+            background: linear-gradient(135deg, #ff9500, #ffb700);
+            color: #000;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: -30px;
+            box-shadow: 0 4px 15px rgba(255, 149, 0, 0.4);
+            border: 4px solid #111213;
+        }
+        .deposit-icon-wrapper .material-symbols-outlined {
+            margin-bottom: 0 !important;
+            font-size: 30px !important;
+        }
+
+        /* Local Override: Shift chat button up ONLY when navbar is present */
+        @media (max-width: 768px) {
+            .chat-toggle-btn {
+                bottom: 80px !important;
+            }
+            .chat-sidebar {
+                bottom: 140px !important;
+            }
+        }
+    </style>
+    @endif
+
     <input type="hidden" id="referral_code" value="">
 
     <!--====== Login Modal Start ======-->

@@ -1083,30 +1083,6 @@ socket.on('onGameCrashed', (data) => {
     socket.on('onGameCrashed', (data) => {
         console.log('💥 [SERVER] Game crashed at', data.crashMultiplier + 'x');
         
-        // ========== UPDATE TOP HISTORY BAR ==========
-        const crashMultiplier = parseFloat(data.crashMultiplier).toFixed(2);
-        let badgeClass = 'bg3';
-        if (parseFloat(crashMultiplier) <= 2) {
-            badgeClass = 'bg3';
-        } else if (parseFloat(crashMultiplier) < 10) {
-            badgeClass = 'bg1';
-        } else {
-            badgeClass = 'bg2';
-        }
-        
-        const newHistoryHtml = `<div class="${badgeClass} custom-badge">${crashMultiplier}x</div>`;
-        $(".payouts-block").prepend(newHistoryHtml);
-        $(".round-history-list").prepend(newHistoryHtml);
-        
-        // Remove oldest if more than 50
-        if ($(".payouts-block .custom-badge").length > 50) {
-            $(".payouts-block .custom-badge").last().remove();
-        }
-        if ($(".round-history-list .custom-badge").length > 50) {
-            $(".round-history-list .custom-badge").last().remove();
-        }
-        // ============================================
-
         // ========== IMMEDIATELY DISABLE CASHOUT BUTTONS ==========
         // This MUST happen FIRST before any other processing to prevent losses
         // Users cannot cash out after crash - disable buttons instantly
