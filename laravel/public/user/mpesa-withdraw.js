@@ -46,7 +46,14 @@ function resetMpesaWithdrawStatus() {
 }
 
 function initiateMpesaWithdraw() {
-    var phone = $('#mpesa_withdraw_phone').val().trim();
+    var rawPhone = $('#mpesa_withdraw_phone').val().trim();
+    
+    // NORMALIZE: If user enters 07..., strip the 0 to get 7...
+    var phoneBody = rawPhone.startsWith('0') ? rawPhone.substring(1) : rawPhone;
+    
+    // Auto-prepend country code if only 9 digits provided
+    var phone = phoneBody.length === 9 ? '254' + phoneBody : phoneBody;
+    
     var amount = $('#mpesa_withdraw_amount').val();
     var walletBalance = parseFloat($('#mpesa_wallet_balance').val()) || 0;
     var minWithdraw = mpesaMinWithdraw;

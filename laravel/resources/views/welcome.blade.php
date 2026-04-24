@@ -180,6 +180,95 @@
         flex-direction: column;
         transition: transform 0.2s ease;
         height: 100%; /* Important for grid alignment */
+        /* Hardware acceleration for smooth scrolling */
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
+        transform: translate3d(0,0,0);
+    }
+
+    /* Game Hover Overlay */
+    .game-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(4px);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        opacity: 0;
+        transition: opacity 0.2s ease-in-out;
+        z-index: 10;
+        padding: 10px;
+        will-change: opacity;
+    }
+
+    .ken-game-card:hover .game-overlay {
+        opacity: 1;
+    }
+
+    /* Mobile-Specific: Optimized for high performance */
+    @media (max-width: 991px) {
+        .game-overlay {
+            opacity: 1;
+            /* Disable expensive blur on mobile */
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+            /* Faster gradient background */
+            background: linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0.5) 40%, rgba(0,0,0,0) 100%) !important;
+            justify-content: flex-end;
+            padding: 5px;
+            gap: 4px;
+        }
+
+        .overlay-btn {
+            width: 95% !important;
+            padding: 4px 2px !important;
+            font-size: 8px !important;
+            border-radius: 4px !important;
+        }
+        
+        .ken-thumb-wrapper {
+            z-index: 1;
+        }
+    }
+
+    .overlay-btn {
+        width: 85%;
+        padding: 8px 5px;
+        border-radius: 6px;
+        font-size: 11px;
+        font-weight: 800;
+        text-transform: uppercase;
+        text-decoration: none !important;
+        text-align: center;
+        transition: all 0.2s ease;
+    }
+
+    .btn-play {
+        background: var(--ken-gold);
+        color: #000 !important;
+        box-shadow: 0 4px 10px rgba(255, 149, 0, 0.3);
+    }
+
+    .btn-demo {
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff !important;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-play:hover { transform: scale(1.05); filter: brightness(1.1); }
+    .btn-demo:hover { background: rgba(255, 255, 255, 0.2); }
+
+    /* Show overlay on mobile tap */
+    @media (max-width: 991px) {
+        .ken-game-card:active .game-overlay {
+            opacity: 1;
+        }
     }
     
     .ken-game-card:active { transform: scale(0.98); }
@@ -324,17 +413,23 @@
     @foreach($categories as $category)
         @foreach($category->games as $game)
         <div class="game-item cat-{{ $category->id }} all @if($game->featured) hot @endif">
-            <a href="{{ session()->has('userlogin') ? route('game.play', $game->alias) : 'javascript:void(0)' }}" 
-               class="ken-game-card"
-               @if(!session()->has('userlogin')) data-bs-toggle="modal" data-bs-target="#login-modal" @endif>
+            <div class="ken-game-card">
                 <i class="far fa-star favorite-star"></i>
                 <div class="ken-thumb-wrapper">
+                    <div class="game-overlay">
+                        <a href="{{ session()->has('userlogin') ? route('game.play', $game->alias) : 'javascript:void(0)' }}" 
+                           @if(!session()->has('userlogin')) data-bs-toggle="modal" data-bs-target="#login-modal" @endif
+                           class="overlay-btn btn-play">Play</a>
+                        <a href="{{ session()->has('userlogin') ? route('game.play', [$game->alias, 'demo']) : 'javascript:void(0)' }}" 
+                           @if(!session()->has('userlogin')) data-bs-toggle="modal" data-bs-target="#login-modal" @endif
+                           class="overlay-btn btn-demo">Demo</a>
+                    </div>
                     <img src="{{ asset($game->image) }}" alt="{{ $game->name }}" />
                 </div>
                 <div class="ken-game-info">
                     <span class="provider-name">{{ strtoupper(__($game->name)) }}</span>
                 </div>
-            </a>
+            </div>
         </div>
         @endforeach
     @endforeach
@@ -342,17 +437,23 @@
     <!-- Uncategorized Games -->
     @foreach($uncategorizedGames as $game)
     <div class="game-item cat-none all @if($game->featured) hot @endif">
-        <a href="{{ session()->has('userlogin') ? route('game.play', $game->alias) : 'javascript:void(0)' }}" 
-           class="ken-game-card"
-           @if(!session()->has('userlogin')) data-bs-toggle="modal" data-bs-target="#login-modal" @endif>
+        <div class="ken-game-card">
             <i class="far fa-star favorite-star"></i>
             <div class="ken-thumb-wrapper">
+                <div class="game-overlay">
+                    <a href="{{ session()->has('userlogin') ? route('game.play', $game->alias) : 'javascript:void(0)' }}" 
+                       @if(!session()->has('userlogin')) data-bs-toggle="modal" data-bs-target="#login-modal" @endif
+                       class="overlay-btn btn-play">Play</a>
+                    <a href="{{ session()->has('userlogin') ? route('game.play', [$game->alias, 'demo']) : 'javascript:void(0)' }}" 
+                       @if(!session()->has('userlogin')) data-bs-toggle="modal" data-bs-target="#login-modal" @endif
+                       class="overlay-btn btn-demo">Demo</a>
+                </div>
                 <img src="{{ asset($game->image) }}" alt="{{ $game->name }}" />
             </div>
             <div class="ken-game-info">
                 <span class="provider-name">{{ strtoupper(__($game->name)) }}</span>
             </div>
-        </a>
+        </div>
     </div>
     @endforeach
 </div>

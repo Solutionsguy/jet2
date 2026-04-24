@@ -1,14 +1,39 @@
 <!DOCTYPE html>
-<html class="no-js" lang="en">
+<html class="no-js" lang="en" prefix="og: http://ogp.me/ns#">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
-    <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <!--====== Title ======-->
-    <title>Betting company {{env('APP_NAME')}} - online sports betting</title>
+    <!-- Primary SEO & Social Media (WhatsApp/FB/Telegram) -->
+    <title>JetMtaa - Premium Crash Gaming</title>
+    <meta name="description" content="JetMtaa is your home for high-stakes crash gaming. Instant M-Pesa withdrawals, 24/7 support, and the best Aviator experience in Kenya.">
+    
+    <!-- Open Graph Tags -->
+    <meta property="og:site_name" content="JetMtaa">
+    <meta property="og:title" content="JetMtaa - Premium Gaming">
+    <meta property="og:description" content="Sign up now at JetMtaa.com and claim your welcome bonus. The #1 destination for Crash gamers!">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jetmtaa.com/">
+    
+    <!-- Image Tags (Optimized for WhatsApp) -->
+    <meta property="og:image" content="https://jetmtaa.com/images/promo-banner.png">
+    <meta property="og:image:secure_url" content="https://jetmtaa.com/images/promo-banner.png">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    
+    <!-- Schema.org for Google/WhatsApp -->
+    <meta itemprop="name" content="JetMtaa">
+    <meta itemprop="description" content="Premium Crash Gaming in Kenya. Join now and win big!">
+    <meta itemprop="image" content="https://jetmtaa.com/images/promo-banner.png">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="JetMtaa - High Performance Crash Gaming">
+    <meta name="twitter:image" content="https://jetmtaa.com/images/promo-banner.png">
+
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <!--====== Favicon Icon ======-->
     <link rel="shortcut icon" href="{{asset('images/logo.png')}}" type="image/png" />
@@ -234,8 +259,13 @@
             color: #ff9500 !important;
         }
 
-        /* Mobile Optimization for Modals */
-        @media (max-width: 576px) {
+        /* Mobile Optimization for Modals and Containers */
+        @media (max-width: 768px) {
+            .main-container { padding-top: 65px !important; }
+            .deposit-container, .withdraw-container, .transfer-container, .history-container, .level-container, .profile-container {
+                padding-top: 10px !important;
+                padding-bottom: 80px !important;
+            }
             .modal-dialog {
                 margin: 10px !important;
                 max-width: calc(100% - 20px) !important;
@@ -244,22 +274,14 @@
                 padding: 20px 20px !important;
             }
             .input-field-row {
-                margin-bottom: 20px !important;
+                margin-bottom: 15px !important;
             }
-            .modal-header {
-                padding: 20px 20px 0 !important;
+            .glass-card {
+                padding: 20px !important;
+                border-radius: 16px !important;
             }
-            .modal-footer-custom {
-                padding: 15px !important;
-            }
-            .country-summary {
-                padding: 10px !important;
-                margin-bottom: 20px !important;
-            }
-            .theme-btn {
-                padding: 12px !important;
-                font-size: 14px !important;
-            }
+            h2 { font-size: 20px !important; }
+            p.text-grey { font-size: 12px !important; margin-bottom: 15px !important; }
         }
     </style>
 
@@ -268,7 +290,12 @@
 
 <body class="dark-bg-main">
     @include('include.header')
-    @yield('content')
+    
+    <div class="main-container" style="min-height: 100vh;">
+        <div class="container-fluid px-3">
+            @yield('content')
+        </div>
+    </div>
 
     @php
         $isGameInterface = Request::is('play/*') || Request::is('crash') || Request::is('aviator');

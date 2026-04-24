@@ -326,10 +326,101 @@
 
 @push('style')
     <style>
+        /* Shared Glassmorphism Logic for All Views */
+        .headtail-body, .headtail-wrapper {
+            background: rgba(255, 255, 255, 0.03) !important;
+            backdrop-filter: blur(15px) !important;
+            -webkit-backdrop-filter: blur(15px) !important;
+            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+            border-radius: 24px !important;
+            padding: 45px !important;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5) !important;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 450px;
+        }
+
+        /* Specific alignment for the control panel content */
+        .headtail-wrapper {
+            align-items: stretch !important;
+        }
+
+        /* Responsive height adjustments */
+        @media(max-width: 991px) {
+            .headtail-body, .headtail-wrapper {
+                min-height: 400px;
+                padding: 30px !important;
+            }
+        }
+
+        /* Neon Selection Glow */
+        .gmimg {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            filter: grayscale(0.6) brightness(0.8);
+            opacity: 0.6;
+            border: 2px solid transparent !important;
+            padding: 15px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.02);
+        }
+        
         .gmimg.active {
-            border: 3px solid #ff9500 !important;
-            border-radius: 50%;
-            box-shadow: 0 0 15px #ff9500;
+            filter: grayscale(0) brightness(1.2);
+            opacity: 1;
+            border: 2px solid #ff9500 !important;
+            box-shadow: 0 0 35px rgba(255, 149, 0, 0.4), inset 0 0 15px rgba(255, 149, 0, 0.2);
+            transform: scale(1.1);
+            background: rgba(255, 149, 0, 0.1);
+        }
+
+        /* Premium Input Styling */
+        .form--control {
+            background: rgba(0, 0, 0, 0.2) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            color: #fff !important;
+            border-radius: 10px !important;
+        }
+        .input-group-text {
+            background: rgba(255, 255, 255, 0.05) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            color: #ff9500 !important;
+        }
+
+        /* High-End Play Button */
+        #flip {
+            background: linear-gradient(135deg, #ff9500 0%, #ff5e00 100%);
+            border: none;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            height: 55px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(255, 94, 0, 0.3);
+            transition: all 0.3s ease;
+            color: #000;
+        }
+
+        #flip:hover:not(:disabled) {
+            box-shadow: 0 0 20px rgba(255, 94, 0, 0.6);
+            transform: translateY(-2px);
+        }
+
+        /* Wallet and Title Labels */
+        .game-contet-title {
+            color: #8a9cb1;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 25px;
+        }
+        .text.bal {
+            color: #ff9500;
+            font-weight: 900;
+            font-size: 1.4rem;
         }
 
         #coin,
@@ -343,7 +434,6 @@
         }
 
         @media(max-width: 991px) {
-
             #coin,
             .coins-wrapper,
             #coin .front,
@@ -357,7 +447,6 @@
 
 
         @media(max-width: 767px) {
-
             #coin,
             .coins-wrapper,
             #coin .front,
@@ -375,7 +464,6 @@
         }
 
         @media(max-width: 425px) {
-
             #coin,
             .coins-wrapper,
             #coin .front,

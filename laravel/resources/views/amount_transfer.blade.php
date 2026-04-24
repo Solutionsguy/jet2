@@ -3,152 +3,105 @@
 @section('css')
 <style>
     .transfer-container {
-        max-width: 500px;
-        margin: 100px auto;
-        padding: 20px;
-    }
-    .transfer-card {
-        background: rgba(25, 26, 27, 0.95);
-        border: 1px solid #2a2b2e;
-        border-radius: 15px;
-        padding: 30px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    }
-    .balance-badge {
-        background: rgba(255, 149, 0, 0.1);
-        border: 1px dashed #ff9500;
-        border-radius: 10px;
-        padding: 15px;
-        text-align: center;
-        margin-bottom: 25px;
-    }
-    .balance-badge .label {
-        color: #888;
-        font-size: 12px;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        display: block;
-        margin-bottom: 5px;
-    }
-    .balance-badge .amount {
-        color: #ff9500;
-        font-size: 24px;
-        font-weight: 800;
-    }
-    .input-group-custom {
-        background: #111;
-        border: 1px solid #333;
-        border-radius: 8px;
-        margin-bottom: 20px;
-        transition: border-color 0.2s;
-    }
-    .input-group-custom:focus-within {
-        border-color: #ff9500;
-    }
-    .input-group-custom .input-group-text {
-        background: transparent;
-        border: none;
-        color: #ff9500;
-    }
-    .input-group-custom .form-control {
-        background: transparent;
-        border: none;
-        color: #fff;
-        padding: 12px 10px;
-    }
-    .input-group-custom .form-control:focus {
-        box-shadow: none;
-    }
-    .transfer-btn {
-        width: 100%;
-        background: #ff9500;
-        color: #000;
-        border: none;
-        padding: 12px;
-        border-radius: 8px;
-        font-weight: 800;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        transition: all 0.2s;
-        margin-top: 10px;
-    }
-    .transfer-btn:hover {
-        background: #fa5e00;
-        transform: translateY(-2px);
+        max-width: 1000px;
+        margin: 0 auto;
     }
     .transfer-header {
         text-align: center;
-        margin-bottom: 30px;
+        margin-bottom: 40px;
     }
     .transfer-header h2 {
-        color: #ff9500;
-        font-weight: 800;
-        text-transform: uppercase;
+        color: #fff;
+        font-weight: 900;
+        letter-spacing: 1px;
     }
-    .transfer-header p {
-        color: #888;
-        font-size: 14px;
+    
+    .glass-card {
+        background: rgba(255, 255, 255, 0.03) !important;
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 24px;
+        padding: 40px;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
     }
-    .security-note {
+
+    .input-field-row {
         display: flex;
         align-items: center;
-        background: rgba(255, 255, 255, 0.03);
-        padding: 10px;
-        border-radius: 8px;
-        margin-top: 20px;
-        color: #666;
-        font-size: 11px;
+        background: rgba(0,0,0,0.2);
+        border: 1px solid rgba(255,255,255,0.05);
+        border-radius: 12px;
+        padding: 12px 15px;
+        margin-bottom: 20px;
     }
-    @media (max-width: 768px) {
-        .transfer-container {
-            margin-top: 80px;
-            padding: 15px;
-        }
-        .transfer-card {
-            padding: 20px;
-        }
+    .field-icon { color: #ff9500; margin-right: 12px; display: flex; }
+    .field-input {
+        background: transparent;
+        border: none;
+        color: #fff;
+        font-weight: 600;
+        width: 100%;
+        outline: none;
+    }
+
+    .theme-btn {
+        width: 100%;
+        background: linear-gradient(135deg, #ff9500 0%, #ff5e00 100%);
+        border: none;
+        color: #000;
+        font-weight: 900;
+        text-transform: uppercase;
+        padding: 18px;
+        border-radius: 14px;
+        letter-spacing: 1px;
+        box-shadow: 0 8px 20px rgba(255, 94, 0, 0.3);
+        transition: all 0.3s ease;
+    }
+    .theme-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 25px rgba(255, 94, 0, 0.5);
     }
 </style>
 @endsection
 
 @section('content')
-<div class="transfer-container">
+<div class="transfer-container py-5">
     <div class="transfer-header">
-        <h2>{{$title}}</h2>
-        <p>Instantly send funds to another player's wallet</p>
+        <h2>TRANSFER FUNDS</h2>
+        <p class="text-grey">Send money instantly to another JetMtaa user</p>
     </div>
 
-    <div class="transfer-card">
-        <!-- Optional: Show current balance if needed -->
-        <div class="balance-badge">
-            <span class="label">Available Funds</span>
-            <span class="amount">KSh {{ wallet(user('id')) }}</span>
-        </div>
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="glass-card">
+                <div class="d-flex align-items-center mb-4">
+                    <span class="material-symbols-outlined text-warning me-2">send</span>
+                    <h5 class="text-white mb-0">Internal Wallet Transfer</h5>
+                </div>
 
-        <form action="/wallet_transfer" method="post" id="amounttransfer">
-            @csrf
-            <div class="input-group input-group-custom">
-                <span class="input-group-text">
-                    <span class="material-symbols-outlined">person</span>
-                </span>
-                <input type="text" class="form-control" id="userid" placeholder="Recipient User ID" name="userid" required>
+                <div class="input-field-row">
+                    <span class="field-icon"><span class="material-symbols-outlined">person</span></span>
+                    <input type="text" class="field-input" id="receiver_id" placeholder="Receiver ID or Username">
+                </div>
+
+                <div class="input-field-row">
+                    <span class="field-icon"><span class="material-symbols-outlined">payments</span></span>
+                    <input type="number" class="field-input" id="transfer_amount" placeholder="Amount to Transfer (KSh)">
+                </div>
+
+                <div class="alert alert-warning bg-dark border-secondary small mb-4">
+                    <i class="material-symbols-outlined f-14 align-middle me-1">info</i>
+                    Transfers are instant and cannot be reversed.
+                </div>
+
+                <button class="theme-btn" onclick="initiateTransfer()">Confirm Transfer</button>
             </div>
-
-            <div class="input-group input-group-custom">
-                <span class="input-group-text">
-                    <span class="material-symbols-outlined">payments</span>
-                </span>
-                <input type="number" class="form-control" id="amount" placeholder="Amount (KSh)" name="amount" required min="1">
+            
+            <div id="transfer_status" class="mt-4" style="display:none;">
+                <div id="transfer_loading" class="alert alert-info border-0 bg-dark text-info"><i class="mdi mdi-loading mdi-spin me-2"></i>Processing...</div>
+                <div id="transfer_error" class="alert alert-danger border-0 bg-dark text-danger"><i class="mdi mdi-alert-circle me-2"></i><span id="transfer_error_msg"></span></div>
             </div>
-
-            <div id="promo_code_error" class="error mb-3" style="font-size: 13px;"></div>
-
-            <button type="submit" class="transfer-btn">Confirm Transfer</button>
-        </form>
-
-        <div class="security-note">
-            <span class="material-symbols-outlined me-2" style="font-size: 18px;">verified_user</span>
-            <span>Secure Peer-to-Peer Transfer. Please double-check the recipient ID before confirming.</span>
         </div>
     </div>
 </div>
@@ -156,30 +109,43 @@
 
 @section('js')
 <script>
-    // Simplified cron if needed, though usually not required on this page
-    /*
-    setInterval(() => {
-        $.ajax({
-            url: '/game-cron',
-            type: "GET",
-            dataType: "json",
-            success: function(intialData) {}
-        });
-    }, 5000); 
-    */
-    
-    // Simple validation feedback
-    $('#amounttransfer').on('submit', function(e) {
-        const amount = parseFloat($('#amount').val());
-        const balance = parseFloat('{{ wallet(user('id')) }}'.replace(/,/g, ''));
+    function initiateTransfer() {
+        var receiver = $('#receiver_id').val();
+        var amount = $('#transfer_amount').val();
         
-        if (amount > balance) {
-            e.preventDefault();
-            $('#promo_code_error').text('Insufficient balance for this transfer.').show();
-            return false;
+        if(!receiver || !amount) {
+            toastr.error("Please fill all fields");
+            return;
         }
-        
-        return confirm('Are you sure you want to transfer KSh ' + amount + ' to User ID ' + $('#userid').val() + '?');
-    });
+
+        $('#transfer_status').show();
+        $('#transfer_loading').show();
+        $('#transfer_error').hide();
+
+        $.ajax({
+            url: '/wallet_transfer',
+            type: 'POST',
+            data: {
+                receiver_id: receiver,
+                amount: amount,
+                _token: '{{ csrf_token() }}'
+            },
+            success: function(res) {
+                $('#transfer_loading').hide();
+                if(res.isSuccess) {
+                    toastr.success(res.message);
+                    setTimeout(() => { location.reload(); }, 2000);
+                } else {
+                    $('#transfer_error').show();
+                    $('#transfer_error_msg').text(res.message);
+                }
+            },
+            error: function() {
+                $('#transfer_loading').hide();
+                $('#transfer_error').show();
+                $('#transfer_error_msg').text("Server error occurred");
+            }
+        });
+    }
 </script>
 @endsection

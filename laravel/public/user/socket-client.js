@@ -38,14 +38,27 @@ class AviatorSocketClient {
             return;
         }
 
+        // AGGRESSIVE MOBILE CONFIGURATION
         this.socket = io(this.serverUrl, {
             transports: ['websocket', 'polling'],
             reconnection: true,
-            reconnectionDelay: 1000,
-            reconnectionAttempts: 5
+            reconnectionDelay: 500,        // Try every half second (was 1000)
+            reconnectionDelayMax: 2000,    // Don't wait longer than 2s
+            reconnectionAttempts: Infinity, // Keep trying
+            timeout: 5000,                 // Connection timeout
+            pingInterval: 5000,            // Ping every 5s to keep alive
+            pingTimeout: 3000              // If no response in 3s, reconnect
         });
 
         this.setupEventListeners();
+        
+        // Wake-up logic: If browser wakes up, force a reconnect check
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden && (!this.isConnected || this.socket.disconnected)) {
+                console.log('📱 Phone woke up - forcing socket reconnect...');
+                this.socket.connect();
+            }
+        });
     }
 
     /**

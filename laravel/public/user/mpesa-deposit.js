@@ -28,7 +28,11 @@ function resetMpesaStatus() {
 }
 
 function initiateMpesaDeposit() {
-    var phoneBody = $('#mpesa_phone').val().trim();
+    var rawPhone = $('#mpesa_phone').val().trim();
+    
+    // NORMALIZE: If user enters 07..., strip the 0 to get 7...
+    var phoneBody = rawPhone.startsWith('0') ? rawPhone.substring(1) : rawPhone;
+    
     var phone = '254' + phoneBody;
     var amount = $('#mpesa_amount').val();
     var email = $('#mpesa_email').val().trim();

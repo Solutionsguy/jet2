@@ -3,52 +3,70 @@
 @section('css')
 <style>
     .referral-container {
-        max-width: 800px;
-        margin: 100px auto;
-        padding: 20px;
+        max-width: 1000px;
+        margin: 0 auto;
     }
-    .referral-card {
-        background: rgba(25, 26, 27, 0.95);
-        border: 1px solid #2a2b2e;
-        border-radius: 15px;
-        padding: 25px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        margin-bottom: 20px;
-        transition: transform 0.3s ease;
+    .referral-header {
+        text-align: center;
+        margin-bottom: 40px;
     }
-    .referral-card:hover {
-        transform: translateY(-5px);
-        border-color: #ff9500;
+    .referral-header h2 {
+        color: #fff;
+        font-weight: 900;
+        letter-spacing: 1px;
     }
+    
+    .referral-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+        margin-bottom: 40px;
+    }
+
+    .glass-card {
+        background: rgba(255, 255, 255, 0.03) !important;
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 24px;
+        padding: 40px;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
     .card-icon {
+        width: 60px;
+        height: 60px;
         background: rgba(255, 149, 0, 0.1);
-        color: #ff9500;
-        width: 50px;
-        height: 50px;
-        border-radius: 12px;
+        border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-bottom: 15px;
+        margin: 0 auto 20px;
+        color: #ff9500;
     }
+    .card-icon span { font-size: 32px; }
+
     .copy-group {
-        position: relative;
-        background: #111;
-        border-radius: 8px;
-        padding: 12px 15px;
         display: flex;
-        justify-content: space-between;
         align-items: center;
-        border: 1px solid #333;
+        background: rgba(0,0,0,0.3);
+        border: 1px solid rgba(255,255,255,0.05);
+        border-radius: 12px;
+        padding: 10px 15px;
+        margin-bottom: 20px;
     }
-    .copy-group span {
-        color: #fff;
-        font-family: 'Roboto Mono', monospace;
-        font-size: 14px;
+    #ref-url {
+        color: #888;
+        font-size: 13px;
+        white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        white-space: nowrap;
-        margin-right: 10px;
+        flex: 1;
+        font-weight: 600;
     }
     .copy-btn {
         background: #ff9500;
@@ -56,142 +74,130 @@
         border: none;
         padding: 5px 15px;
         border-radius: 6px;
-        font-weight: 700;
-        font-size: 12px;
-        cursor: pointer;
+        font-weight: 800;
+        font-size: 11px;
+        margin-left: 10px;
         transition: all 0.2s;
     }
-    .copy-btn:hover {
-        background: #ffaa33;
-        transform: scale(1.05);
-    }
-    .referral-header {
-        text-align: center;
-        margin-bottom: 40px;
-    }
-    .referral-header h2 {
-        color: #ff9500;
-        font-weight: 800;
-        letter-spacing: 1px;
+    .copy-btn:hover { background: #fff; }
+
+    .theme-btn {
+        width: 100%;
+        background: linear-gradient(135deg, #ff9500 0%, #ff5e00 100%);
+        border: none;
+        color: #000;
+        font-weight: 900;
         text-transform: uppercase;
+        padding: 15px;
+        border-radius: 12px;
+        letter-spacing: 1px;
+        box-shadow: 0 8px 20px rgba(255, 94, 0, 0.2);
+        transition: all 0.3s ease;
     }
-    .referral-header p {
-        color: #888;
+    .theme-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(255, 94, 0, 0.4); }
+
+    .promo-box {
+        background: linear-gradient(to right, rgba(255, 149, 0, 0.1), transparent);
+        border-left: 4px solid #ff9500;
+        padding: 20px;
+        border-radius: 0 15px 15px 0;
+        margin-top: 30px;
     }
-    .stats-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 20px;
-    }
-    @media (max-width: 768px) {
-        .stats-grid {
-            grid-template-columns: 1fr;
-            gap: 15px;
-        }
-        .referral-container {
-            margin-top: 70px;
-            padding: 10px;
-        }
-        .referral-card {
-            padding: 15px;
-            margin-bottom: 10px;
-        }
-        .referral-header h2 {
-            font-size: 1.5rem;
-        }
-        .referral-header p {
-            font-size: 13px;
-        }
-        .card-icon {
-            width: 40px;
-            height: 40px;
-            margin-bottom: 10px;
-        }
-        .card-icon span {
-            font-size: 20px !important;
-        }
-        .copy-group span {
-            font-size: 12px;
-        }
-        .copy-btn {
-            padding: 4px 10px;
-            font-size: 11px;
-        }
-    }
+    .promo-box h4 { color: #fff; font-weight: 800; margin-bottom: 5px; }
+    .promo-box p { color: #888; margin-bottom: 0; font-size: 14px; }
 </style>
+@endsection
+
 @section('content')
-    <div class="referral-container">
-        <div class="referral-header">
-            <h2>Invite & Earn</h2>
-            <p>Share your unique link with friends and start earning rewards together!</p>
+<div class="referral-container py-5">
+    <div class="referral-header">
+        <h2>INVITE & EARN</h2>
+        <p class="text-grey">Grow your network and earn commissions on every bet your friends make</p>
+    </div>
+
+    <div class="referral-grid">
+        <!-- Commission Card -->
+        <div class="glass-card text-center">
+            <div class="card-icon">
+                <span class="material-symbols-outlined">payments</span>
+            </div>
+            <h3 class="text-white fw-900 mb-1">20%</h3>
+            <p class="text-grey uppercase small fw-700 mb-4">Lifetime Commission</p>
+            <p class="text-secondary">You receive a percentage of the house edge for every game played by your referrals, paid instantly to your wallet.</p>
         </div>
 
-        <div class="stats-grid">
-            <!-- Referral Code Card -->
-            <div class="referral-card">
-                <div class="card-icon">
-                    <span class="material-symbols-outlined">qr_code_2</span>
-                </div>
-                <h5 class="text-white mb-3">Your Referral Code</h5>
-                <div class="copy-group">
-                    <span id="ref-code">{{user('id')}}</span>
-                    <button class="copy-btn" onclick="copyText('ref-code', this)">COPY</button>
-                </div>
+        <!-- Sharing Link Card -->
+        <div class="glass-card">
+            <div class="card-icon">
+                <span class="material-symbols-outlined">link</span>
             </div>
-
-            <!-- Referral Link Card -->
-            <div class="referral-card">
-                <div class="card-icon">
-                    <span class="material-symbols-outlined">link</span>
-                </div>
-                <h5 class="text-white mb-3">Sharing Link</h5>
-                <div class="copy-group">
-                    <span id="ref-url">{{url('register?refer='.user('id'))}}</span>
-                    <button class="copy-btn" onclick="copyText('ref-url', this)">COPY</button>
-                </div>
+            <h5 class="text-white text-center mb-3">Your Referral Link</h5>
+            <div class="copy-group mb-3">
+                <span id="ref-url">{{url('register?refer='.user('id'))}}</span>
+                <button class="copy-btn" onclick="copyText('ref-url', this)">COPY</button>
             </div>
+            <button class="theme-btn" onclick="shareJetMtaa()">
+                <span class="material-symbols-outlined f-18 align-middle me-1">share</span> 
+                SHARE LINK
+            </button>
         </div>
+    </div>
 
-        <!-- How it works -->
-        <div class="referral-card mt-4">
-            <h5 class="text-white mb-4">How it works</h5>
-            <div class="row text-center text-grey small">
-                <div class="col-4">
-                    <div class="mb-2 text-warning"><span class="material-symbols-outlined" style="font-size: 32px;">share</span></div>
-                    <div>Share Link</div>
+    <div class="glass-card">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <div class="promo-box">
+                    <h4>Earn Passive Income</h4>
+                    <p>There is no limit to how many friends you can invite. The more they play, the more you earn. Track your earnings in the Level Management tab.</p>
                 </div>
-                <div class="col-4">
-                    <div class="mb-2 text-warning"><span class="material-symbols-outlined" style="font-size: 32px;">person_add</span></div>
-                    <div>Friend Joins</div>
-                </div>
-                <div class="col-4">
-                    <div class="mb-2 text-warning"><span class="material-symbols-outlined" style="font-size: 32px;">payments</span></div>
-                    <div>Get Rewards</div>
-                </div>
+            </div>
+            <div class="col-lg-4 text-center mt-4 mt-lg-0">
+                <a href="/level-management" class="theme-btn d-inline-block w-auto px-5">View My Team</a>
             </div>
         </div>
     </div>
+</div>
 @endsection
 
 @section('js')
 <script>
-    function copyText(id, btn) {
-        const text = document.getElementById(id).innerText;
-        const elem = document.createElement('textarea');
+    function copyText(elementId, btn) {
+        var text = document.getElementById(elementId).innerText;
+        var elem = document.createElement("textarea");
         document.body.appendChild(elem);
         elem.value = text;
         elem.select();
-        document.execCommand('copy');
+        document.execCommand("copy");
         document.body.removeChild(elem);
         
-        const originalText = btn.innerText;
+        var originalText = btn.innerText;
         btn.innerText = 'COPIED!';
-        btn.style.background = '#00ff00';
+        btn.style.background = '#00ff88';
         
         setTimeout(() => {
             btn.innerText = originalText;
             btn.style.background = '#ff9500';
         }, 2000);
+    }
+
+    async function shareJetMtaa() {
+        const shareData = {
+            title: 'JetMtaa - Win Big Today!',
+            text: 'Hey! Join me on JetMtaa and let\'s win together. Get 100% bonus on your first deposit! 🚀',
+            url: document.getElementById('ref-url').innerText
+        };
+
+        try {
+            if (navigator.share) {
+                await navigator.share(shareData);
+            } else {
+                const copyBtn = document.querySelector('.copy-btn');
+                copyText('ref-url', copyBtn);
+                toastr.info('Link copied to clipboard');
+            }
+        } catch (err) {
+            console.error('Error sharing:', err);
+        }
     }
 </script>
 @endsection

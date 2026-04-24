@@ -23,61 +23,63 @@ class ViserMartPaymentService
      */
     public function initiatePayment($data)
     {
-        try {
-            $payload = [
-                'external_reference' => $data['reference'],
-                'amount' => $data['amount'],
-                'currency' => $data['currency'] ?? 'KES',
-                'customer_email' => $data['email'],
-                'callback_url' => $data['callback_url'] ?? route('ipn.visermart'),
-                'return_url' => $data['return_url'] ?? null,
-            ];
+        $maxRetries = 3;
+        $attempt = 0;
+        $lastError = 'Unknown error';
 
-            // Merge extra metadata and channels if provided
-            if (isset($data['metadata'])) {
-                $payload['metadata'] = $data['metadata'];
+        while ($attempt < $maxRetries) {
+            $attempt++;
+            try {
+                $payload = [
+                    'external_reference' => $data['reference'],
+                    'amount' => $data['amount'],
+                    'currency' => $data['currency'] ?? 'KES',
+                    'customer_email' => $data['email'],
+                    'callback_url' => $data['callback_url'] ?? route('ipn.visermart'),
+                    'return_url' => $data['return_url'] ?? null,
+                ];
+
+                if (isset($data['metadata'])) $payload['metadata'] = $data['metadata'];
+                if (isset($data['channels'])) $payload['channels'] = $data['channels'];
+
+                $request = Http::withHeaders([
+                    'X-Aetheric-Key' => $this->apiKey,
+                    'Content-Type' => 'application/json',
+                    'Accept' => 'application/json',
+                ])
+                ->timeout(20) // Give the proxy 20 seconds to respond
+                ->connectTimeout(10); // Wait 10 seconds for initial connection
+
+                if (str_contains($this->baseUrl, 'localhost') || 
+                    str_contains($this->baseUrl, '127.0.0.1') || 
+                    str_contains($this->baseUrl, 'docuworld.store')) {
+                    $request->withoutVerifying();
+                }
+
+                $response = $request->post($this->baseUrl . '/api/external/payment/initiate', $payload);
+
+                if ($response->successful()) {
+                    return $response->json();
+                }
+
+                $errorBody = $response->body();
+                $lastError = "Status: " . $response->status() . " Body: " . $errorBody;
+                
+                Log::warning("ViserMart Initiation attempt $attempt failed", [
+                    'status' => $response->status(),
+                    'error' => $errorBody
+                ]);
+
+            } catch (\Exception $e) {
+                $lastError = $e->getMessage();
+                Log::error("ViserMart Connection attempt $attempt failed", ['error' => $lastError]);
             }
-            if (isset($data['channels'])) {
-                $payload['channels'] = $data['channels'];
-            }
 
-            $request = Http::withHeaders([
-                'X-Aetheric-Key' => $this->apiKey,
-                'Content-Type' => 'application/json',
-                'Accept' => 'application/json',
-            ]);
-
-            // Only bypass SSL for local/proxy domains to maintain security for true live environments
-            // If we're on local XAMPP connecting to docuworld.store, we usually need to bypass
-            if (str_contains($this->baseUrl, 'localhost') || 
-                str_contains($this->baseUrl, '127.0.0.1') || 
-                str_contains($this->baseUrl, 'docuworld.store')) {
-                $request->withoutVerifying();
-            }
-
-            $response = $request->post($this->baseUrl . '/api/external/payment/initiate', $payload);
-
-            if ($response->successful()) {
-                return $response->json();
-            }
-
-            $errorBody = $response->body();
-            Log::error('ViserMart payment initiation failed', [
-                'status' => $response->status(),
-                'body' => $errorBody,
-                'url' => $this->baseUrl . '/api/external/payment/initiate',
-                'data' => $data
-            ]);
-
-            return ['error' => 'Could not initiate payment with ViserMart. Status: ' . $response->status() . ' Response: ' . $errorBody];
-        } catch (\Exception $e) {
-            Log::error('Exception during ViserMart payment initiation', [
-                'message' => $e->getMessage(),
-                'url' => $this->baseUrl . '/api/external/payment/initiate',
-                'trace' => $e->getTraceAsString()
-            ]);
-            return ['error' => 'Payment service connection error: ' . $e->getMessage()];
+            // Wait briefly before retrying (0.5s, 1s)
+            if ($attempt < $maxRetries) usleep(500000 * $attempt);
         }
+
+        return ['error' => 'ViserMart not reachable after several attempts. Last error: ' . $lastError];
     }
 
     /**

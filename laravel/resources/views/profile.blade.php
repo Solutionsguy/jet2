@@ -4,231 +4,122 @@
 <style>
     .profile-container {
         max-width: 1000px;
-        margin: 100px auto;
-        padding: 20px;
+        margin: 0 auto;
     }
-    .profile-header-card {
-        background: linear-gradient(135deg, #1a1b1d 0%, #101011 100%);
-        border: 1px solid #2a2b2e;
-        border-radius: 20px;
-        padding: 30px;
+    .profile-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+    .profile-header h2 {
+        color: #fff;
+        font-weight: 900;
+        letter-spacing: 1px;
+    }
+    
+    .glass-card {
+        background: rgba(255, 255, 255, 0.03) !important;
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 24px;
+        padding: 40px;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+    }
+
+    .profile-avatar-section {
+        text-align: center;
         margin-bottom: 30px;
-        display: flex;
-        align-items: center;
-        gap: 25px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     }
-    .profile-avatar-large {
+    .profile-avatar-section img {
         width: 100px;
         height: 100px;
-        background: #222;
-        border: 3px solid #ff9500;
         border-radius: 50%;
+        border: 3px solid #ff9500;
+        padding: 5px;
+        background: rgba(0,0,0,0.3);
+        margin-bottom: 15px;
+    }
+
+    .input-field-row {
         display: flex;
         align-items: center;
-        justify-content: center;
-        overflow: hidden;
-    }
-    .profile-header-info h2 {
-        color: #fff;
-        margin: 0;
-        font-weight: 800;
-        text-transform: uppercase;
-    }
-    .profile-header-info p {
-        color: #ff9500;
-        margin: 0;
-        font-weight: 600;
-        font-size: 14px;
-    }
-    .info-card {
-        background: rgba(25, 26, 27, 0.95);
-        border: 1px solid #2a2b2e;
-        border-radius: 15px;
-        padding: 20px;
-        height: 100%;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-    }
-    .info-card-title {
-        color: #ff9500;
-        font-weight: 800;
-        font-size: 12px;
-        text-transform: uppercase;
-        letter-spacing: 1px;
+        background: rgba(0,0,0,0.2);
+        border: 1px solid rgba(255,255,255,0.05);
+        border-radius: 12px;
+        padding: 12px 15px;
         margin-bottom: 20px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
     }
-    .info-row {
-        display: flex;
-        justify-content: space-between;
-        padding: 12px 0;
-        border-bottom: 1px solid #1a1b1d;
-    }
-    .info-row:last-child {
-        border-bottom: none;
-    }
-    .info-label {
-        color: #666;
-        font-size: 13px;
-    }
-    .info-value {
+    .field-icon { color: #ff9500; margin-right: 12px; display: flex; }
+    .field-input {
+        background: transparent;
+        border: none;
         color: #fff;
         font-weight: 600;
-        font-size: 13px;
-        text-align: right;
+        width: 100%;
+        outline: none;
     }
-    .lock-icon {
-        color: #444;
-        font-size: 14px !important;
-        margin-left: 8px;
-    }
-    @media (max-width: 768px) {
-        .profile-container {
-            margin-top: 80px;
-            padding: 15px;
-        }
-        .profile-header-card {
-            flex-direction: column;
-            text-align: center;
-            padding: 20px;
-        }
-        .profile-avatar-large {
-            width: 80px;
-            height: 80px;
-        }
+    .field-input:disabled { opacity: 0.5; color: #888; }
+
+    .theme-btn {
+        width: 100%;
+        background: linear-gradient(135deg, #ff9500 0%, #ff5e00 100%);
+        border: none;
+        color: #000;
+        font-weight: 900;
+        text-transform: uppercase;
+        padding: 18px;
+        border-radius: 14px;
+        letter-spacing: 1px;
+        box-shadow: 0 8px 20px rgba(255, 94, 0, 0.3);
+        transition: all 0.3s ease;
     }
 </style>
 @endsection
 
 @section('content')
-<div class="profile-container">
-    <!-- Header Card -->
-    <div class="profile-header-card">
-        <div class="profile-avatar-large">
-            <img src="{{asset('images/avtar/av-1.png')}}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover;">
-        </div>
-        <div class="profile-header-info">
-            <p>Welcome back,</p>
-            <h2>{{ user('name') }}</h2>
-            <div class="mt-2">
-                <span class="badge bg-dark border border-secondary text-grey">User ID: {{ user('id') }}</span>
-                <span class="badge bg-dark border border-warning text-warning ms-1">Active Member</span>
-            </div>
-        </div>
+<div class="profile-container py-5">
+    <div class="profile-header">
+        <h2>PERSONAL DETAILS</h2>
+        <p class="text-grey">Manage your account information and preferences</p>
     </div>
 
-    <div class="row g-4">
-        <!-- Account Details Card -->
-        <div class="col-md-6">
-            <div class="info-card">
-                <div class="info-card-title">
-                    <span class="material-symbols-outlined">account_balance</span>
-                    Bank Details
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="glass-card">
+                <div class="profile-avatar-section">
+                    <img src="{{ user('image') ?? asset('images/user-default.png') }}" alt="Avatar">
+                    <h5 class="text-white mb-0">{{ user('name') }}</h5>
+                    <p class="text-warning small fw-700">Verified Member</p>
                 </div>
-                <div class="info-row">
-                    <span class="info-label">Bank Name</span>
-                    <span class="info-value">
-                        {{isset($bank->bankname)?$bank->bankname:'N/A'}}
-                        <span class="material-symbols-outlined lock-icon">lock</span>
-                    </span>
+
+                <div class="input-field-row">
+                    <span class="field-icon"><span class="material-symbols-outlined">person</span></span>
+                    <input type="text" class="field-input" value="{{ user('name') }}" disabled>
                 </div>
-                <div class="info-row">
-                    <span class="info-label">Account Number</span>
-                    <span class="info-value">
-                        {{isset($bank->accountno)?$bank->accountno:'N/A'}}
-                        <span class="material-symbols-outlined lock-icon">lock</span>
-                    </span>
+
+                <div class="input-field-row">
+                    <span class="field-icon"><span class="material-symbols-outlined">mail</span></span>
+                    <input type="text" class="field-input" value="{{ user('email') }}" disabled>
                 </div>
-                <div class="info-row">
-                    <span class="info-label">IFSC Code</span>
-                    <span class="info-value">
-                        {{isset($bank->ifsccode)?$bank->ifsccode:'N/A'}}
-                        <span class="material-symbols-outlined lock-icon">lock</span>
-                    </span>
+
+                <div class="input-field-row">
+                    <span class="field-icon"><span class="material-symbols-outlined">call</span></span>
+                    <input type="text" class="field-input" value="{{ user('mobile') }}" disabled>
                 </div>
-                <div class="info-row">
-                    <span class="info-label">Branch</span>
-                    <span class="info-value">
-                        {{isset($bank->branchname)?$bank->branchname:'N/A'}}
-                        <span class="material-symbols-outlined lock-icon">lock</span>
-                    </span>
+
+                <div class="input-field-row">
+                    <span class="field-icon"><span class="material-symbols-outlined">payments</span></span>
+                    <input type="text" class="field-input" value="Default Currency: {{ user('currency') }}" disabled>
                 </div>
+
+                <div class="alert alert-info bg-dark border-secondary small mb-4">
+                    <i class="material-symbols-outlined f-14 align-middle me-1">lock</i>
+                    To change your personal details, please contact support.
+                </div>
+
+                <a href="/logout" class="theme-btn text-center text-decoration-none d-block" style="background: rgba(255,255,255,0.05); color: #fff; box-shadow: none;">Sign Out</a>
             </div>
         </div>
-
-        <!-- Contact Details Card -->
-        <div class="col-md-6">
-            <div class="info-card">
-                <div class="info-card-title">
-                    <span class="material-symbols-outlined">contact_phone</span>
-                    Contact Info
-                </div>
-                <div class="info-row">
-                    <span class="info-label">Mobile Number</span>
-                    <span class="info-value">
-                        {{user('mobile') ? user('mobile') : 'Not Linked' }}
-                        <span class="material-symbols-outlined lock-icon">lock</span>
-                    </span>
-                </div>
-                <div class="info-row">
-                    <span class="info-label">Email Address</span>
-                    <span class="info-value">
-                        {{ user('email') }}
-                        <span class="material-symbols-outlined lock-icon">lock</span>
-                    </span>
-                </div>
-                <div class="info-row">
-                    <span class="info-label">Country</span>
-                    <span class="info-value">
-                        {{ ucfirst(user('country')) }}
-                        <span class="material-symbols-outlined lock-icon">lock</span>
-                    </span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Personal Details Card -->
-        <div class="col-12">
-            <div class="info-card">
-                <div class="info-card-title">
-                    <span class="material-symbols-outlined">badge</span>
-                    Personal Details
-                </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="info-row">
-                            <span class="info-label">Full Name</span>
-                            <span class="info-value">{{ user('name') }}</span>
-                        </div>
-                        <div class="info-row">
-                            <span class="info-label">Gender</span>
-                            <span class="info-value">{{ ucfirst(user('gender')) }}</span>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="info-row">
-                            <span class="info-label">Preferred Currency</span>
-                            <span class="info-value text-warning fw-bold">{{ user('currency') }}</span>
-                        </div>
-                        <div class="info-row">
-                            <span class="info-label">Security Status</span>
-                            <span class="info-value"><span class="text-success">Verified</span></span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Security Note -->
-    <div class="mt-4 p-3 bg-dark border border-secondary rounded-3 text-center">
-        <p class="text-grey small mb-0">
-            <span class="material-symbols-outlined align-middle me-1" style="font-size: 16px;">verified_user</span>
-            Information is encrypted and locked. To update your details, please contact support.
-        </p>
     </div>
 </div>
 @endsection
-

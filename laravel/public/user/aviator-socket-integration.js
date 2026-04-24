@@ -74,46 +74,57 @@ function setupVisibilityHandler(socket) {
             // Tab is becoming hidden - mark it
             window.tabWasHidden = true;
             window.hiddenTimestamp = Date.now();
+            window.lastMultiplierBeforeHide = window.prediction.currentMultiplier || 1.00;
+            
+            // Stop prediction loop but keep data
+            window.prediction.isActive = false;
             
             // IMPORTANT: Stop plane animations to prevent corrupted state
             if (typeof window.stopPlaneAnimations === 'function') {
                 window.stopPlaneAnimations();
             }
             
-            console.log('👁️ Tab hidden - animations stopped, will resync when visible');
+            console.log('👁️ Tab hidden at', window.lastMultiplierBeforeHide + 'x');
         } else {
             // Tab is becoming visible again
             if (window.tabWasHidden) {
-                const hiddenDuration = Date.now() - (window.hiddenTimestamp || 0);
-                console.log(`👁️ Tab visible again after ${Math.round(hiddenDuration/1000)}s - requesting resync...`);
+                const now = Date.now();
+                const hiddenDuration = (now - (window.hiddenTimestamp || now)) / 1000;
+                console.log(`👁️ Tab visible after ${hiddenDuration.toFixed(2)}s`);
                 
-                // Immediately snap UI to last known state to prevent flicker
-                resyncUIState();
-                
-                // DON'T call resumePlaneAnimation here - let the socket sync handle it
-                // This prevents duplicate animation triggers
-                // The onSyncGameInProgress handler will call showFlyingPlane which starts the animation
-                
-                // Request current game state from server
-                // Server will respond with syncGameInProgress (if game is flying) or gamePhase
-                if (socket && socket.isSocketConnected()) {
-                    // Use the requestSync method on the socket client
-                    if (typeof socket.requestSync === 'function') {
-                        socket.requestSync();
-                    } else {
-                        // Fallback: access raw socket
-                        const rawSocket = socket.getSocket ? socket.getSocket() : null;
-                        if (rawSocket) {
-                            rawSocket.emit('requestSync');
-                            console.log('📡 Requested game state sync from server');
-                        }
+                // IF GAME IS STILL FLYING, FORCE INSTANT RESUME
+                if (window.currentGamePhase === 'flying') {
+                    console.log('🚀 FORCING INSTANT RESUME...');
+                    
+                    // Calculate where the multiplier SHOULD be right now
+                    const driftAmount = hiddenDuration * window.prediction.growthRate;
+                    const estimatedMultiplier = window.lastMultiplierBeforeHide + driftAmount;
+                    
+                    // Snap the internal prediction engine to the new time
+                    window.prediction.isActive = true;
+                    window.prediction.currentMultiplier = estimatedMultiplier;
+                    
+                    // Immediately update UI and start drawing the plane
+                    updateMultiplierDisplay(estimatedMultiplier);
+                    if (typeof window.startPlaneAtMultiplier === 'function') {
+                        window.startPlaneAtMultiplier(estimatedMultiplier);
                     }
+                    
+                    // Restart the high-speed loop
+                    if (window.prediction.animationFrameId) cancelAnimationFrame(window.prediction.animationFrameId);
+                    window.prediction.animationFrameId = requestAnimationFrame(runPredictionLoop);
+                } else {
+                    resyncUIState();
                 }
                 
-                // Clear the hidden flag after a short delay to allow catch-up events to be skipped
+                // Also manually tell the socket to re-check the server
+                if (socket && typeof socket.requestSync === 'function') {
+                    socket.requestSync();
+                }
+                
+                // Clear the hidden flag after a small safety delay
                 setTimeout(() => {
                     window.tabWasHidden = false;
-                    console.log('✅ Tab resync complete - normal updates resumed');
                 }, 200);
             }
         }
@@ -526,15 +537,24 @@ function showFlyingPlane(gameId, multiplier, isMidGameSync = false) {
 function setupSocketEventHandlers(socket) {
     // Connection status handler
     socket.on('onConnectionChange', (data) => {
+        const $bulb = $('#socket_bulb');
+        const $text = $('#socket_status_text');
+        
         if (data.connected) {
             console.log('✓ Connected to game server');
+            // Update Status Bulb UI
+            if ($bulb.length) {
+                $bulb.removeClass('disconnected').addClass('connected');
+                $text.text('Online').removeClass('text-danger').css('color', '#00ff88');
+            }
             // Hide preloader immediately on connection - game UI will show via socket events
             $(".load-txt").hide();
-            // Don't show toastr for connection - too noisy
         } else {
             console.log('✗ Disconnected from game server');
-            if (typeof toastr !== 'undefined') {
-                toastr.warning('Disconnected from game server. Reconnecting...');
+            // Update Status Bulb UI
+            if ($bulb.length) {
+                $bulb.removeClass('connected').addClass('disconnected');
+                $text.text('Offline').addClass('text-danger').css('color', '');
             }
         }
     });

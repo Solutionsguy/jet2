@@ -13,9 +13,9 @@ function sendBetIntent(betAmount, isAutoBet = false) {
             if (aviatorSocket && typeof aviatorSocket.isSocketConnected === 'function' && aviatorSocket.isSocketConnected()) {
                 const rawSocket = aviatorSocket.getSocket();
                 if (rawSocket && rawSocket.connected) {
-                    // Get wallet balance from UI for quick validation
-                    const walletText = $("#wallet_balance").text();
-                    const walletBalance = parseFloat(walletText.replace(/[^0-9.]/g, '')) || 0;
+                    // Get wallet balance directly from global variables for accuracy
+                    const currentType = (typeof current_wallet_type !== 'undefined') ? current_wallet_type : 'money';
+                    const activeBalance = (currentType === 'freebet') ? freebet_balance : wallet_balance;
                     
                     rawSocket.emit('betIntent', {
                         odapuId: member_id,
@@ -23,7 +23,7 @@ function sendBetIntent(betAmount, isAutoBet = false) {
                         username: username,
                         userId: member_id,
                         betAmount: parseFloat(betAmount) || min_bet_amount,
-                        walletBalance: walletBalance,
+                        walletBalance: activeBalance,
                         timestamp: Date.now(),
                         isAutoBet: isAutoBet,  // Auto-bets are first bet placers (queued before round)
                         priority: isAutoBet ? 'first' : 'normal'  // Mark priority for crash calculation

@@ -96,36 +96,42 @@ body {
     }
 
 .custom-badge {
-    font-size: 12px;
-    line-height: 24px;
-    height: 22px;
-    padding: 0 10px;
+    font-size: 11px;
+    line-height: 1;
+    padding: 3px 6px;
     text-align: center;
-    border-radius: 11px;
-    display: flex;
+    border-radius: 6px;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-weight: 600;
-    width: fit-content;
+    font-weight: 700;
+    width: auto;
+    margin-right: 4px;
+    text-transform: lowercase;
 }
 
-/* Multiplier badge colors - EXACT match to plane glow effect colors */
-/* bg3: Low multiplier (≤2x) - Cyan/Blue (from glow: rgba(0, 200, 255)) */
+/* Ensure the multiplier 'x' is consistent */
+.custom-badge::after {
+    content: '';
+}
+
+/* Multiplier badge colors - STANDARD AVIATOR SCHEME */
+/* bg3: Low multiplier (≤2x) - Standard Blue/Cyan */
 .bg3 {
-    background: #055522;
+    background: #34b4ff;
     color: #001820;
 }
 
-/* bg1: Medium multiplier (2x-10x) - Purple/Violet (from glow: rgba(120, 100, 255) to rgba(180, 80, 255)) */
+/* bg1: Medium multiplier (2x-10x) - Standard Purple */
 .bg1 {
-    background: #b450ff;
-    color: #1a0028;
+    background: #913de3;
+    color: #fff;
 }
 
-/* bg2: High multiplier (≥10x) - Pink/Magenta (from glow: rgba(255, 50, 150)) */
+/* bg2: High multiplier (≥10x) - Standard Pink/Magenta */
 .bg2 {
-    background: #ff3296;
-    color: #280014;
+    background: #c017b4;
+    color: #fff;
 }
 
 /* bg-lost: Lost bet indicator - Red/Dark */

@@ -239,13 +239,12 @@ class Gamesetting extends Controller
             }
         }
         
-        // Build final response data - use the latest balances
-        $final_balance = $status ? $new_balance : floatval(wallet($userId, 'num'));
-        $final_freebet_balance = $status ? $new_freebet_balance : floatval($walletData->freebet_amount);
+        // Build final response data - fetch FRESHEST balance from DB to avoid any sync issues
+        $freshWallet = Wallet::where('userid', $userId)->first();
         
         $data = array(
-            "wallet_balance" => round($final_balance, 2),
-            "freebet_balance" => round($final_freebet_balance, 2),
+            "wallet_balance" => round(floatval($freshWallet->amount), 2),
+            "freebet_balance" => round(floatval($freshWallet->freebet_amount), 2),
             "wallet_type" => $wallet_type,
             "return_bets" => $returnbets,
             "socket_data" => $betData

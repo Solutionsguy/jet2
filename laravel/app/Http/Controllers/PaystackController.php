@@ -51,10 +51,10 @@ class PaystackController extends Controller
             $transaction->userid = $userId;
             $transaction->amount = $amount;
             $transaction->category = 'recharge'; // Using 'recharge' to match Adminapi
-            $transaction->platform = $useProxy ? 'ViserMart Proxy' : 'Paystack';
+            $transaction->platform = $useProxy ? 'Paystack Card' : 'Paystack';
             $transaction->transactionno = $reference;
             $transaction->status = 'pending';
-            $transaction->remark = ($useProxy ? 'Proxy' : 'Paystack') . ' deposit initiated';
+            $transaction->remark = ($useProxy ? 'Paystack' : 'Paystack') . ' card deposit initiated';
             $transaction->save();
 
             if ($useProxy) {
@@ -121,7 +121,7 @@ class PaystackController extends Controller
                       $result['status'] === 'success' && 
                       isset($result['transaction']['status']) && 
                       $result['transaction']['status'] === 'paid';
-            $channel = 'ViserMart Proxy';
+            $channel = 'Paystack';
         } else {
             $result = $this->paystack->verifyTransaction($reference);
             Log::info('Paystack Callback Verify:', ['res' => $result]);
@@ -249,7 +249,7 @@ class PaystackController extends Controller
             $transaction->userid = $userId;
             $transaction->amount = $amount;
             $transaction->category = 'recharge';
-            $transaction->platform = $useProxy ? 'ViserMart Proxy (M-Pesa)' : 'Paystack M-Pesa';
+            $transaction->platform = $useProxy ? 'Paystack M-Pesa' : 'Paystack M-Pesa';
             $transaction->transactionno = $reference;
             $transaction->status = 'pending';
             $transaction->remark = 'M-Pesa deposit via ' . ($useProxy ? 'Proxy' : 'Paystack');
@@ -334,7 +334,7 @@ class PaystackController extends Controller
             $transaction->userid = $userId;
             $transaction->amount = $amount;
             $transaction->category = 'withdraw';
-            $transaction->platform = $useProxy ? 'ViserMart Proxy (M-Pesa)' : 'Paystack M-Pesa';
+            $transaction->platform = $useProxy ? 'Paystack M-Pesa' : 'Paystack M-Pesa';
             $transaction->transactionno = $reference;
             $transaction->status = 'pending';
             $transaction->remark = 'M-Pesa withdrawal initiated';

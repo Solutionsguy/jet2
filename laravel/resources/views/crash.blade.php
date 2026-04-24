@@ -78,6 +78,39 @@
     var hash_id = "{{ csrf_token() }}";
 </script>
     <style>
+        /* Mobile Performance Optimizations (Layout-Safe) */
+        #myCanvas, #auto_increment_number_div {
+            will-change: transform, opacity !important;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            pointer-events: none !important; /* Let touches pass through the canvas to the background */
+        }
+
+        .plane-glow-effect {
+            pointer-events: none !important; /* Ensure decorative glow doesn't block scrolling */
+        }
+
+        #auto_increment_number {
+            will-change: contents !important;
+        }
+
+        /* Force smooth scrolling and prevent touch-action conflicts */
+        .main-wrapper, .left-sidebar, .right-sidebar, .scroll-div {
+            -webkit-overflow-scrolling: touch !important;
+            touch-action: pan-y !important; /* Specifically allow vertical scrolling */
+        }
+
+        #all_bets, #my_bet_list, #member_bet {
+            contain: content !important;
+        }
+
+        /* Ensure betting buttons still work despite canvas pointer-events: none */
+        .game-play, .bet-controls, .navigation {
+            pointer-events: auto !important;
+            position: relative;
+            z-index: 10;
+        }
+
         label.error {
             color: #fa0000;
             font-size: 14px;

@@ -2,17 +2,36 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <script>
-        // GLOBAL DEBUG TOGGLE
-        window.DEBUG_MODE = false;
-        if (!window.DEBUG_MODE) {
-            console.log = function() {};
-            console.info = function() {};
-            console.warn = function() {};
-        }
-    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Betting company {{ env('APP_NAME') }} - online sports betting</title>
+    
+    <!-- Primary SEO & Social Media (WhatsApp/FB/Telegram) -->
+    <title>JetMtaa - Premium Crash Gaming & Aviator</title>
+    <meta name="description" content="Join JetMtaa for the ultimate crash gaming experience. Instant M-Pesa deposits & huge bonuses!">
+    
+    <!-- Open Graph Tags -->
+    <meta property="og:site_name" content="JetMtaa">
+    <meta property="og:title" content="JetMtaa - Fly High, Win Big!">
+    <meta property="og:description" content="Get 100% bonus on your first deposit! Join the fastest growing crash game community at JetMtaa.com">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jetmtaa.com/">
+    
+    <!-- Image Tags (Optimized for WhatsApp) -->
+    <meta property="og:image" content="https://jetmtaa.com/images/promo-banner.png">
+    <meta property="og:image:secure_url" content="https://jetmtaa.com/images/promo-banner.png">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    
+    <!-- Schema.org for Google/WhatsApp -->
+    <meta itemprop="name" content="JetMtaa">
+    <meta itemprop="description" content="Premium Crash Gaming in Kenya. Join now and win big!">
+    <meta itemprop="image" content="https://jetmtaa.com/images/promo-banner.png">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="JetMtaa - Win Big Today">
+    <meta name="twitter:image" content="https://jetmtaa.com/images/promo-banner.png">
+
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="shortcut icon" href="{{ asset('images/logo.png') }}">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&amp;display=swap" rel="stylesheet">

@@ -33,6 +33,44 @@
     .wagering-hidden {
         display: none !important;
     }
+
+    /* Server Status Bulb Styles */
+    .server-status {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(0,0,0,0.3);
+        padding: 4px 10px;
+        border-radius: 20px;
+        border: 1px solid rgba(255,255,255,0.1);
+        height: 26px;
+    }
+    .status-bulb {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        transition: all 0.3s ease;
+    }
+    .status-bulb.connected {
+        background: #00ff88;
+        box-shadow: 0 0 8px #00ff88;
+    }
+    .status-bulb.disconnected {
+        background: #ff3232;
+        box-shadow: 0 0 8px #ff3232;
+        animation: statusBlink 1s infinite;
+    }
+    @keyframes statusBlink {
+        0% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.4; transform: scale(1.1); }
+        100% { opacity: 1; transform: scale(1); }
+    }
+    .status-text {
+        font-size: 9px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
 </style>
 <header>
     <div class="header-top">
@@ -284,8 +322,9 @@
                 help
             </span> How to Play
         </button> -->
-            <div class="wallet-balance h-26">
-                <span id="wallet_balance">{{ wallet(user('id')) }}</span>
+            <div class="server-status h-26" title="Game Server Connection">
+                <div id="socket_bulb" class="status-bulb disconnected"></div>
+                <span id="socket_status_text" class="status-text text-danger">Offline</span>
             </div>
         </div>
     </div>
