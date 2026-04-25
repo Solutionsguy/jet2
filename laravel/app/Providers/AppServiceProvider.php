@@ -6,6 +6,8 @@ use Illuminate\Support\ServiceProvider;
 
 use Illuminate\Pagination\Paginator;
 
+use Illuminate\Support\Facades\URL;
+
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -25,6 +27,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        if (str_contains(config('app.url'), 'https')) {
+            URL::forceScheme('https');
+        }
         Paginator::useBootstrapFive();
         view()->share('activeTemplateTrue', 'assets/xaxino/');
     }

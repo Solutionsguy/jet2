@@ -300,7 +300,7 @@
 
             <!-- Status Messages -->
             <div id="mpesa_status_box" style="display: none;" class="mt-4">
-                <div id="mpesa_loading" class="alert alert-info border-0 bg-dark text-info"><i class="mdi mdi-loading mdi-spin me-2"></i>Initializing...</div>
+                <div id="mpesa_loading" class="alert alert-info border-0 bg-dark text-info"><i class="mdi mdi-loading mdi-spin me-2"></i><span id="mpesa_loading_msg">Initializing...</span></div>
                 <div id="mpesa_error" class="alert alert-danger border-0 bg-dark text-danger"><i class="mdi mdi-alert-circle me-2"></i><span id="mpesa_error_msg"></span></div>
             </div>
             <div id="paystack_status" style="display: none;" class="mt-4">
