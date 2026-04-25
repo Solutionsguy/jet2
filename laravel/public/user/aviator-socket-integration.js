@@ -1093,12 +1093,6 @@ socket.on('onMultiplierUpdate', (data) => {
     updateActiveBetsCashOutAmounts(data.multiplier);
 });
 
-// Update game crashed handler to stop prediction
-socket.on('onGameCrashed', (data) => {
-    stopPrediction();
-    // ... rest of existing code ...
-});
-
     // Game crashed handler - ALL clients receive this from server
     socket.on('onGameCrashed', (data) => {
         console.log('💥 [SERVER] Game crashed at', data.crashMultiplier + 'x');
@@ -1150,6 +1144,8 @@ socket.on('onGameCrashed', (data) => {
         // The 'waiting' phase event will hide flew_away and show loading
         console.log('⏳ Waiting for server to start next round...');
     });
+    }
+}
     
     // Game reset handler - prepare for new round
     socket.on('onGameReset', (data) => {

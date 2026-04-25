@@ -1,21 +1,20 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" prefix="og: http://ogp.me/ns#">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <!-- Primary SEO & Social Media (WhatsApp/FB/Telegram) -->
-    <title>JetMtaa - Premium Crash Gaming & Aviator</title>
-    <meta name="description" content="Join JetMtaa for the ultimate crash gaming experience. Instant M-Pesa deposits & huge bonuses!">
+    <!-- Primary SEO & Search Engine Optimization -->
+    <title>JetMtaa | JetMtaa Aviator, Casino & Premium Crash Gaming</title>
+    <meta name="description" content="JetMtaa.com is Kenya's #1 destination for Aviator, Casino games and premium crash gaming. Join JetMtaa and win big!">
+    <meta name="keywords" content="JetMtaa, JetMtaa Aviator, JetMtaa Casino, JetMtaa.com, JetMtaa Kenya">
     
-    <!-- Open Graph Tags -->
+    <!-- Open Graph Tags (Facebook / WhatsApp / Telegram) -->
     <meta property="og:site_name" content="JetMtaa">
-    <meta property="og:title" content="JetMtaa - Fly High, Win Big!">
-    <meta property="og:description" content="Get 100% bonus on your first deposit! Join the fastest growing crash game community at JetMtaa.com">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://jetmtaa.com/">
-    
-    <!-- Image Tags (Optimized for WhatsApp) -->
+    <meta property="og:title" content="JetMtaa - The Best Aviator & Casino in Kenya!">
+    <meta property="og:description" content="Sign up now at JetMtaa.com and win big. Premium Crash Games, instant M-Pesa deposits and fast withdrawals!">
     <meta property="og:image" content="https://jetmtaa.com/images/promo-banner.png">
     <meta property="og:image:secure_url" content="https://jetmtaa.com/images/promo-banner.png">
     <meta property="og:image:type" content="image/png">

@@ -1,39 +1,40 @@
-// Manual dropdown toggle fix
+/**
+ * Single-Click Dropdown Fix
+ * This script handles all .custom-toggle buttons to ensure they open on the FIRST click.
+ * It bypasses Bootstrap's automatic engine to prevent double-click conflicts.
+ */
+
 $(document).ready(function() {
-    console.log('Dropdown fix script loaded');
-    
-    // Remove existing Bootstrap dropdown initialization
-    $('[data-bs-toggle="dropdown"]').off('click');
-    
-    // Manual dropdown toggle
-    $('[data-bs-toggle="dropdown"]').on('click', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        
-        console.log('Menu icon clicked');
-        
-        var $dropdown = $(this).next('.dropdown-menu');
-        var isVisible = $dropdown.hasClass('show');
-        
-        // Hide all other dropdowns
-        $('.dropdown-menu').removeClass('show');
-        
-        // Toggle this dropdown
-        if (!isVisible) {
-            $dropdown.addClass('show');
-            console.log('Dropdown opened');
-        } else {
-            $dropdown.removeClass('show');
-            console.log('Dropdown closed');
-        }
-    });
-    
-    // Close dropdown when clicking outside
+    console.log('🚀 Single-Click Menu Fix initialized');
+
+    // 1. Disable any lingering Bootstrap listeners on these specific buttons
+    $('.custom-toggle').attr('data-bs-toggle', 'disabled');
+
+    // 2. Clear all open menus when clicking anywhere else
     $(document).on('click', function(e) {
         if (!$(e.target).closest('.btn-group').length) {
             $('.dropdown-menu').removeClass('show');
         }
     });
-    
-    console.log('Dropdown handlers attached');
+
+    // 3. The "Master" Toggle Handler
+    $(document).on('click', '.custom-toggle', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const $parent = $(this).closest('.btn-group');
+        const $menu = $parent.find('.dropdown-menu');
+        const isCurrentlyOpen = $menu.hasClass('show');
+
+        // Close all other menus first
+        $('.dropdown-menu').removeClass('show');
+
+        // Toggle this specific menu
+        if (!isCurrentlyOpen) {
+            $menu.addClass('show');
+            console.log('✅ Menu Opened');
+        } else {
+            console.log('❌ Menu Closed');
+        }
+    });
 });

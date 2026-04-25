@@ -5,20 +5,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-    <!-- Primary SEO & Social Media (WhatsApp/FB/Telegram) -->
-    <title>JetMtaa - Premium Crash Gaming</title>
-    <meta name="description" content="JetMtaa is your home for high-stakes crash gaming. Instant M-Pesa withdrawals, 24/7 support, and the best Aviator experience in Kenya.">
+    <!-- Primary SEO & Search Engine Optimization -->
+    <title>JetMtaa | JetMtaa Aviator, Casino & Premium Crash Gaming</title>
+    <meta name="description" content="JetMtaa.com is Kenya's #1 destination for Aviator, Casino games and premium crash gaming with instant M-Pesa deposits. Join JetMtaa and win big!">
+    <meta name="keywords" content="JetMtaa, JetMtaa Aviator, JetMtaa Casino, JetMtaa.com, JetMtaa Kenya">
+    <link rel="canonical" href="{{ url()->current() }}" />
     
-    <!-- Open Graph Tags -->
+    <!-- Open Graph Tags (Facebook / WhatsApp / Telegram) -->
     <meta property="og:site_name" content="JetMtaa">
-    <meta property="og:title" content="JetMtaa - Premium Gaming">
-    <meta property="og:description" content="Sign up now at JetMtaa.com and claim your welcome bonus. The #1 destination for Crash gamers!">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://jetmtaa.com/">
+    <meta property="og:url" content="{{ url()->full() }}">
+    <meta property="og:title" content="{{ request()->has('refer') ? '🚀 Join my team on JetMtaa - Get 100% Bonus!' : 'JetMtaa - The Best Aviator & Casino in Kenya' }}">
+    <meta property="og:description" content="Sign up at JetMtaa.com. Instant M-Pesa deposits, huge multipliers, and 24/7 payouts!">
     
-    <!-- Image Tags (Optimized for WhatsApp) -->
-    <meta property="og:image" content="https://jetmtaa.com/images/promo-banner.png">
-    <meta property="og:image:secure_url" content="https://jetmtaa.com/images/promo-banner.png">
+    <!-- Image Preview Logic -->
+    @php
+        $previewImage = "https://jetmtaa.com/images/promo-banner.png";
+        // If you upload 'refer-banner.png', change the logic here to use it for referrals
+    @endphp
+    <meta property="og:image" content="{{ $previewImage }}?v={{ time() }}">
+    <meta property="og:image:secure_url" content="{{ $previewImage }}?v={{ time() }}">
     <meta property="og:image:type" content="image/png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">

@@ -12,6 +12,31 @@
             </h3>
         </div>
         <div class="row">
+            <div class="col-lg-12 grid-margin stretch-card">
+                <div class="card bg-gradient-dark text-white">
+                    <div class="card-body">
+                        <h4 class="card-title text-white">Payment Gateway Settings</h4>
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <p class="mb-0">Current Mode: 
+                                    <span class="badge {{ setting('payment_gateway_mode') == 'mpesa' ? 'badge-success' : 'badge-primary' }}">
+                                        {{ strtoupper(setting('payment_gateway_mode') ?? 'PAYSTACK') }}
+                                    </span>
+                                </p>
+                                <small class="text-muted">Direct M-Pesa bypasses the Paystack checkout screen.</small>
+                            </div>
+                            <div>
+                                <button class="btn btn-sm btn-info" onclick="switchGatewayMode()">
+                                    Switch to {{ setting('payment_gateway_mode') == 'mpesa' ? 'Paystack' : 'Direct M-Pesa' }}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
             <div class="col-lg-6 grid-margin stretch-card">
                 <div class="card">
                     <div class="card-body">
@@ -83,5 +108,14 @@
                     "/manage_jet_secure/amount-setup", "#");
             }
         });
+
+        function switchGatewayMode() {
+            if (confirm("Are you sure you want to switch the payment gateway mode?")) {
+                let data = new FormData();
+                data.append('_token', '{{ csrf_token() }}');
+                apex("POST", "{{ url('manage_jet_secure/api/switch-payment-mode') }}", data, null,
+                    "/manage_jet_secure/amount-setup", "#");
+            }
+        }
     </script>
 @endsection

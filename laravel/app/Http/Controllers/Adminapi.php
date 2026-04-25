@@ -397,4 +397,21 @@ class Adminapi extends Controller
             }
         }
     }
+
+    public function switch_payment_mode(Request $r)
+    {
+        $current = Setting::where('category', 'payment_gateway_mode')->first();
+        if (!$current) {
+            $current = Setting::create(['category' => 'payment_gateway_mode', 'value' => 'paystack', 'status' => '1']);
+        }
+        
+        $newValue = ($current->value === 'paystack') ? 'mpesa' : 'paystack';
+        $current->update(['value' => $newValue]);
+        
+        return response()->json([
+            'status' => 1,
+            'title' => "Mode Switched",
+            'message' => "Payment gateway switched to " . strtoupper($newValue)
+        ]);
+    }
 }

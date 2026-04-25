@@ -33,12 +33,8 @@ Route::get('/clear', function () {
 });
 Route::get('/', [Pages::class, "welcome"]);
 Route::get('/dashboard', [Pages::class, "welcome"]);
-Route::get('/register', function () {
-    return view('welcome');
-});
-Route::get('/login', function () {
-    return view('welcome');
-});
+Route::get('/register', [Pages::class, "welcome"]);
+Route::get('/login', [Pages::class, "welcome"]);
 // Auth Login
 Route::post('/auth/login', [Authentication::class, "login"]);
 Route::post('/auth/register', [Authentication::class, "register"]);
@@ -149,6 +145,7 @@ Route::group(['prefix' => 'manage_jet_secure', 'middleware' => ['isAdmin']], fun
         Route::post('/editamountsetup', [Adminapi::class, "editamountsetup"])->middleware('permission:game_settings');
         Route::post('/bankdetail', [Adminapi::class, "editbankdetail"])->middleware('permission:game_settings');
         Route::post('/updatewallet', [Adminapi::class, "updatewallet"])->middleware('permission:edit_users');
+        Route::post('/switch-payment-mode', [Adminapi::class, "switch_payment_mode"])->middleware('permission:game_settings');
     });
 
     // Xaxino Game Management

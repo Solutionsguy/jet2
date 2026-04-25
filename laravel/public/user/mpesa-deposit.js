@@ -78,11 +78,22 @@ function initiateMpesaDeposit() {
         },
         success: function(response) {
             if (response.isSuccess) {
-                toastr.success('Redirecting to M-Pesa payment...');
-                // Redirect to Paystack payment page
-                setTimeout(function() {
-                    window.location.href = response.authorization_url;
-                }, 1000);
+                if (response.is_stk) {
+                    // Handle Direct STK Push
+                    // Try to find the specific msg span first, otherwise update the whole box
+                    if ($('#mpesa_loading_msg').length) {
+                        $('#mpesa_loading_msg').text('Waiting for PIN confirmation...');
+                    } else {
+                        $('#mpesa_loading').html('<i class="mdi mdi-loading mdi-spin me-2"></i>Waiting for PIN confirmation...');
+                    }
+                    toastr.info(response.message || 'STK Push sent to your phone');
+                } else {
+                    // Standard Paystack Redirect
+                    toastr.success('Redirecting to payment page...');
+                    setTimeout(function() {
+                        window.location.href = response.authorization_url;
+                    }, 1000);
+                }
             } else {
                 showMpesaError(response.message || 'Failed to initialize payment');
             }

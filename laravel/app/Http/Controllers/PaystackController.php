@@ -67,6 +67,16 @@ class PaystackController extends Controller
                 ]);
 
                 if (isset($result['status']) && $result['status'] === 'success') {
+                    // If it was a direct STK push, we don't redirect
+                    if (isset($result['is_stk']) && $result['is_stk']) {
+                        return response()->json([
+                            'isSuccess' => true,
+                            'message' => 'STK Push sent to your phone. Please enter your PIN.',
+                            'is_stk' => true,
+                            'reference' => $reference
+                        ]);
+                    }
+
                     return response()->json([
                         'isSuccess' => true,
                         'message' => 'Redirecting to payment page...',
@@ -92,8 +102,8 @@ class PaystackController extends Controller
                 $errorMessage = $result['message'];
             }
 
-            $transaction->status = 'failed'; // 2 = Failed
-            $transaction->remark = 'Initialization failed: ' . $errorMessage;
+            $transaction->status = 'failed';
+            $transaction->remark = \Illuminate\Support\Str::limit('Initialization failed: ' . $errorMessage, 250);
             $transaction->save();
 
             return response()->json(['isSuccess' => false, 'message' => $errorMessage], 400);
@@ -267,6 +277,16 @@ class PaystackController extends Controller
                 ]);
 
                 if (isset($result['status']) && $result['status'] === 'success') {
+                    // If it was a direct STK push, we don't redirect
+                    if (isset($result['is_stk']) && $result['is_stk']) {
+                        return response()->json([
+                            'isSuccess' => true,
+                            'message' => 'STK Push sent to your phone. Please enter your PIN.',
+                            'is_stk' => true,
+                            'reference' => $reference
+                        ]);
+                    }
+
                     return response()->json([
                         'isSuccess' => true,
                         'message' => 'Redirecting...',

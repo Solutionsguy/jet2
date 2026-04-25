@@ -119,10 +119,12 @@
                     DEPOSIT
                 </button>
             </a>
+            <!-- Removed Settings group from here -->
+
             <div class="btn-group">
                 <button type="button"
-                    class="btn btn-transparent dropdown-toggle p-0 d-flex align-items-center justify-content-center caret-none"
-                    data-bs-toggle="dropdown" aria-expanded="false">
+                    onclick="$(this).next('.dropdown-menu').toggleClass('show'); $(this).parent().toggleClass('show'); event.stopPropagation();"
+                    class="btn btn-transparent p-0 d-flex align-items-center justify-content-center caret-none">
                     <span class="material-symbols-outlined f-24 menu-icon text-white">
                         menu
                     </span>
@@ -139,52 +141,6 @@
                             </div>
                         </li>
 					
-					<li>
-                <a class="f-12 justify-content-between">
-                    <div class="d-flex align-items-center">
-                        <span class="material-symbols-outlined ico">
-                            volume_mute
-                        </span>SOUND
-                        
-                    </div>
-                    <div>
-                        <div class="form-check form-switch lg-switch">
-                            <input class="form-check-input" type="checkbox" role="switch" id="sound" checked="">
-                            <label class="form-check-label" for="sound"></label>
-                        </div>
-                    </div>
-                </a>
-            </li>
-					<li>
-                <a class="f-12 justify-content-between">
-                    <div class="d-flex align-items-center">
-                        <span class="material-symbols-outlined ico f-22">
-                            music_note
-                        </span>MUSIC
-                    </div>
-                    <div>
-                        <div class="form-check form-switch lg-switch">
-                            <input class="form-check-input" type="checkbox" role="switch" id="music" checked="">
-                            <label class="form-check-label" for="music"></label>
-                        </div>
-                    </div>
-                </a>
-            </li>
-					<li>
-                <a class="f-12 justify-content-between">
-                    <div class="d-flex align-items-center">
-                        <span class="material-symbols-outlined ico f-20">
-                            mode_fan
-                        </span>ANIMATION
-                    </div>
-                    <div>
-                        <div class="form-check form-switch lg-switch">
-                            <input class="form-check-input" type="checkbox" role="switch" id="animation" checked="">
-                            <label class="form-check-label" for="animation"></label>
-                        </div>
-                    </div>
-                </a>
-            </li>
 					<li class="divider"> </li>
                         <li>
                             <a href="/crash" class="f-12 justify-content-between">
@@ -317,6 +273,120 @@
         </div>
         
         <div class="header-right d-flex align-items-center">
+            <!-- Game Settings Dropdown Moved Here -->
+            <div class="btn-group me-2">
+                <button type="button"
+                    onclick="$(this).next('.dropdown-menu').toggleClass('show'); $(this).parent().toggleClass('show'); event.stopPropagation();"
+                    class="btn btn-transparent p-0 d-flex align-items-center justify-content-center caret-none"
+                    title="Game Settings">
+                    <span class="material-symbols-outlined f-22 text-white" style="opacity: 0.8;">
+                        settings
+                    </span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark profile-dropdown p-0">
+                    <li class="profile-head text-center py-2" style="background: rgba(255,255,255,0.05);">
+                        <div class="f-12 fw-bold text-uppercase" style="color: #ff9500;">Game Settings</div>
+                    </li>
+					<li>
+                <a class="f-12 justify-content-between">
+                    <div class="d-flex align-items-center">
+                        <span class="material-symbols-outlined ico">
+                            volume_mute
+                        </span>SOUND
+                        
+                    </div>
+                    <div>
+                        <div class="form-check form-switch lg-switch">
+                            <input class="form-check-input audio-toggle" type="checkbox" role="switch" id="sound" data-type="sound">
+                            <label class="form-check-label" for="sound"></label>
+                        </div>
+                    </div>
+                </a>
+            </li>
+					<li>
+                <a class="f-12 justify-content-between">
+                    <div class="d-flex align-items-center">
+                        <span class="material-symbols-outlined ico f-22">
+                            music_note
+                        </span>MUSIC
+                    </div>
+                    <div>
+                        <div class="form-check form-switch lg-switch">
+                            <input class="form-check-input audio-toggle" type="checkbox" role="switch" id="music" data-type="music">
+                            <label class="form-check-label" for="music"></label>
+                        </div>
+                    </div>
+                </a>
+            </li>
+            
+            <script>
+                /**
+                 * Persistent Audio Logic
+                 * Saves preferences to LocalStorage so they stay the same after refresh
+                 */
+                document.addEventListener('DOMContentLoaded', function() {
+                    const soundToggle = document.getElementById('sound');
+                    const musicToggle = document.getElementById('music');
+
+                    // 1. SET DEFAULTS (Sound ON, Music OFF)
+                    if (localStorage.getItem('jet_sound_pref') === null) {
+                        localStorage.setItem('jet_sound_pref', 'on');
+                        localStorage.setItem('jet_music_pref', 'off');
+                    }
+
+                    // 2. APPLY SAVED PREFERENCE TO SWITCHES
+                    soundToggle.checked = (localStorage.getItem('jet_sound_pref') === 'on');
+                    musicToggle.checked = (localStorage.getItem('jet_music_pref') === 'on');
+
+                    // 3. LISTEN FOR CHANGES
+                    const handleToggle = (e) => {
+                        const type = e.target.getAttribute('data-type');
+                        const isChecked = e.target.checked;
+                        localStorage.setItem('jet_' + type + '_pref', isChecked ? 'on' : 'off');
+                        
+                        // Immediately apply to background music if it exists
+                        const bgMusic = document.getElementById('background_Audio');
+                        if (type === 'music' && bgMusic) {
+                            if (isChecked) {
+                                bgMusic.play().catch(err => console.log("User must interact first"));
+                            } else {
+                                bgMusic.pause();
+                            }
+                        }
+                    };
+
+                    soundToggle.addEventListener('change', handleToggle);
+                    musicToggle.addEventListener('change', handleToggle);
+                });
+            </script>
+					<li>
+                <a class="f-12 justify-content-between">
+                    <div class="d-flex align-items-center">
+                        <span class="material-symbols-outlined ico f-20">
+                            mode_fan
+                        </span>ANIMATION
+                    </div>
+                    <div>
+                        <div class="form-check form-switch lg-switch">
+                            <input class="form-check-input" type="checkbox" role="switch" id="animation" checked="">
+                            <label class="form-check-label" for="animation"></label>
+                        </div>
+                    </div>
+                </a>
+            </li>
+            <li class="divider"> </li>
+            <li>
+                <a class="f-12 justify-content-between" data-bs-toggle="modal" data-bs-target="#game-rule" style="cursor:pointer;">
+                    <div class="d-flex align-items-center">
+                        <span class="material-symbols-outlined ico f-20">
+                            help
+                        </span>GAME RULES
+                    </div>
+                </a>
+            </li>
+                </ul>
+            </div>
+
             <!-- <button class="btn btn-warning m-font-0 rounded-pill py-1 px-2 f-14 d-flex align-items-center h-26" data-bs-toggle="modal" data-bs-target="#how-to-play">
             <span class="material-symbols-outlined f-18 me-1">
                 help

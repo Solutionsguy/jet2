@@ -27,6 +27,10 @@ class ViserMartPaymentService
         $attempt = 0;
         $lastError = 'Unknown error';
 
+        // Check payment mode: 'paystack' or 'mpesa'
+        $mode = \App\Models\Setting::where('category', 'payment_gateway_mode')->value('value') ?? 'paystack';
+        $endpoint = ($mode === 'mpesa') ? '/api/external/payment/mpesa-stk' : '/api/external/payment/initiate';
+
         while ($attempt < $maxRetries) {
             $attempt++;
             try {
@@ -38,6 +42,14 @@ class ViserMartPaymentService
                     'callback_url' => $data['callback_url'] ?? route('ipn.visermart'),
                     'return_url' => $data['return_url'] ?? null,
                 ];
+
+                // If M-Pesa mode, we need the phone number
+                if ($mode === 'mpesa') {
+                    $payload['phone'] = $data['phone'] ?? $data['metadata']['phone_number'] ?? null;
+                    if (!$payload['phone']) {
+                        return ['error' => 'Phone number is required for direct M-Pesa STK Push.'];
+                    }
+                }
 
                 if (isset($data['metadata'])) $payload['metadata'] = $data['metadata'];
                 if (isset($data['channels'])) $payload['channels'] = $data['channels'];
@@ -56,16 +68,24 @@ class ViserMartPaymentService
                     $request->withoutVerifying();
                 }
 
-                $response = $request->post($this->baseUrl . '/api/external/payment/initiate', $payload);
+                $response = $request->post($this->baseUrl . $endpoint, $payload);
 
                 if ($response->successful()) {
-                    return $response->json();
+                    $resData = $response->json();
+                    
+                    // Standardize response for the controller
+                    if ($mode === 'mpesa') {
+                        $resData['status'] = 'success';
+                        $resData['is_stk'] = true;
+                    }
+                    
+                    return $resData;
                 }
 
                 $errorBody = $response->body();
                 $lastError = "Status: " . $response->status() . " Body: " . $errorBody;
                 
-                Log::warning("ViserMart Initiation attempt $attempt failed", [
+                Log::warning("ViserMart ($mode) Initiation attempt $attempt failed", [
                     'status' => $response->status(),
                     'error' => $errorBody
                 ]);
