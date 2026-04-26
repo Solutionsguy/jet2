@@ -1140,12 +1140,23 @@ socket.on('onMultiplierUpdate', (data) => {
         // Update wallet balance
         updateWalletBalanceFromServer();
         
+        // 1. MASTER KILL SWITCH: Stop Prediction Engine instantly
+        window.stop_incrementor = true;
+        if (typeof stopPrediction === 'function') {
+            stopPrediction();
+        }
+        if (window.incrementorInterval) {
+            clearInterval(window.incrementorInterval);
+        }
+
+        // 2. FORCE LOCK: Stick the visual number to the server crash point
+        const el = document.getElementById('auto_increment_number');
+        if (el) el.innerText = parseFloat(data.crashMultiplier).toFixed(2) + 'x';
+        
         // Server will automatically start the next game cycle
         // The 'waiting' phase event will hide flew_away and show loading
         console.log('⏳ Waiting for server to start next round...');
     });
-    }
-}
     
     // Game reset handler - prepare for new round
     socket.on('onGameReset', (data) => {

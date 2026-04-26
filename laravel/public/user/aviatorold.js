@@ -722,6 +722,12 @@ function lets_fly() {
 }
 
 function incrementor(inc_no) {
+    // 1. MASTER KILL SWITCH: If the server crashed, STOP EVERYTHING
+    if (window.stop_incrementor) {
+        console.log('🛑 Visual Loop Terminated by Kill Switch');
+        return;
+    }
+
     $('.loading-game').removeClass('show');
     $("#auto_increment_number_div").show();
     $("#running_type").text('cash out time');
