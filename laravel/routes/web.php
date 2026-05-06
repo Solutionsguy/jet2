@@ -86,6 +86,7 @@ Route::group(['prefix' => 'manage_jet_secure', 'middleware' => ['isAdmin']], fun
         
         Route::get('/sub-admins', [\App\Http\Controllers\AdminRoleController::class, 'subAdminsIndex']);
         Route::post('/sub-admins', [\App\Http\Controllers\AdminRoleController::class, 'subAdminStore']);
+        Route::post('/sub-admins/promote', [\App\Http\Controllers\AdminRoleController::class, 'promoteUser'])->name('admin.promote');
     });
     
     // Rain Management Routes

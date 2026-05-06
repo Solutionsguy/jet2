@@ -97,4 +97,21 @@ class AdminRoleController extends Controller
 
         return back()->with('success', 'Sub-admin created successfully!');
     }
+
+    public function promoteUser(Request $request)
+    {
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'role_id' => 'required|exists:roles,id'
+        ]);
+
+        $user = User::findOrFail($request->user_id);
+        
+        $user->update([
+            'isadmin' => '1',
+            'role_id' => $request->role_id
+        ]);
+
+        return back()->with('success', "User {$user->name} has been promoted to Admin!");
+    }
 }

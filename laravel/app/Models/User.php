@@ -11,6 +11,11 @@ class User extends Model
 
     protected $guarded = [];
 
+    protected $casts = [
+        'is_superadmin' => 'boolean',
+        'role_id' => 'integer',
+    ];
+
     public function role()
     {
         return $this->belongsTo(Role::class);

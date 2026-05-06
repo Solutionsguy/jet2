@@ -1308,25 +1308,85 @@
                             payouts are rendered void and all affected bets are refunded.</li>
                     </ul>
                 </div>
-                <audio id="sound_Audio">
-                    <source src="plane-crash.mp3" type="audio/mpeg">
-                </audio>
-                <audio id="background_Audio">
-                    <source src="background.mp3" type="audio/mpeg">
-                </audio>
-                <audio id="fly_plane_audio">
-                    <source src="game-start.mp3" type="audio/mpeg">
-                </audio>
-                <audio id="cash_out_audio">
-                    <source src="cashout.mp3" type="audio/mpeg">
-                </audio>
-                <audio id="cash_out_audio_2">
-                    <source src="cashout_2.mp3" type="audio/mpeg">
-                </audio>
+                <!-- Original Audio IDs kept as Skeletons to prevent script errors -->
+                <audio id="sound_Audio"></audio>
+                <audio id="background_Audio"></audio>
+                <audio id="fly_plane_audio"></audio>
+                <audio id="cash_out_audio"></audio>
+                <audio id="cash_out_audio_2"></audio>
             </div>
         </div>
     </div>
     <!--====== Game Rules Modal End ======-->
+    
+    <script src="{{ asset('js/audio-handler.js') }}"></script>
+    <script>
+        // 1. Global Helper for aviatorold.js (Defined immediately)
+        window.audioHandler = {
+            safePlay: function(soundElement) {
+                if (soundElement && typeof soundElement.play === 'function') {
+                    return soundElement.play();
+                }
+                return Promise.resolve();
+            }
+        };
+
+        /**
+         * THE BRIDGE: Redirects old audio calls to the modern mixer.
+         */
+        (function() {
+            var sfxOn = true, bgOn = false; 
+
+            function updateStateFromUI() {
+                const sEl = document.getElementById('sound');
+                const mEl = document.getElementById('music');
+                if (sEl) sfxOn = sEl.checked;
+                if (mEl) bgOn = mEl.checked;
+            }
+
+            // Create Mock Sound Objects
+            function createMock(file, isSFX = true) {
+                var mock = {
+                    play: function() { 
+                        if (isSFX && sfxOn) AudioHandler.playSound(file);
+                        if (!isSFX && bgOn) AudioHandler.playBackground(file);
+                        return Promise.resolve();
+                    },
+                    pause: function() { if (!isSFX) AudioHandler.stopBackground(); },
+                    load: function() {}, volume: 1, currentTime: 0, paused: true
+                };
+                mock.safePlay = function() { return this.play(); };
+                return mock;
+            }
+
+            // Override getElementById to return mocks
+            const originalGet = document.getElementById;
+            document.getElementById = function(id) {
+                if (id === 'sound_Audio') return createMock('crash');
+                if (id === 'background_Audio') return createMock('background', false);
+                if (id === 'fly_plane_audio') return createMock('start');
+                if (id === 'cash_out_audio') return createMock('cashout');
+                if (id === 'cash_out_audio_2') return createMock('cashout2');
+                return originalGet.apply(document, arguments);
+            };
+            
+            document.addEventListener('change', function(e) {
+                if (e.target.id === 'sound') sfxOn = e.target.checked;
+                if (e.target.id === 'music') {
+                    bgOn = e.target.checked;
+                    if (bgOn) AudioHandler.playBackground('background');
+                    else AudioHandler.stopBackground();
+                }
+            });
+
+            const unlockAndSync = () => {
+                updateStateFromUI();
+                if (bgOn) AudioHandler.playBackground('background');
+                console.log('🔈 Audio System Ready');
+            };
+            ['click', 'touchstart'].forEach(v => document.addEventListener(v, unlockAndSync, {once:true}));
+        })();
+    </script>
 
     <!--====== Hinal (End) ======-->
     <script>
@@ -1439,9 +1499,6 @@
 
     <!--====== Plugin js ======-->
     <script src="/js/jquery.min.js"></script>
-
-    <!-- Audio Handler (load early to prevent autoplay errors) -->
-    <script src="{{ asset('js/audio-handler.js') }}"></script>
 
     <!-- Socket.IO Client (load after jQuery) -->
     <script src="/socket.io/socket.io.js"></script>

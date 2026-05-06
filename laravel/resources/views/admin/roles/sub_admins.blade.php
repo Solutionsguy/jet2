@@ -17,6 +17,17 @@
         </div>
     @endif
 
+    @if ($errors->any())
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <ul class="mb-0">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
     <div class="row">
         <!-- Add New Admin -->
         <div class="col-md-12 grid-margin stretch-card">
@@ -65,6 +76,39 @@
                         </div>
                         
                         <button type="submit" class="btn btn-gradient-primary me-2">Add Admin Account</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Promote Existing User -->
+        <div class="col-md-12 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title text-warning">Promote Existing User to Admin</h4>
+                    <p class="card-description"> Enter the User ID of an existing player to grant them administrative access. </p>
+                    <form action="{{ route('admin.promote') }}" method="POST" class="forms-sample">
+                        @csrf
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="promoteUserId">User ID</label>
+                                    <input type="number" class="form-control" name="user_id" id="promoteUserId" placeholder="e.g. 1045" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="promoteAdminRole">Assign Role</label>
+                                    <select class="form-control text-dark" name="role_id" id="promoteAdminRole" required>
+                                        <option value="">Select a Role</option>
+                                        @foreach($roles as $role)
+                                        <option value="{{ $role->id }}">{{ $role->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-gradient-warning me-2 text-dark">Promote to Admin</button>
                     </form>
                 </div>
             </div>
